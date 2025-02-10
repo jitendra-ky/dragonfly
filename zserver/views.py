@@ -90,3 +90,20 @@ class HomeView(View):
             "name" : "John Doe",
         }
         return render(request, 'home.html', context)
+
+class SignInTemplateView(View):
+    
+    def get(self, request):
+        context = {
+            "title" : "Sign In",
+        }
+        return render(request, 'signin.html', context)
+
+
+class SignUpTemplateView(View):
+    
+    def get(self, request):
+        context = {
+            "title" : "Sign Up",
+        }
+        return render(request, 'signup.html', context)

@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Sign Up{% endblock %}
+
+{% block content %}
+<div id="signup-container">
+    <h1>Sign Up</h1>
+    <form id="signup-form" method="post" action="{% url 'user-profile' %}">
+        {% csrf_token %}
+        <label for="fullname">Full Name:</label>
+        <input type="text" id="fullname" name="fullname" required>
+        <label for="email">Email:</label>
+        <input type="email" id="email" name="email" required>
+        <label for="password">Password:</label>
+        <input type="password" id="password" name="password" required>
+        <button type="submit">Sign Up</button>
+    </form>
+</div>
+<div id="otp-verification">
+    <h2>Verify OTP</h2>
+    <form id="otp-form" method="post">
+        {% csrf_token %}
+        <label for="otp">Enter OTP:</label>
+        <input type="text" id="otp" name="otp" required>
+        <button type="submit">Verify</button>
+    </form>
+</div>
+<script src="{% static 'js/signup.js' %}"></script>
+{% endblock %}
