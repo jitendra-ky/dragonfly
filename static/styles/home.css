@@ -109,6 +109,12 @@ body {
                 transition: all 0.3s ease-in-out;
             }
 
+            .error-message {
+                color: red;
+                font-size: 1rem;
+                margin: 5px 0;
+            }
+
             .submit-btn:hover {
                 background-color: rgb(146, 97, 206, 0.8);
             }

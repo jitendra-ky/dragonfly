@@ -28,8 +28,16 @@ $(function () {
                 email = formData.email;
             },
             error: function (response) {
-                alert('sign up failed. Please try again.');
-                console.log(response);
+                error_message = "";
+                if (response.responseJSON) {
+                    // as responseJSON contain errors of different fields in field: array(string);
+                    for (const key in response.responseJSON) {
+                        error_message += `${key}: ${response.responseJSON[key] + '\n'}`;
+                    }
+                } else {
+                    error_message = 'An unexpected error occurred.';
+                }
+                $('.error-message').text(error_message);
             }
         })
     })
@@ -54,8 +62,16 @@ $(function () {
                 console.log(response);
             },
             error: function (response) {
-                alert('otp verification failed. Please try again.');
-                console.log(response);
+                error_message = "";
+                if (response.responseJSON) {
+                    // as responseJSON contain errors of different fields in field: array(string);
+                    for (const key in response.responseJSON) {
+                        error_message += `${key}: ${response.responseJSON[key] + '\n'}`;
+                    }
+                } else {
+                    error_message = 'An unexpected error occurred.';
+                }
+                $('.error-message').text(error_message);
             }
         })
     })
