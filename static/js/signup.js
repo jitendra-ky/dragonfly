@@ -9,13 +9,17 @@ $(function () {
         const formData = {
             fullname: $('#fullname').val(),
             email: $('#email').val(),
-            password: $('#password').val()
+            password: $('#password').val(),
+            csrfmiddlewaretoken: $('input[name=csrfmiddlewaretoken]').val()
         }
         $.ajax({
             url: '/api/user-profile/',
             method: 'POST',
             data: JSON.stringify(formData),
             contentType: 'application/json',
+            headers: {
+                'X-CSRFToken': formData.csrfmiddlewaretoken
+            },
             success: function (response) {
                 alert('sign up successful opt send');
                 console.log(response);
@@ -34,13 +38,17 @@ $(function () {
         event.preventDefault();
         const formData = {
             email: email,
-            otp: $('#otp').val()
+            otp: $('#otp').val(),
+            csrfmiddlewaretoken: $('input[name=csrfmiddlewaretoken]').val(),
         }
         $.ajax({
             url: '/api/sign-up-otp/',
             method: 'POST',
             data: JSON.stringify(formData),
             contentType: 'application/json',
+            headers: {
+                'X-CSRFToken': formData.csrfmiddlewaretoken
+            },
             success: function (response) {
                 alert('otp verification successful');
                 console.log(response);
