@@ -80,6 +80,34 @@ body {
         background-color: white;
         border-radius: 50px;
 
+        .otp-email-detail {
+            display: flex;
+            flex-direction: column;
+            margin: 20px 0;
+
+            .otp-email {
+                font-size: 1.2rem;
+                font-weight: 500;
+            }
+
+            .resend-otp-btn {
+                background-color: transparent;
+                border: none;
+                background-color: rgb(60, 131, 237);
+                font-size: 1.2rem;
+                cursor: pointer;
+                transition: all 0.3s ease-in-out;
+                padding: 10px;
+                margin: 10px 0;
+                color: white;
+                border-radius: 20px;
+            }
+
+            .resend-otp-btn:hover {
+                background-color: rgb(60, 131, 237, 0.8);
+            }
+        }
+
         form {
             display: flex;
             flex-direction: column;

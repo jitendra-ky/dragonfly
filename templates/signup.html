@@ -48,7 +48,11 @@
         </div>
         <div class="signbox-right">
             <div class="signbox-right-inner">
-                <h2>Verify OTP</h2>
+                <h2>Verify Email</h2>
+                <div class="otp-email-detail">
+                    <div class="otp-email">here</div> <!--client side fill this place with otp send to xyz@gmail.com-->
+                    <button class="resend-otp-btn">Resend OTP</button>
+                </div>
                 <form id="otp-form" method="post">
                     {% csrf_token %}
                     <input type="hidden" id="csrf_token" name="csrfmiddlewaretoken" value="{{ csrf_token }}">

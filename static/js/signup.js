@@ -26,6 +26,8 @@ $(function () {
                 $signupCont.hide();
                 $otpCont.show();
                 email = formData.email;
+                $('.otp-email').text(`OTP sent to ${email}`);
+
             },
             error: function (response) {
                 error_message = "";
