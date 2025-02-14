@@ -15,8 +15,14 @@ $(function () {
                 'X-CSRFToken': formData.csrfmiddlewaretoken
             },
             success: function (response) {
-                alert('Sign in successful');
-                console.log(response);
+                $('.success-drop-down').text('You have successfully signed in.');
+                $('.success-drop-down').css('display', 'flex');
+                setTimeout(() => {
+                    $('.success-drop-down').css('display', 'none');
+                    // redirect to home page
+                    window.location.href = '/';
+                }, 1000);
+
             },
             error: function (response) {
                 error_message = "";

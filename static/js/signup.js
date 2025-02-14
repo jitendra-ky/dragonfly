@@ -21,12 +21,16 @@ $(function () {
                 'X-CSRFToken': formData.csrfmiddlewaretoken
             },
             success: function (response) {
-                alert('sign up successful opt send');
-                console.log(response);
-                $signupCont.hide();
-                $otpCont.show();
-                email = formData.email;
-                $('.otp-email').text(`OTP sent to ${email}`);
+                $('.success-drop-down').text('Success:) redireting to otp verification');
+                $('.success-drop-down').css('display', 'flex');
+                setTimeout(() => {
+                    $('.success-drop-down').css('display', 'none');
+                    $signupCont.hide();
+                    $otpCont.show();
+                    email = formData.email;
+                    $('.otp-email').text(`OTP sent to ${email}`);
+                }, 1000);
+
 
             },
             error: function (response) {
@@ -60,8 +64,14 @@ $(function () {
                 'X-CSRFToken': formData.csrfmiddlewaretoken
             },
             success: function (response) {
-                alert('otp verification successful');
-                console.log(response);
+                $('.success-drop-down').text('Email verified successfully. redirecting to sign-in page.');
+                $('.success-drop-down').css('display', 'flex');
+                setTimeout(() => {
+                    $('.success-drop-down').css('display', 'none');
+                    // redirect to home page
+                    window.location.href = '/signin/';
+                }, 1000);
+
             },
             error: function (response) {
                 error_message = "";
