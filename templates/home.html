@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+
+{% block title %}Home{% endblock %}
+
+{% block content %}
+<div class="nav-bar"></div>
+<div class="app">
+    <div class="column-left"></div>
+    <div class="column-middle">
+        <h1>Home</h1>
+        <p>Welcome to the home page! {{ name }}</p>
+        <button id="click-me">click me</button>
+    </div>
+</div>
+{% endblock %}

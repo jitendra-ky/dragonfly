@@ -8,6 +8,8 @@ from zserver.serializers import (
     SignUpOTPSerializer,
     UserProfileSerializer,
 )
+from django.shortcuts import render
+from django.views import View
 
 
 class UserProfileView(APIView):
@@ -79,3 +81,29 @@ class SignUpOTPView(APIView):
             serializer.delete_otp()
             return Response(status=status.HTTP_200_OK)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+class HomeView(View):
+    
+    def get(self, request):
+        context = {
+            "name" : "John Doe",
+        }
+        return render(request, 'home.html', context)
+
+class SignInTemplateView(View):
+    
+    def get(self, request):
+        context = {
+            "title" : "Sign In",
+        }
+        return render(request, 'signin.html', context)
+
+
+class SignUpTemplateView(View):
+    
+    def get(self, request):
+        context = {
+            "title" : "Sign Up",
+        }
+        return render(request, 'signup.html', context)

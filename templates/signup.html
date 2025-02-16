@@ -1,0 +1,71 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Sign Up{% endblock %}
+
+{% block content %}
+<div id="signup-container" class="signbox">
+    <div class="success-drop-down"></div>
+    <div class="signbox-inner">
+        <div class="signbox-left">
+            <div class="signbox-left-inner">
+                <img src="{% static '/images/dora-the-explorer.png' %}" alt="">
+            </div>
+        </div>
+        <div class="signbox-right">
+            <div class="signbox-right-inner">
+                <h2>Create Account</h2>
+                <form id="signup-form" method="post">
+                    {% csrf_token %}
+                    <input type="hidden" id="csrf_token" name="csrfmiddlewaretoken" value="{{ csrf_token }}">
+                    <input type="text" id="fullname" name="fullname" placeholder="Full Name" required>
+                    <input type="email" id="email" name="email" placeholder="Email" required>
+                    <input type="password" id="password" name="password" placeholder="Password" required>
+                    <div class="error-message"></div>
+                    <button type="submit" class="submit-btn">Sign Up</button>
+                </form>
+                <div class="divider">Or Sign Up With</div>
+                <div class="google-signup">
+                    <img src="{% static '/images/google-icon.png' %}" alt="Google Logo">
+                    <span>Sign up with Google</span>
+                </div>
+
+                <p class="signin-text">
+                    Already have an account? <a href="{% url 'sign-in-page' %}">Sign in</a>
+                </p>
+
+
+            </div>
+        </div>
+    </div>
+</div>
+
+<div id="otp-verification" class="signbox">
+    <div class="success-drop-down"></div>
+    <div class="signbox-inner">
+        <div class="signbox-left">
+            <div class="signbox-left-inner">
+                here is our image
+            </div>
+        </div>
+        <div class="signbox-right">
+            <div class="signbox-right-inner">
+                <h2>Verify Email</h2>
+                <div class="otp-email-detail">
+                    <div class="otp-email">here</div> <!--client side fill this place with otp send to xyz@gmail.com-->
+                    <button class="resend-otp-btn">Resend OTP</button>
+                </div>
+                <form id="otp-form" method="post">
+                    {% csrf_token %}
+                    <input type="hidden" id="csrf_token" name="csrfmiddlewaretoken" value="{{ csrf_token }}">
+                    <input type="text" id="otp" name="otp" placeholder="OTP" required>
+                    <div class="error-message"></div>
+                    <button type="submit" class="submit-btn">Verify</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="{% static 'js/signup.js' %}"></script>
+{% endblock %}
