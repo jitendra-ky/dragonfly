@@ -63,6 +63,18 @@ class UserProfileView(APIView):
 
 
 class SignInView(APIView):
+    
+    def get(self, request: Request) -> Response:
+        session_id = request.headers.get("session-id")
+        if session_id is None:
+            return Response(status=status.HTTP_401_UNAUTHORIZED)
+        try:
+            session = Session.objects.get(session_id=session_id)
+        except Session.DoesNotExist:
+            return Response(status=status.HTTP_401_UNAUTHORIZED)
+        user = session.user
+        serializer = UserProfileSerializer(user)
+        return Response(serializer.data)
 
     def post(self, request: Request) -> Response:
         serializer = SessionSerializer(data=request.data)

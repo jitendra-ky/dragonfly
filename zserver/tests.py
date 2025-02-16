@@ -244,6 +244,31 @@ class SignInViewTest(TestCase):
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
         # self.assertEqual(response.data['email'][0], 'User does not exist.')
 
+    def test_get(self):
+        print("_________test_get_________")
+        # test get request with valid session id
+        response = self.client.get(
+            self.user_url, headers={"session-id": self.active_user_session.session_id}
+        )
+        print(f"GET response status: {response.status_code}")
+        print(f"GET response data: {response.data}")
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data["email"], self.active_user_with_session.email)
+
+        # test get request with invalid session id
+        response = self.client.get(
+            self.user_url, headers={"session-id": "invalid_session_id"}
+        )
+        print(f"GET response status: {response.status_code}")
+        print(f"GET response data: {response.data}")
+        self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
+
+        # test get request without session id
+        response = self.client.get(self.user_url)
+        print(f"GET response status: {response.status_code}")
+        print(f"GET response data: {response.data}")
+        self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
+
 
 class SignUpOTPTest(TestCase):
 
