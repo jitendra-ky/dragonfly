@@ -230,7 +230,8 @@ class SignInViewTest(TestCase):
         print(f"POST response status: {response.status_code}")
         print(f"POST response data: {response.data}")
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
-        # self.assertEqual(response.data['email'], active_user_with_right_password['email'])
+        self.assertIn("session_id", response.data)
+        self.assertEqual(response.data["session_id"], Session.objects.get(session_id=response.data["session_id"]).session_id)
 
         # test case for not existed user
         not_existed_user = {
