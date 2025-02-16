@@ -1,4 +1,14 @@
+import { getCookie } from './assets.js';
+
 $(function () {
+    // Check if session_id cookie exists
+    const sessionId = getCookie('session_id');
+    console.log(sessionId);
+    if (sessionId) {
+        window.location.href = '/';
+        return;
+    }
+
     $('#signin-form').on('submit', function (event) {
         event.preventDefault();
         const formData = {
@@ -15,6 +25,9 @@ $(function () {
                 'X-CSRFToken': formData.csrfmiddlewaretoken
             },
             success: function (response) {
+                // Save session ID in cookies
+                document.cookie = `session_id=${response.session_id}; path=/;`;
+                console.log('Session ID:', response.session_id);
                 $('.success-drop-down').text('You have successfully signed in.');
                 $('.success-drop-down').css('display', 'flex');
                 setTimeout(() => {

@@ -1,4 +1,14 @@
+import { getCookie } from './assets.js';
+
 $(function () {
+    // Check if session_id cookie exists
+    const sessionId = getCookie('session_id');
+    console.log(sessionId);
+    if (sessionId) {
+        window.location.href = '/';
+        return;
+    }
+
     const $signupCont = $('#signup-container');
     const $otpCont = $('#otp-verification');
     let email = undefined;

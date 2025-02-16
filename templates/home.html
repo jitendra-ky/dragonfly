@@ -1,4 +1,5 @@
 {% extends "base.html" %}
+{% load static %}
 
 {% block title %}Home{% endblock %}
 
@@ -12,4 +13,6 @@
         <button id="click-me">click me</button>
     </div>
 </div>
+
+<script type="module" src="{% static 'js/home.js' %}"></script>
 {% endblock %}
