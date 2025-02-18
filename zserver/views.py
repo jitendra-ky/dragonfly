@@ -17,6 +17,8 @@ from google.auth.transport import requests
 from dotenv import load_dotenv
 import os
 
+from zserver.utils import get_env_var
+
 load_dotenv()
 
 class UserProfileView(APIView):
@@ -107,6 +109,7 @@ class HomeView(View):
     def get(self, request):
         context = {
             "name" : "John Doe",
+            "env_var" : get_env_var(),
         }
         return render(request, 'home.html', context)
 
@@ -115,6 +118,7 @@ class SignInTemplateView(View):
     def get(self, request):
         context = {
             "title" : "Sign In",
+            "env_var" : get_env_var(),
         }
         return render(request, 'signin.html', context)
 
@@ -124,6 +128,7 @@ class SignUpTemplateView(View):
     def get(self, request):
         context = {
             "title" : "Sign Up",
+            "env_var" : get_env_var
         }
         return render(request, 'signup.html', context)
 
