@@ -5,6 +5,14 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+    <script>
+        // here i will unpack the env_var dict from the context
+        var env_var = {
+            {% for key, value in env_var.items %}
+                "{{ key }}": "{{ value|safe }}"{% if not forloop.last %},{% endif %}
+            {% endfor %}
+        };
+    </script>
     <link rel="stylesheet" href="{% static 'styles/home.css' %}">
     <title>{% block title %}My Website{% endblock %}</title>
 </head>

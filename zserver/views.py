@@ -11,6 +11,15 @@ from zserver.serializers import (
 from django.shortcuts import render
 from django.views import View
 
+from google.oauth2 import id_token
+from google.auth.transport import requests
+
+from dotenv import load_dotenv
+import os
+
+from zserver.utils import get_env_var
+
+load_dotenv()
 
 class UserProfileView(APIView):
 
@@ -100,6 +109,7 @@ class HomeView(View):
     def get(self, request):
         context = {
             "name" : "John Doe",
+            "env_var" : get_env_var(),
         }
         return render(request, 'home.html', context)
 
@@ -108,6 +118,7 @@ class SignInTemplateView(View):
     def get(self, request):
         context = {
             "title" : "Sign In",
+            "env_var" : get_env_var(),
         }
         return render(request, 'signin.html', context)
 
@@ -117,5 +128,59 @@ class SignUpTemplateView(View):
     def get(self, request):
         context = {
             "title" : "Sign Up",
+            "env_var" : get_env_var
         }
         return render(request, 'signup.html', context)
+
+
+class GoogleLoginView(APIView):
+    
+    def post(self, request):
+        try:
+            authorization_code = request.data.get("code")
+
+            # Exchange authorization code for tokens
+            tokens = self.exchange_authorization_code(authorization_code)
+            print('get the token')
+
+            # Verify the token with Google's API
+            GOOGLE_CLIENT_ID = os.getenv("GOOGLE_CLIENT_ID")
+            id_info = id_token.verify_oauth2_token(tokens["id_token"], requests.Request(), GOOGLE_CLIENT_ID)
+
+            if id_info["iss"] not in ["accounts.google.com", "https://accounts.google.com"]:
+                return Response({"message": "Invalid issuer"}, status=status.HTTP_403_FORBIDDEN)
+
+            # Get user information
+            email = id_info["email"]
+            name = id_info.get("name", "")
+            
+            # Create or get user
+            user, created = UserProfile.objects.get_or_create(email=email, defaults={"fullname": name})
+            user_session = SessionSerializer().create({"user": user})
+            session_id = user_session.session_id
+            
+            return Response({"message": "Login successful!", "session_id": session_id}, status=status.HTTP_200_OK)
+        
+        except Exception as e:
+            return Response({"message": str(e)}, status=status.HTTP_400_BAD_REQUEST)
+
+    def exchange_authorization_code(self, authorization_code):
+        client_id = os.getenv("GOOGLE_CLIENT_ID")
+        client_secret = os.getenv("GOOGLE_CLIENT_SECRET")
+        redirect_uri = os.getenv("GOOGLE_REDIRECT_URI")
+
+        token_request_data = {
+            "code": authorization_code,
+            "client_id": client_id,
+            "client_secret": client_secret,
+            "redirect_uri": redirect_uri,
+            "grant_type": "authorization_code"
+        }
+        response = requests.requests.post('https://oauth2.googleapis.com/token', data=token_request_data)
+        response_data = response.json()
+
+        if response.status_code != 200:
+            print("exchange authorization error")
+            raise Exception(response_data.get("error", "Failed to exchange authorization code"))
+
+        return response_data
