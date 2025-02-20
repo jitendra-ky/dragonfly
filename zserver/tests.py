@@ -251,7 +251,7 @@ class SignInViewTest(TestCase):
         print(f"POST response status: {response.status_code}")
         print(f"POST response data: {response.data}")
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
-        # self.assertEqual(response.data['email'][0], 'User does not exist.')
+        self.assertEqual(response.data["email"][0], "User does not exist.")
 
     def test_get(self):
         """Test retrieving user profile with session ID."""
