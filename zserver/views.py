@@ -154,10 +154,10 @@ class GoogleLoginView(APIView):
             print("get the token")
 
             # Verify the token with Google's API
-            GOOGLE_CLIENT_ID = os.getenv("GOOGLE_CLIENT_ID")
+            google_client_id = os.getenv("GOOGLE_CLIENT_ID")
             id_info = id_token.verify_oauth2_token(tokens["id_token"],
                                                    requests.Request(),
-                                                   GOOGLE_CLIENT_ID)
+                                                   google_client_id)
 
             if id_info["iss"] not in ["accounts.google.com", "https://accounts.google.com"]:
                 return Response({"message": "Invalid issuer"}, status=status.HTTP_403_FORBIDDEN)

@@ -21,8 +21,8 @@ class UserProfile(models.Model):
     def generate_otp(self) -> str:
         """Generate a 6-digit OTP for the user."""
         generated_opt = "".join(random.choices(string.digits, k=6))
-        OTP = SignUpOTP(user=self, otp=generated_opt)
-        OTP.save()
+        otp = SignUpOTP(user=self, otp=generated_opt)
+        otp.save()
         return generated_opt
 
     def is_password_valid(self, password: str) -> bool:
