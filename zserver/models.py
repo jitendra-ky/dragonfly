@@ -14,16 +14,19 @@ class UserProfile(models.Model):
     updated_at = models.DateTimeField(auto_now=True, blank=False, null=False)
     is_active = models.BooleanField(default=False, blank=False, null=False)
 
-    def __str__(self):
+    def __str__(self) -> str:
+        """Return the email of the user."""
         return self.email
 
-    def generate_otp(self):
+    def generate_otp(self) -> str:
+        """Generate a 6-digit OTP for the user."""
         generated_opt = "".join(random.choices(string.digits, k=6))
-        OTP = SignUpOTP(user=self, otp=generated_opt)
-        OTP.save()
+        otp = SignUpOTP(user=self, otp=generated_opt)
+        otp.save()
         return generated_opt
 
-    def is_password_valid(self, password):
+    def is_password_valid(self, password: str) -> bool:
+        """Check if the provided password is valid."""
         return self.password == password
 
 
@@ -33,7 +36,8 @@ class SignUpOTP(models.Model):
     otp = models.CharField(max_length=6, blank=False, null=False)
     created_at = models.DateTimeField(auto_now_add=True, blank=False, null=False)
 
-    def __str__(self):
+    def __str__(self) -> str:
+        """Return the email of the user associated with the OTP."""
         return self.user.email
 
 
@@ -43,15 +47,18 @@ class Session(models.Model):
     session_id = models.CharField(max_length=100, blank=False, null=False)
     created_at = models.DateTimeField(auto_now_add=True, blank=False, null=False)
 
-    def __str__(self):
+    def __str__(self) -> str:
+        """Return the email of the user associated with the session."""
         return self.user.email
 
-    def is_password_valid(self, password):
+    def is_password_valid(self, password: str) -> bool:
+        """Check if the provided password is valid."""
         return self.user.is_password_valid(password)
 
-    def generate_session_id(self):
+    def generate_session_id(self) -> str:
+        """Generate a unique session ID for the session."""
         generated_session_id = "".join(
-            random.choices(string.ascii_letters + string.digits, k=100)
+            random.choices(string.ascii_letters + string.digits, k=100),
         )
         self.session_id = generated_session_id
         self.save()

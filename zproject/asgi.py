@@ -1,5 +1,4 @@
-"""
-ASGI config for zproject project.
+"""ASGI config for zproject project.
 
 It exposes the ASGI callable as a module-level variable named ``application``.
 

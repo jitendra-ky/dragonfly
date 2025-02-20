@@ -8,6 +8,7 @@ from .models import Session, SignUpOTP, UserProfile
 
 class UserProfileViewTest(TestCase):
     def setUp(self):
+        """Set up test data for UserProfileViewTest."""
         # setup mainly do follwing things
         # create 3 users
         # one is not active
@@ -30,7 +31,7 @@ class UserProfileViewTest(TestCase):
             is_active=True,
         )
         self.active_user_session = Session.objects.create(
-            user=self.active_user_with_session, session_id="session_id"
+            user=self.active_user_with_session, session_id="session_id",
         )
         # creating active user without session
         self.active_user_without_session = UserProfile.objects.create(
@@ -49,10 +50,11 @@ class UserProfileViewTest(TestCase):
         print("_________setup done_________")
 
     def test_get_user_profile(self):
+        """Test retrieving user profile."""
         print("_________test_get_user_profile_________")
         # test get request with session id
         response = self.client.get(
-            self.user_url, headers={"session-id": self.active_user_session.session_id}
+            self.user_url, headers={"session-id": self.active_user_session.session_id},
         )
         print(f"GET response status: {response.status_code}")
         print(f"GET response data: {response.data}")
@@ -66,6 +68,7 @@ class UserProfileViewTest(TestCase):
         self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
 
     def test_create_user_profile(self):
+        """Test creating a new user profile."""
         print("_________test_create_user_profile_________")
         # this will send a post request to create a user that now exists
         new_user = {
@@ -85,7 +88,7 @@ class UserProfileViewTest(TestCase):
         except UserProfile.DoesNotExist:
             self.fail("User not created")
         try:
-            otp = SignUpOTP.objects.get(user=user)
+            SignUpOTP.objects.get(user=user)
             print("OTP generated successfully")
         except SignUpOTP.DoesNotExist:
             self.fail("OTP not generated")
@@ -96,10 +99,12 @@ class UserProfileViewTest(TestCase):
         print(f"POST response data: {response.data}")
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
         self.assertEqual(
-            response.data["email"][0], "user profile with this email already exists."
+            response.data["email"][0],
+            "user profile with this email already exists.",
         )
 
     def test_update_user_profile(self):
+        """Test updating an existing user profile."""
         print("_________test_update_user_profile_________")
         # test put request with session id
         updated_user = {
@@ -125,16 +130,17 @@ class UserProfileViewTest(TestCase):
         self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
 
     def test_delete_user_profile(self):
+        """Test deleting a user profile."""
         print("_________test_delete_user_profile_________")
         # test delete request with session id
         response = self.client.delete(
-            self.user_url, headers={"session-id": self.active_user_session.session_id}
+            self.user_url, headers={"session-id": self.active_user_session.session_id},
         )
         print(f"DELETE response status: {response.status_code}")
         self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
         # now check the user is deleted
         try:
-            user = UserProfile.objects.get(email=self.active_user_with_session.email)
+            UserProfile.objects.get(email=self.active_user_with_session.email)
             self.fail("User not deleted")
         except UserProfile.DoesNotExist:
             print("User deleted successfully")
@@ -145,7 +151,7 @@ class UserProfileViewTest(TestCase):
         self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
         # now check the user is not deleted
         try:
-            user = UserProfile.objects.get(email=self.active_user_without_session.email)
+            UserProfile.objects.get(email=self.active_user_without_session.email)
             print("User not deleted")
         except UserProfile.DoesNotExist:
             print("User not deleted")
@@ -153,6 +159,7 @@ class UserProfileViewTest(TestCase):
 
 class SignInViewTest(TestCase):
     def setUp(self):
+        """Set up test data for SignInViewTest."""
         # setup mainly do follwing things
         # create 3 users
         # one is not active
@@ -175,7 +182,7 @@ class SignInViewTest(TestCase):
             is_active=True,
         )
         self.active_user_session = Session.objects.create(
-            user=self.active_user_with_session, session_id="session_id"
+            user=self.active_user_with_session, session_id="session_id",
         )
         # creating active user without session
         self.active_user_without_session = UserProfile.objects.create(
@@ -194,6 +201,7 @@ class SignInViewTest(TestCase):
         print("_________setup done_________")
 
     def test_post(self):
+        """Test creating a new session for the user."""
         print("_________test_post_________")
         # here we write test cases for all different type of user
         # our test inluce for
@@ -231,7 +239,8 @@ class SignInViewTest(TestCase):
         print(f"POST response data: {response.data}")
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
         self.assertIn("session_id", response.data)
-        self.assertEqual(response.data["session_id"], Session.objects.get(session_id=response.data["session_id"]).session_id)
+        self.assertEqual(response.data["session_id"],
+                         Session.objects.get(session_id=response.data["session_id"]).session_id)
 
         # test case for not existed user
         not_existed_user = {
@@ -242,13 +251,14 @@ class SignInViewTest(TestCase):
         print(f"POST response status: {response.status_code}")
         print(f"POST response data: {response.data}")
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
-        # self.assertEqual(response.data['email'][0], 'User does not exist.')
+        self.assertEqual(response.data["email"][0], "User does not exist.")
 
     def test_get(self):
+        """Test retrieving user profile with session ID."""
         print("_________test_get_________")
         # test get request with valid session id
         response = self.client.get(
-            self.user_url, headers={"session-id": self.active_user_session.session_id}
+            self.user_url, headers={"session-id": self.active_user_session.session_id},
         )
         print(f"GET response status: {response.status_code}")
         print(f"GET response data: {response.data}")
@@ -257,7 +267,7 @@ class SignInViewTest(TestCase):
 
         # test get request with invalid session id
         response = self.client.get(
-            self.user_url, headers={"session-id": "invalid_session_id"}
+            self.user_url, headers={"session-id": "invalid_session_id"},
         )
         print(f"GET response status: {response.status_code}")
         print(f"GET response data: {response.data}")
@@ -273,6 +283,7 @@ class SignInViewTest(TestCase):
 class SignUpOTPTest(TestCase):
 
     def setUp(self):
+        """Set up test data for SignUpOTPTest."""
         self.client = APIClient()
         self.endpoint = reverse("sign-up-otp")
 
@@ -289,6 +300,7 @@ class SignUpOTPTest(TestCase):
             pass
 
     def test_post(self):
+        """Test verifying OTP and activating the user."""
         # first send the post request to create a user on 'user-profile' endpoint
         # then read teh otp from the 'SignUpOTP' model
         # then test the current endpoint by sending post request with the otp
