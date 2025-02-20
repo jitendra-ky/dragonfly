@@ -17,13 +17,13 @@ class UserProfile(models.Model):
     def __str__(self) -> str:
         return self.email
 
-    def generate_otp(self):
+    def generate_otp(self) -> str:
         generated_opt = "".join(random.choices(string.digits, k=6))
         OTP = SignUpOTP(user=self, otp=generated_opt)
         OTP.save()
         return generated_opt
 
-    def is_password_valid(self, password):
+    def is_password_valid(self, password: str) -> bool:
         return self.password == password
 
 
@@ -46,10 +46,10 @@ class Session(models.Model):
     def __str__(self) -> str:
         return self.user.email
 
-    def is_password_valid(self, password):
+    def is_password_valid(self, password: str) -> bool:
         return self.user.is_password_valid(password)
 
-    def generate_session_id(self):
+    def generate_session_id(self) -> str:
         generated_session_id = "".join(
             random.choices(string.ascii_letters + string.digits, k=100),
         )

@@ -16,12 +16,12 @@ class UserProfileSerializer(serializers.ModelSerializer):
             "password": {"write_only": True},  # Make the password field write-only
         }
 
-    def create(self, validated_data):
+    def create(self, validated_data: dict) -> UserProfile:
         user = UserProfile.objects.create(**validated_data)
         user.generate_otp()
         return user
 
-    def update(self, instance, validated_data):
+    def update(self, instance: UserProfile, validated_data: dict) -> UserProfile:
         instance.fullname = validated_data.get("fullname", instance.fullname)
         instance.email = validated_data.get("email", instance.email)
         instance.password = validated_data.get("password", instance.password)
@@ -37,7 +37,7 @@ class SignUpOTPSerializer(serializers.ModelSerializer):
         model = SignUpOTP
         fields = ["otp", "email"]
 
-    def validate(self, data):
+    def validate(self, data: dict) -> dict:
         email = data.get("email")
         otp = data.get("otp")
 
@@ -58,12 +58,12 @@ class SignUpOTPSerializer(serializers.ModelSerializer):
         data["user_otp"] = user_otp
         return data
 
-    def make_user_active(self):
+    def make_user_active(self) -> None:
         user = self.validated_data["user"]
         user.is_active = True
         user.save()
 
-    def delete_otp(self):
+    def delete_otp(self) -> None:
         user_otp = self.validated_data["user_otp"]
         user_otp.delete()
 
@@ -72,7 +72,7 @@ class SessionSerializer(serializers.Serializer):
     email = serializers.EmailField(max_length=100)
     password = serializers.CharField(write_only=True)
 
-    def validate(self, data):
+    def validate(self, data: dict) -> dict:
         email = data.get("email")
         password = data.get("password")
 
@@ -90,7 +90,7 @@ class SessionSerializer(serializers.Serializer):
         data["user"] = user
         return data
 
-    def create(self, validated_data):
+    def create(self, validated_data: dict) -> Session:
         user = validated_data["user"]
         session = Session(user=user)
         session.generate_session_id()

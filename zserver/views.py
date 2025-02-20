@@ -105,7 +105,7 @@ class SignUpOTPView(APIView):
 
 class HomeView(View):
 
-    def get(self, request):
+    def get(self, request: Request) -> Response:
         context = {
             "name" : "John Doe",
             "env_var" : get_env_var(),
@@ -114,7 +114,7 @@ class HomeView(View):
 
 class SignInTemplateView(View):
 
-    def get(self, request):
+    def get(self, request: Request) -> Response:
         context = {
             "title" : "Sign In",
             "env_var" : get_env_var(),
@@ -124,7 +124,7 @@ class SignInTemplateView(View):
 
 class SignUpTemplateView(View):
 
-    def get(self, request):
+    def get(self, request: Request) -> Response:
         context = {
             "title" : "Sign Up",
             "env_var" : get_env_var,
@@ -134,7 +134,7 @@ class SignUpTemplateView(View):
 
 class GoogleLoginView(APIView):
 
-    def post(self, request):
+    def post(self, request: Request) -> Response:
         try:
             authorization_code = request.data.get("code")
 
@@ -163,7 +163,7 @@ class GoogleLoginView(APIView):
         except Exception as e:
             return Response({"message": str(e)}, status=status.HTTP_400_BAD_REQUEST)
 
-    def exchange_authorization_code(self, authorization_code):
+    def exchange_authorization_code(self, authorization_code: str) -> dict:
         client_id = os.getenv("GOOGLE_CLIENT_ID")
         client_secret = os.getenv("GOOGLE_CLIENT_SECRET")
         redirect_uri = os.getenv("GOOGLE_REDIRECT_URI")
