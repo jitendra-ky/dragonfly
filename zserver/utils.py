@@ -1,10 +1,10 @@
-from dotenv import load_dotenv
 import os
-from typing import Dict
+
+from dotenv import load_dotenv
 
 load_dotenv()
-def get_env_var() -> Dict[str, str]:
+def get_env_var() -> dict[str, str]:
     env_var = {}
-    env_var['GOOGLE_CLIENT_ID'] = os.getenv('GOOGLE_CLIENT_ID')
-    env_var['GOOGLE_REDIRECT_URI'] = os.getenv('GOOGLE_REDIRECT_URI')
+    env_var["GOOGLE_CLIENT_ID"] = os.getenv("GOOGLE_CLIENT_ID")
+    env_var["GOOGLE_REDIRECT_URI"] = os.getenv("GOOGLE_REDIRECT_URI")
     return env_var

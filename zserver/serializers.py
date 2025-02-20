@@ -13,7 +13,7 @@ class UserProfileSerializer(serializers.ModelSerializer):
             "password",
         ]  # Fields to be included in the serialization
         extra_kwargs = {
-            "password": {"write_only": True}  # Make the password field write-only
+            "password": {"write_only": True},  # Make the password field write-only
         }
 
     def create(self, validated_data):

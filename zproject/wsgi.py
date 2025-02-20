@@ -1,5 +1,4 @@
-"""
-WSGI config for zproject project.
+"""WSGI config for zproject project.
 
 It exposes the WSGI callable as a module-level variable named ``application``.
 

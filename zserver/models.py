@@ -51,7 +51,7 @@ class Session(models.Model):
 
     def generate_session_id(self):
         generated_session_id = "".join(
-            random.choices(string.ascii_letters + string.digits, k=100)
+            random.choices(string.ascii_letters + string.digits, k=100),
         )
         self.session_id = generated_session_id
         self.save()

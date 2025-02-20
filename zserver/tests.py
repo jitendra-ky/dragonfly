@@ -30,7 +30,7 @@ class UserProfileViewTest(TestCase):
             is_active=True,
         )
         self.active_user_session = Session.objects.create(
-            user=self.active_user_with_session, session_id="session_id"
+            user=self.active_user_with_session, session_id="session_id",
         )
         # creating active user without session
         self.active_user_without_session = UserProfile.objects.create(
@@ -52,7 +52,7 @@ class UserProfileViewTest(TestCase):
         print("_________test_get_user_profile_________")
         # test get request with session id
         response = self.client.get(
-            self.user_url, headers={"session-id": self.active_user_session.session_id}
+            self.user_url, headers={"session-id": self.active_user_session.session_id},
         )
         print(f"GET response status: {response.status_code}")
         print(f"GET response data: {response.data}")
@@ -96,7 +96,7 @@ class UserProfileViewTest(TestCase):
         print(f"POST response data: {response.data}")
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
         self.assertEqual(
-            response.data["email"][0], "user profile with this email already exists."
+            response.data["email"][0], "user profile with this email already exists.",
         )
 
     def test_update_user_profile(self):
@@ -128,7 +128,7 @@ class UserProfileViewTest(TestCase):
         print("_________test_delete_user_profile_________")
         # test delete request with session id
         response = self.client.delete(
-            self.user_url, headers={"session-id": self.active_user_session.session_id}
+            self.user_url, headers={"session-id": self.active_user_session.session_id},
         )
         print(f"DELETE response status: {response.status_code}")
         self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
@@ -175,7 +175,7 @@ class SignInViewTest(TestCase):
             is_active=True,
         )
         self.active_user_session = Session.objects.create(
-            user=self.active_user_with_session, session_id="session_id"
+            user=self.active_user_with_session, session_id="session_id",
         )
         # creating active user without session
         self.active_user_without_session = UserProfile.objects.create(
@@ -248,7 +248,7 @@ class SignInViewTest(TestCase):
         print("_________test_get_________")
         # test get request with valid session id
         response = self.client.get(
-            self.user_url, headers={"session-id": self.active_user_session.session_id}
+            self.user_url, headers={"session-id": self.active_user_session.session_id},
         )
         print(f"GET response status: {response.status_code}")
         print(f"GET response data: {response.data}")
@@ -257,7 +257,7 @@ class SignInViewTest(TestCase):
 
         # test get request with invalid session id
         response = self.client.get(
-            self.user_url, headers={"session-id": "invalid_session_id"}
+            self.user_url, headers={"session-id": "invalid_session_id"},
         )
         print(f"GET response status: {response.status_code}")
         print(f"GET response data: {response.data}")
