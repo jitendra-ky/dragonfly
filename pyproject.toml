@@ -1,0 +1,10 @@
+[tool.ruff]
+line-length = 100
+target-version = "py310"
+
+[tool.ruff.format]  # Enables Ruff's formatter
+quote-style = "double"
+
+[tool.ruff.lint]
+select = ["ALL"]  # Enable all useful linting rules
+ignore = ["E501"]  # Ignore line length if Black-style wrapping is used
