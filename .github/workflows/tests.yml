@@ -28,3 +28,6 @@ jobs:
     - name: Run Django tests
       run: |
         python manage.py test
+    - name: Run Ruff tests
+      run: |
+        ruff check --force-exclude $(git ls-files '*.py')
