@@ -43,13 +43,13 @@ class SignUpOTPSerializer(serializers.ModelSerializer):
 
         try:
             user = UserProfile.objects.get(email=email)
-        except UserProfile.DoesNotExist:
-            raise serializers.ValidationError({"email": "User does not exist."})
+        except UserProfile.DoesNotExist as err:
+            raise serializers.ValidationError({"email": "User does not exist."}) from err
 
         try:
             user_otp = SignUpOTP.objects.get(user=user)
-        except SignUpOTP.DoesNotExist:
-            raise serializers.ValidationError({"otp": "OTP does not exist."})
+        except SignUpOTP.DoesNotExist as err:
+            raise serializers.ValidationError({"otp": "OTP does not exist."}) from err
 
         if user_otp.otp != otp:
             raise serializers.ValidationError({"otp": "Incorrect OTP."})
@@ -78,8 +78,8 @@ class SessionSerializer(serializers.Serializer):
 
         try:
             user = UserProfile.objects.get(email=email)
-        except UserProfile.DoesNotExist:
-            raise serializers.ValidationError({"email": "User does not exist."})
+        except UserProfile.DoesNotExist as err:
+            raise serializers.ValidationError({"email": "User does not exist."}) from err
 
         if not user.is_password_valid(password):
             raise serializers.ValidationError({"password": "Incorrect password."})
