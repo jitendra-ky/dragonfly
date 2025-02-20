@@ -14,7 +14,7 @@ class UserProfile(models.Model):
     updated_at = models.DateTimeField(auto_now=True, blank=False, null=False)
     is_active = models.BooleanField(default=False, blank=False, null=False)
 
-    def __str__(self):
+    def __str__(self) -> str:
         return self.email
 
     def generate_otp(self):
@@ -33,7 +33,7 @@ class SignUpOTP(models.Model):
     otp = models.CharField(max_length=6, blank=False, null=False)
     created_at = models.DateTimeField(auto_now_add=True, blank=False, null=False)
 
-    def __str__(self):
+    def __str__(self) -> str:
         return self.user.email
 
 
@@ -43,7 +43,7 @@ class Session(models.Model):
     session_id = models.CharField(max_length=100, blank=False, null=False)
     created_at = models.DateTimeField(auto_now_add=True, blank=False, null=False)
 
-    def __str__(self):
+    def __str__(self) -> str:
         return self.user.email
 
     def is_password_valid(self, password):
