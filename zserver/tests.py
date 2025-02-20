@@ -99,7 +99,8 @@ class UserProfileViewTest(TestCase):
         print(f"POST response data: {response.data}")
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
         self.assertEqual(
-            response.data["email"][0], "user profile with this email already exists.",
+            response.data["email"][0],
+            "user profile with this email already exists.",
         )
 
     def test_update_user_profile(self):
@@ -238,7 +239,8 @@ class SignInViewTest(TestCase):
         print(f"POST response data: {response.data}")
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
         self.assertIn("session_id", response.data)
-        self.assertEqual(response.data["session_id"], Session.objects.get(session_id=response.data["session_id"]).session_id)
+        self.assertEqual(response.data["session_id"],
+                         Session.objects.get(session_id=response.data["session_id"]).session_id)
 
         # test case for not existed user
         not_existed_user = {

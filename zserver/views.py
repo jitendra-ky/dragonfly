@@ -93,7 +93,8 @@ class SignInView(APIView):
         serializer = SessionSerializer(data=request.data)
         if serializer.is_valid():
             session = serializer.save()
-            return Response({"session_id": session.session_id}, status=status.HTTP_201_CREATED)
+            return Response({"session_id": session.session_id},
+                            status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
@@ -154,7 +155,9 @@ class GoogleLoginView(APIView):
 
             # Verify the token with Google's API
             GOOGLE_CLIENT_ID = os.getenv("GOOGLE_CLIENT_ID")
-            id_info = id_token.verify_oauth2_token(tokens["id_token"], requests.Request(), GOOGLE_CLIENT_ID)
+            id_info = id_token.verify_oauth2_token(tokens["id_token"],
+                                                   requests.Request(),
+                                                   GOOGLE_CLIENT_ID)
 
             if id_info["iss"] not in ["accounts.google.com", "https://accounts.google.com"]:
                 return Response({"message": "Invalid issuer"}, status=status.HTTP_403_FORBIDDEN)
@@ -164,11 +167,14 @@ class GoogleLoginView(APIView):
             name = id_info.get("name", "")
 
             # Create or get user
-            user, created = UserProfile.objects.get_or_create(email=email, defaults={"fullname": name})
+            user, created = UserProfile.objects.get_or_create(
+                email=email, defaults={"fullname": name})
             user_session = SessionSerializer().create({"user": user})
             session_id = user_session.session_id
 
-            return Response({"message": "Login successful!", "session_id": session_id}, status=status.HTTP_200_OK)
+            return Response({"message": "Login successful!",
+                             "session_id": session_id},
+                            status=status.HTTP_200_OK)
 
         except Exception as e:
             return Response({"message": str(e)}, status=status.HTTP_400_BAD_REQUEST)
@@ -186,11 +192,15 @@ class GoogleLoginView(APIView):
             "redirect_uri": redirect_uri,
             "grant_type": "authorization_code",
         }
-        response = requests.requests.post("https://oauth2.googleapis.com/token", data=token_request_data)
+        response = requests.requests.post(
+            "https://oauth2.googleapis.com/token",
+            data=token_request_data,
+        )
         response_data = response.json()
 
         if response.status_code != 200:
             print("exchange authorization error")
-            raise Exception(response_data.get("error", "Failed to exchange authorization code"))
+            raise Exception(response_data.get("error",
+                                              "Failed to exchange authorization code"))
 
         return response_data
