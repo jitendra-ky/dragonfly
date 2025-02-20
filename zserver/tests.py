@@ -88,7 +88,7 @@ class UserProfileViewTest(TestCase):
         except UserProfile.DoesNotExist:
             self.fail("User not created")
         try:
-            otp = SignUpOTP.objects.get(user=user)
+            SignUpOTP.objects.get(user=user)
             print("OTP generated successfully")
         except SignUpOTP.DoesNotExist:
             self.fail("OTP not generated")
@@ -140,7 +140,7 @@ class UserProfileViewTest(TestCase):
         self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
         # now check the user is deleted
         try:
-            user = UserProfile.objects.get(email=self.active_user_with_session.email)
+            UserProfile.objects.get(email=self.active_user_with_session.email)
             self.fail("User not deleted")
         except UserProfile.DoesNotExist:
             print("User deleted successfully")
@@ -151,7 +151,7 @@ class UserProfileViewTest(TestCase):
         self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
         # now check the user is not deleted
         try:
-            user = UserProfile.objects.get(email=self.active_user_without_session.email)
+            UserProfile.objects.get(email=self.active_user_without_session.email)
             print("User not deleted")
         except UserProfile.DoesNotExist:
             print("User not deleted")
