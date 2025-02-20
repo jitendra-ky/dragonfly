@@ -23,7 +23,7 @@ load_dotenv()
 class UserProfileView(APIView):
 
     def get(self, request: Request) -> Response:
-        # only display the signin user's profile
+        """Retrieve the profile of the signed-in user."""
         session_id = request.headers.get("session-id")
         if session_id is None:
             return Response(status=status.HTTP_401_UNAUTHORIZED)
@@ -36,6 +36,7 @@ class UserProfileView(APIView):
         return Response(serializer.data)
 
     def post(self, request: Request) -> Response:
+        """Create a new user profile."""
         serializer = UserProfileSerializer(data=request.data)
         if serializer.is_valid():
             serializer.save()
@@ -43,6 +44,7 @@ class UserProfileView(APIView):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
     def put(self, request: Request) -> Response:
+        """Update the profile of the signed-in user."""
         session_id = request.headers.get("session-id")
         if session_id is None:
             return Response(status=status.HTTP_401_UNAUTHORIZED)
@@ -58,6 +60,7 @@ class UserProfileView(APIView):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
     def delete(self, request: Request) -> Response:
+        """Delete the profile of the signed-in user."""
         session_id = request.headers.get("session-id")
         if session_id is None:
             return Response(status=status.HTTP_401_UNAUTHORIZED)
@@ -73,6 +76,7 @@ class UserProfileView(APIView):
 class SignInView(APIView):
 
     def get(self, request: Request) -> Response:
+        """Retrieve the profile of the signed-in user."""
         session_id = request.headers.get("session-id")
         if session_id is None:
             return Response(status=status.HTTP_401_UNAUTHORIZED)
@@ -85,6 +89,7 @@ class SignInView(APIView):
         return Response(serializer.data)
 
     def post(self, request: Request) -> Response:
+        """Create a new session for the user."""
         serializer = SessionSerializer(data=request.data)
         if serializer.is_valid():
             session = serializer.save()
@@ -95,6 +100,7 @@ class SignInView(APIView):
 class SignUpOTPView(APIView):
 
     def post(self, request: Request) -> Response:
+        """Verify OTP and activate the user."""
         serializer = SignUpOTPSerializer(data=request.data)
         if serializer.is_valid():
             serializer.make_user_active()
@@ -106,6 +112,7 @@ class SignUpOTPView(APIView):
 class HomeView(View):
 
     def get(self, request: Request) -> Response:
+        """Render the home page."""
         context = {
             "name" : "John Doe",
             "env_var" : get_env_var(),
@@ -115,6 +122,7 @@ class HomeView(View):
 class SignInTemplateView(View):
 
     def get(self, request: Request) -> Response:
+        """Render the sign-in page."""
         context = {
             "title" : "Sign In",
             "env_var" : get_env_var(),
@@ -125,6 +133,7 @@ class SignInTemplateView(View):
 class SignUpTemplateView(View):
 
     def get(self, request: Request) -> Response:
+        """Render the sign-up page."""
         context = {
             "title" : "Sign Up",
             "env_var" : get_env_var,
@@ -135,6 +144,7 @@ class SignUpTemplateView(View):
 class GoogleLoginView(APIView):
 
     def post(self, request: Request) -> Response:
+        """Handle Google login and create a session for the user."""
         try:
             authorization_code = request.data.get("code")
 
@@ -164,6 +174,7 @@ class GoogleLoginView(APIView):
             return Response({"message": str(e)}, status=status.HTTP_400_BAD_REQUEST)
 
     def exchange_authorization_code(self, authorization_code: str) -> dict:
+        """Exchange the authorization code for tokens."""
         client_id = os.getenv("GOOGLE_CLIENT_ID")
         client_secret = os.getenv("GOOGLE_CLIENT_SECRET")
         redirect_uri = os.getenv("GOOGLE_REDIRECT_URI")

@@ -6,6 +6,8 @@ from .models import Session, SignUpOTP, UserProfile
 # Serializer class for the UserProfile model
 class UserProfileSerializer(serializers.ModelSerializer):
     class Meta:
+        """Meta class to specify the model and fields to be serialized."""
+
         model = UserProfile  # Specify the model to be serialized
         fields = [
             "fullname",
@@ -17,11 +19,13 @@ class UserProfileSerializer(serializers.ModelSerializer):
         }
 
     def create(self, validated_data: dict) -> UserProfile:
+        """Create a new user profile and generate OTP."""
         user = UserProfile.objects.create(**validated_data)
         user.generate_otp()
         return user
 
     def update(self, instance: UserProfile, validated_data: dict) -> UserProfile:
+        """Update an existing user profile."""
         instance.fullname = validated_data.get("fullname", instance.fullname)
         instance.email = validated_data.get("email", instance.email)
         instance.password = validated_data.get("password", instance.password)
@@ -34,10 +38,13 @@ class SignUpOTPSerializer(serializers.ModelSerializer):
     email = serializers.EmailField(max_length=100)
 
     class Meta:
+        """Meta class to specify the model and fields to be serialized."""
+
         model = SignUpOTP
         fields = ["otp", "email"]
 
     def validate(self, data: dict) -> dict:
+        """Validate the OTP and email."""
         email = data.get("email")
         otp = data.get("otp")
 
@@ -59,11 +66,13 @@ class SignUpOTPSerializer(serializers.ModelSerializer):
         return data
 
     def make_user_active(self) -> None:
+        """Activate the user."""
         user = self.validated_data["user"]
         user.is_active = True
         user.save()
 
     def delete_otp(self) -> None:
+        """Delete the OTP."""
         user_otp = self.validated_data["user_otp"]
         user_otp.delete()
 
@@ -73,6 +82,7 @@ class SessionSerializer(serializers.Serializer):
     password = serializers.CharField(write_only=True)
 
     def validate(self, data: dict) -> dict:
+        """Validate the email and password."""
         email = data.get("email")
         password = data.get("password")
 
@@ -91,6 +101,7 @@ class SessionSerializer(serializers.Serializer):
         return data
 
     def create(self, validated_data: dict) -> Session:
+        """Create a new session for the user."""
         user = validated_data["user"]
         session = Session(user=user)
         session.generate_session_id()

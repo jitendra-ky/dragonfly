@@ -8,6 +8,7 @@ from .models import Session, SignUpOTP, UserProfile
 
 class UserProfileViewTest(TestCase):
     def setUp(self):
+        """Set up test data for UserProfileViewTest."""
         # setup mainly do follwing things
         # create 3 users
         # one is not active
@@ -49,6 +50,7 @@ class UserProfileViewTest(TestCase):
         print("_________setup done_________")
 
     def test_get_user_profile(self):
+        """Test retrieving user profile."""
         print("_________test_get_user_profile_________")
         # test get request with session id
         response = self.client.get(
@@ -66,6 +68,7 @@ class UserProfileViewTest(TestCase):
         self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
 
     def test_create_user_profile(self):
+        """Test creating a new user profile."""
         print("_________test_create_user_profile_________")
         # this will send a post request to create a user that now exists
         new_user = {
@@ -100,6 +103,7 @@ class UserProfileViewTest(TestCase):
         )
 
     def test_update_user_profile(self):
+        """Test updating an existing user profile."""
         print("_________test_update_user_profile_________")
         # test put request with session id
         updated_user = {
@@ -125,6 +129,7 @@ class UserProfileViewTest(TestCase):
         self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
 
     def test_delete_user_profile(self):
+        """Test deleting a user profile."""
         print("_________test_delete_user_profile_________")
         # test delete request with session id
         response = self.client.delete(
@@ -153,6 +158,7 @@ class UserProfileViewTest(TestCase):
 
 class SignInViewTest(TestCase):
     def setUp(self):
+        """Set up test data for SignInViewTest."""
         # setup mainly do follwing things
         # create 3 users
         # one is not active
@@ -194,6 +200,7 @@ class SignInViewTest(TestCase):
         print("_________setup done_________")
 
     def test_post(self):
+        """Test creating a new session for the user."""
         print("_________test_post_________")
         # here we write test cases for all different type of user
         # our test inluce for
@@ -245,6 +252,7 @@ class SignInViewTest(TestCase):
         # self.assertEqual(response.data['email'][0], 'User does not exist.')
 
     def test_get(self):
+        """Test retrieving user profile with session ID."""
         print("_________test_get_________")
         # test get request with valid session id
         response = self.client.get(
@@ -273,6 +281,7 @@ class SignInViewTest(TestCase):
 class SignUpOTPTest(TestCase):
 
     def setUp(self):
+        """Set up test data for SignUpOTPTest."""
         self.client = APIClient()
         self.endpoint = reverse("sign-up-otp")
 
@@ -289,6 +298,7 @@ class SignUpOTPTest(TestCase):
             pass
 
     def test_post(self):
+        """Test verifying OTP and activating the user."""
         # first send the post request to create a user on 'user-profile' endpoint
         # then read teh otp from the 'SignUpOTP' model
         # then test the current endpoint by sending post request with the otp

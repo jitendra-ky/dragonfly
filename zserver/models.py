@@ -15,15 +15,18 @@ class UserProfile(models.Model):
     is_active = models.BooleanField(default=False, blank=False, null=False)
 
     def __str__(self) -> str:
+        """Return the email of the user."""
         return self.email
 
     def generate_otp(self) -> str:
+        """Generate a 6-digit OTP for the user."""
         generated_opt = "".join(random.choices(string.digits, k=6))
         OTP = SignUpOTP(user=self, otp=generated_opt)
         OTP.save()
         return generated_opt
 
     def is_password_valid(self, password: str) -> bool:
+        """Check if the provided password is valid."""
         return self.password == password
 
 
@@ -34,6 +37,7 @@ class SignUpOTP(models.Model):
     created_at = models.DateTimeField(auto_now_add=True, blank=False, null=False)
 
     def __str__(self) -> str:
+        """Return the email of the user associated with the OTP."""
         return self.user.email
 
 
@@ -44,12 +48,15 @@ class Session(models.Model):
     created_at = models.DateTimeField(auto_now_add=True, blank=False, null=False)
 
     def __str__(self) -> str:
+        """Return the email of the user associated with the session."""
         return self.user.email
 
     def is_password_valid(self, password: str) -> bool:
+        """Check if the provided password is valid."""
         return self.user.is_password_valid(password)
 
     def generate_session_id(self) -> str:
+        """Generate a unique session ID for the session."""
         generated_session_id = "".join(
             random.choices(string.ascii_letters + string.digits, k=100),
         )
