@@ -198,7 +198,8 @@ class GoogleLoginView(APIView):
         )
         response_data = response.json()
 
-        if response.status_code != 200:
+        http_success_code = 200
+        if response.status_code != http_success_code:
             print("exchange authorization error")
             raise Exception(response_data.get("error",
                                               "Failed to exchange authorization code"))
