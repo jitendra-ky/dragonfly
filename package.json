@@ -1,0 +1,21 @@
+{
+  "name": "dragonfly",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "npm run prettier && npm run lint",
+    "lint": "eslint static/js",
+    "lint:fix": "eslint --fix static/js",
+    "prettier": "prettier --check .",
+    "prettier:write": "prettier --write ."
+  },
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "eslint": "^9.20.1",
+    "eslint-config-prettier": "^10.0.1",
+    "eslint-plugin-prettier": "^5.2.3",
+    "prettier": "^3.5.1"
+  }
+}
