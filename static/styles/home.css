@@ -1,282 +1,289 @@
 * {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-    font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family:
+    system-ui,
+    -apple-system,
+    BlinkMacSystemFont,
+    'Segoe UI',
+    Roboto,
+    Oxygen,
+    Ubuntu,
+    Cantarell,
+    'Open Sans',
+    'Helvetica Neue',
+    sans-serif;
 }
 
 body {
-    * {
-        /* border: thin solid red; */
-    }
-    font-family: 'Roboto', sans-serif;
-    /* background-color: #c0c0c0; */
-    height: 100vh;
-    /* overflow: hidden; */
+  * {
+    /* border: thin solid red; */
+  }
+  font-family: 'Roboto', sans-serif;
+  /* background-color: #c0c0c0; */
+  height: 100vh;
+  /* overflow: hidden; */
 }
 
 .nav-bar {
-    width: 100%;
-    height: 50px;
+  width: 100%;
+  height: 50px;
 }
 
 .app {
-    display: flex;
-    height: 100%;
-    background-color: rgb(237, 236, 236);
+  display: flex;
+  height: 100%;
+  background-color: rgb(237, 236, 236);
 }
 
 .column-left {
-    width: 200px;
-    background-color: #8a8989;
+  width: 200px;
+  background-color: #8a8989;
 }
 
 .column-middle {
-    flex: 1;
-    background-color: rgb(185, 185, 185);
+  flex: 1;
+  background-color: rgb(185, 185, 185);
 }
 
 .success-drop-down {
-    position: fixed;
-    top: 0;
-    left: 50%;
-    transform: translateX(-50%);
-    z-index: 1000;
-    width: 300px;
-    background-color: rgb(0, 128, 0);
-    color: white;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    border-radius: 10px;
-    box-shadow: 0px 0px 10px 0px rgb(0, 0, 0, 0.5);
-    margin: 10px;
-    padding: 10px;
-    animation: slideIn 0.5s ease-in-out forwards;
-    display: none;
+  position: fixed;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 1000;
+  width: 300px;
+  background-color: rgb(0, 128, 0);
+  color: white;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border-radius: 10px;
+  box-shadow: 0px 0px 10px 0px rgb(0, 0, 0, 0.5);
+  margin: 10px;
+  padding: 10px;
+  animation: slideIn 0.5s ease-in-out forwards;
+  display: none;
 }
 
 @keyframes slideIn {
-    0% {
-        transform: translate(-50%,-100%);
-    }
-    100% {
-        transform: translate(-50%,0);
-    }
+  0% {
+    transform: translate(-50%, -100%);
+  }
+  100% {
+    transform: translate(-50%, 0);
+  }
 }
 
-
-
 .signbox {
-    max-width: 1024px;
-    height: 700px;
-    margin: 50px auto;
-    background-color: rgb(175, 144, 213);
+  max-width: 1024px;
+  height: 700px;
+  margin: 50px auto;
+  background-color: rgb(175, 144, 213);
+  border-radius: 50px;
+  box-shadow: 0px 0px 20px 0px rgb(14, 14, 14, 0.1);
+
+  .signbox-inner {
+    height: 100%;
+    width: 100%;
+    display: flex;
+  }
+
+  .signbox-left {
+    width: 40%;
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 20px 50px;
+
+    .signbox-left-inner {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      /* border: thin solid black; */
+      height: 100%;
+      width: 100%;
+      overflow: hidden;
+    }
+
+    img {
+      width: 80%;
+      object-fit: cover;
+    }
+  }
+  .signbox-right {
+    width: 60%;
+    height: 100%;
+    padding: 80px 100px;
+    background-color: white;
     border-radius: 50px;
-    box-shadow: 0px 0px 20px 0px rgb(14, 14, 14, 0.1);
 
-    .signbox-inner {
-        height: 100%;
-        width: 100%;
-        display: flex;
+    .otp-email-detail {
+      display: flex;
+      flex-direction: column;
+      margin: 20px 0;
+
+      .otp-email {
+        font-size: 1.2rem;
+        font-weight: 500;
+      }
+
+      .resend-otp-btn {
+        background-color: transparent;
+        border: none;
+        background-color: rgb(60, 131, 237);
+        font-size: 1.2rem;
+        cursor: pointer;
+        transition: all 0.3s ease-in-out;
+        padding: 10px;
+        margin: 10px 0;
+        color: white;
+        border-radius: 20px;
+      }
+
+      .resend-otp-btn:hover {
+        background-color: rgb(60, 131, 237, 0.8);
+      }
     }
 
-    .signbox-left {
-        width: 40%;
-        height: 100%;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        padding: 20px 50px;
+    form {
+      display: flex;
+      flex-direction: column;
+      padding-top: 20px;
 
-        .signbox-left-inner {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            /* border: thin solid black; */
-            height: 100%;
-            width: 100%;
-            overflow: hidden;
-        }
+      input {
+        margin: 10px 0;
+        padding: 5px;
+        margin: 10px 0px;
+        border: none;
+        border-bottom: 1px solid rgb(66, 66, 66);
+        font-size: 1.2rem;
+      }
+      input:focus {
+        outline: none;
+      }
 
-        img {
-            width: 80%;
-            object-fit: cover;
-        }
+      .submit-btn {
+        margin: 10px 0;
+        padding: 10px;
+        border-radius: 20px;
+        border: none;
+        font-size: 1.2rem;
+        background-color: rgb(146, 97, 206);
+        color: white;
+        cursor: pointer;
+        transition: all 0.3s ease-in-out;
+      }
+
+      .error-message {
+        color: red;
+        font-size: 1rem;
+        margin: 5px 0;
+      }
+
+      .submit-btn:hover {
+        background-color: rgb(146, 97, 206, 0.8);
+      }
     }
-    .signbox-right {
-        width: 60%;
-        height: 100%;
-        padding: 80px 100px;
-        background-color: white;
-        border-radius: 50px;
 
-        .otp-email-detail {
-            display: flex;
-            flex-direction: column;
-            margin: 20px 0;
-
-            .otp-email {
-                font-size: 1.2rem;
-                font-weight: 500;
-            }
-
-            .resend-otp-btn {
-                background-color: transparent;
-                border: none;
-                background-color: rgb(60, 131, 237);
-                font-size: 1.2rem;
-                cursor: pointer;
-                transition: all 0.3s ease-in-out;
-                padding: 10px;
-                margin: 10px 0;
-                color: white;
-                border-radius: 20px;
-            }
-
-            .resend-otp-btn:hover {
-                background-color: rgb(60, 131, 237, 0.8);
-            }
-        }
-
-        form {
-            display: flex;
-            flex-direction: column;
-            padding-top: 20px;
-
-            input {
-                margin: 10px 0;
-                padding: 5px;
-                margin: 10px 0px;
-                border: none;
-                border-bottom: 1px solid rgb(66, 66, 66);
-                font-size: 1.2rem;
-            }
-            input:focus {
-                outline: none;
-            }
-
-            .submit-btn {
-                margin: 10px 0;
-                padding: 10px;
-                border-radius: 20px;
-                border: none;
-                font-size: 1.2rem;
-                background-color: rgb(146, 97, 206);
-                color: white;
-                cursor: pointer;
-                transition: all 0.3s ease-in-out;
-            }
-
-            .error-message {
-                color: red;
-                font-size: 1rem;
-                margin: 5px 0;
-            }
-
-            .submit-btn:hover {
-                background-color: rgb(146, 97, 206, 0.8);
-            }
-
-        }
-
-        .divider {
-            display: flex;
-            align-items: center;
-            margin: 20px 0;
-        }
-
-        .divider::before,
-        .divider::after {
-            content: '';
-            flex: 1;
-            border-bottom: 1px solid #ccc;
-        }
-
-        .divider::before {
-            margin-right: .25em;
-        }
-
-        .divider::after {
-            margin-left: .25em;
-        }
-
-        .google-signup {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            background-color: white;
-            border: 1px solid #ccc;
-            padding: 12px 20px;
-            border-radius: 8px;
-            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
-            cursor: pointer;
-            font-family: Arial, sans-serif;
-            font-size: 16px;
-            font-weight: 500;
-            transition: all 0.3s ease-in-out;
-            margin: 10px 0px;
-        }
-
-        .google-signup img {
-            width: 24px;
-            height: 24px;
-        }
-
-        .google-signup:hover {
-            background-color: #f0f0f0;
-        }
-
-        .signin-text {
-            margin-top: 30px;
-            font-size: 14px;
-            color: #555;
-            text-align: center;
-            text-decoration: underline;
-        }
-
-        .signin-text a {
-            color: #1a73e8;
-            text-decoration: none;
-            font-weight: bold;
-        }
-
-        .signin-text a:hover {
-            text-decoration: underline;
-        }
+    .divider {
+      display: flex;
+      align-items: center;
+      margin: 20px 0;
     }
-    
+
+    .divider::before,
+    .divider::after {
+      content: '';
+      flex: 1;
+      border-bottom: 1px solid #ccc;
+    }
+
+    .divider::before {
+      margin-right: 0.25em;
+    }
+
+    .divider::after {
+      margin-left: 0.25em;
+    }
+
+    .google-signup {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      background-color: white;
+      border: 1px solid #ccc;
+      padding: 12px 20px;
+      border-radius: 8px;
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+      cursor: pointer;
+      font-family: Arial, sans-serif;
+      font-size: 16px;
+      font-weight: 500;
+      transition: all 0.3s ease-in-out;
+      margin: 10px 0px;
+    }
+
+    .google-signup img {
+      width: 24px;
+      height: 24px;
+    }
+
+    .google-signup:hover {
+      background-color: #f0f0f0;
+    }
+
+    .signin-text {
+      margin-top: 30px;
+      font-size: 14px;
+      color: #555;
+      text-align: center;
+      text-decoration: underline;
+    }
+
+    .signin-text a {
+      color: #1a73e8;
+      text-decoration: none;
+      font-weight: bold;
+    }
+
+    .signin-text a:hover {
+      text-decoration: underline;
+    }
+  }
 }
 
 /* #add media queries here for laptop and mobile responsiveness */
 
 @media (max-width: 1024px) {
-    .signbox{
-        width: 600px;
-        background-color: white;
-        .signbox-left{
-            display: none;
-        }
-        .signbox-right{
-            width: 100%;
-            padding: 50px;
-        }
+  .signbox {
+    width: 600px;
+    background-color: white;
+    .signbox-left {
+      display: none;
     }
+    .signbox-right {
+      width: 100%;
+      padding: 50px;
+    }
+  }
 }
 
 @media (max-width: 650px) {
-    .signbox {
-        text-align: center;
-        border: none;
-        box-shadow: none;
-        height: 100vh;
-        font-size: 2rem;
-    }
-    .signbox-right{
-        border: none;
+  .signbox {
+    text-align: center;
+    border: none;
+    box-shadow: none;
+    height: 100vh;
+    font-size: 2rem;
+  }
+  .signbox-right {
+    border: none;
 
-        input {
-            font-size: 5rem;
-        }
+    input {
+      font-size: 5rem;
     }
+  }
 }
