@@ -152,9 +152,9 @@ class UserProfileViewTest(TestCase):
         # now check the user is not deleted
         try:
             UserProfile.objects.get(email=self.active_user_without_session.email)
-            print("User not deleted")
+            print("✓ user not deleted")
         except UserProfile.DoesNotExist:
-            print("User not deleted")
+            self.fail("✕ User deleted without session id")
 
 
 class SignInViewTest(TestCase):
