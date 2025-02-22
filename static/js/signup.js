@@ -78,10 +78,18 @@ $(function () {
 
   $('#signup-form').on('submit', function (event) {
     event.preventDefault()
+    const password = $('#password').val()
+    const confirmPassword = $('#confirm-password').val()
+
+    if (password !== confirmPassword) {
+      $('.error-message').text('Passwords do not match.')
+      return
+    }
+
     const formData = {
       fullname: $('#fullname').val(),
       email: $('#email').val(),
-      password: $('#password').val(),
+      password: password,
       csrfmiddlewaretoken: $('input[name=csrfmiddlewaretoken]').val(),
     }
     $.ajax({
