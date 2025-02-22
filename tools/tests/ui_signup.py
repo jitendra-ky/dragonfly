@@ -30,11 +30,13 @@ def test_signup(driver: webdriver.Firefox):
     fullname = driver.find_element(By.ID, "fullname")
     email = driver.find_element(By.ID, "email")
     password = driver.find_element(By.ID, "password")
+    confirm_password = driver.find_element(By.ID, "confirm-password")
     submit = driver.find_element(By.CSS_SELECTOR, "#signup-form .submit-btn")
 
     fullname.send_keys("John Doe")
     email.send_keys(f"jk69854+test{random.randint(10000, 99999)}@gmail.com")
     password.send_keys("rootroot")
+    confirm_password.send_keys("rootroot")
     submit.click()
     time.sleep(2)
 
