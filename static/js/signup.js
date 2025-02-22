@@ -145,7 +145,7 @@ $(function () {
         }, 1000)
       },
       error: function (response) {
-        error_message = ''
+        let error_message = ''
         if (response.responseJSON) {
           // as responseJSON contain errors of different fields in field: array(string);
           for (const key in response.responseJSON) {
