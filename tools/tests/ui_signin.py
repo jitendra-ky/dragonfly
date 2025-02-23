@@ -29,7 +29,7 @@ def test_signin(driver: webdriver.Firefox):
     password = driver.find_element(By.ID, "password")
     submit = driver.find_element(By.CSS_SELECTOR, "#signin-form .submit-btn")
 
-    username.send_keys("jk69854+1@gmail.com")
+    username.send_keys("active_user@jitendra.me")
     password.send_keys("rootroot")
     submit.click()
     time.sleep(2)
