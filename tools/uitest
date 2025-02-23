@@ -1,4 +1,5 @@
 #!/bin/bash
 
 # Run the ui_all.py script
+python3 setup_ui_test_db.py
 python3 tools/tests/ui_all.py

@@ -1,4 +1,3 @@
-import random
 import time
 
 from common import setup_module, teardown_module
@@ -34,7 +33,7 @@ def test_signup(driver: webdriver.Firefox):
     submit = driver.find_element(By.CSS_SELECTOR, "#signup-form .submit-btn")
 
     fullname.send_keys("John Doe")
-    email.send_keys(f"jk69854+test{random.randint(10000, 99999)}@gmail.com")
+    email.send_keys("unregistered@jitendra.me")
     password.send_keys("rootroot")
     confirm_password.send_keys("rootroot")
     submit.click()
