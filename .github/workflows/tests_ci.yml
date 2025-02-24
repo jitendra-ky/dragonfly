@@ -1,0 +1,61 @@
+name: Tests CI
+
+on:
+  push:
+    branches: ['main']
+  pull_request:
+    branches: ['main']
+  workflow_dispatch:
+
+jobs:
+  tests:
+    runs-on: ubuntu-latest
+
+    steps:
+      # Step 1: Check out the repository
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      # Step 2: Pull the Docker image from Docker Hub
+      - name: Build Docker image
+        run: |
+          docker build -f ./tools/dockerfiles/Dockerfile.tests -t dragonfly-test-img .
+
+      # Step 3: Start the Docker container (in detached mode)
+      - name: Start Docker Container
+        run: |
+          docker run --name dragonfly-test-container -d \
+            dragonfly-test-img
+
+      # Step 4: Run Django tests inside the container
+      - name: Run Django tests
+        run: |
+          docker exec dragonfly-test-container python manage.py test
+
+      # Step 5: Run Ruff linter inside the container
+      - name: Run Ruff linter
+        run: |
+          docker exec dragonfly-test-container ruff check --force-exclude $(git ls-files '*.py')
+
+      # Step 6: Run ESLint and Prettier tests inside the container
+      - name: Run ESLint and Prettier tests
+        run: |
+          docker exec dragonfly-test-container npm run test
+
+      # Step 7: Setup for Selenium UI tests inside the container
+      - name: Setup for Selenium UI tests
+        run: |
+          docker exec dragonfly-test-container python3 setup_ui_test_db.py
+          docker exec dragonfly-test-container nohup python3 manage.py runserver > server.log 2>&1 &
+          sleep 5  # Allow time for the server to start
+
+      # Step 8: Run Selenium UI tests inside the container
+      - name: Run Selenium UI tests
+        run: |
+          docker exec dragonfly-test-container xvfb-run --auto-servernum --server-args='-screen 0 640x480x24' python3 tools/tests/ui_all.py
+
+      # Step 9: Clean up the container after test execution
+      - name: Clean up container
+        run: |
+          docker stop dragonfly-test-container
+          docker rm dragonfly-test-container
