@@ -1,0 +1,37 @@
+# Step 1: Use the official Python image as the base image
+FROM python:3.10-slim
+
+# Install system dependencies and Node.js
+RUN apt-get update && apt-get install -y \
+    curl \
+    gnupg \
+    firefox-esr \
+    xvfb \
+    wget \
+    libgtk-3-0 \
+    libdbus-glib-1-2 \
+    && curl -fsSL https://deb.nodesource.com/setup_18.x | bash - \
+    && apt-get install -y nodejs \
+    && rm -rf /var/lib/apt/lists/*
+
+# Set working directory
+WORKDIR /app
+
+# Copy project files
+COPY . .
+
+# Install Python dependencies
+RUN pip3 install --upgrade pip && \
+    pip3 install -r requirements.txt
+
+# Install Node.js dependencies
+RUN npm ci
+
+# setup django project
+RUN python manage.py migrate
+
+# add port 8000
+EXPOSE 8000
+
+# Keep the container running
+CMD ["sleep", "infinity"]
