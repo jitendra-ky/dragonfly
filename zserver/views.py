@@ -12,6 +12,8 @@ from rest_framework.views import APIView
 
 from zserver.models import Session, UserProfile
 from zserver.serializers import (
+    ForgotPasswordSerializer,
+    ResetPasswordSerializer,
     SessionSerializer,
     SignUpOTPSerializer,
     UserProfileSerializer,
@@ -205,3 +207,25 @@ class GoogleLoginView(APIView):
                                               "Failed to exchange authorization code"))
 
         return response_data
+
+
+class ForgotPasswordView(APIView):
+
+    def post(self, request: Request) -> Response:
+        """Handle forgot password request."""
+        serializer = ForgotPasswordSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.send_reset_otp()
+            return Response({"message": "Password reset OTP sent."}, status=status.HTTP_200_OK)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+class ResetPasswordView(APIView):
+
+    def post(self, request: Request) -> Response:
+        """Handle password reset using OTP."""
+        serializer = ResetPasswordSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.reset_password()
+            return Response({"message": "Password reset successful."}, status=status.HTTP_200_OK)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
