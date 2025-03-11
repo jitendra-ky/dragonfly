@@ -17,12 +17,13 @@ RUN apt-get update && apt-get install -y \
 # Set working directory
 WORKDIR /app
 
+# Install Python dependencies
+COPY requirements/development.txt requirements/development.txt
+RUN pip3 install --upgrade pip && \
+    pip3 install -r requirements/development.txt
+
 # Copy project files
 COPY . .
-
-# Install Python dependencies
-RUN pip3 install --upgrade pip && \
-    pip3 install -r requirements/production.txt
 
 # Install Node.js dependencies
 RUN npm ci
