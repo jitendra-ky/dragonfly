@@ -1,0 +1,26 @@
+# Use official Python image as a base
+FROM python:3.10
+
+# Set environment variables
+ENV PYTHONUNBUFFERED=1
+# so that during build use production settings
+ENV DJANGO_SETTINGS_MODULE="zproject.settings_production"
+
+# Set the working directory inside the container
+WORKDIR /app
+
+# Copy requirements and install dependencies
+COPY requirements/production.txt requirements.txt
+RUN pip install --no-cache-dir -r requirements.txt
+
+# Copy the rest of the application code
+COPY . .
+
+# Collect static files (for Django)
+RUN python manage.py collectstatic --noinput
+
+# Expose port (default Gunicorn port)
+EXPOSE 8000
+
+# Run Gunicorn as the application server
+CMD ["gunicorn", "--bind", "0.0.0.0:8000", "zproject.wsgi:application"]
