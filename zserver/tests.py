@@ -329,3 +329,76 @@ class SignUpOTPTest(TestCase):
             self.fail("OTP not deleted")
         except SignUpOTP.DoesNotExist:
             print("OTP deleted successfully")
+
+
+class ForgotPasswordViewTest(TestCase):
+    def setUp(self):
+        """Set up test data for ForgotPasswordViewTest."""
+        self.active_user = UserProfile.objects.create(
+            fullname="Test User",
+            email="test_user@jitendra.me",
+            password="rootrootroot",
+            is_active=True,
+        )
+        self.client = APIClient()
+        self.url = reverse("forgot-password")
+
+    def test_forgot_password_valid_email(self):
+        """Test forgot password with a valid email."""
+        response = self.client.post(self.url, {"email": self.active_user.email})
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data["message"], "Password reset OTP sent.")
+
+
+class ResetPasswordViewTest(TestCase):
+    def setUp(self):
+        """Set up test data for ResetPasswordViewTest."""
+        self.client = APIClient()
+        self.url = reverse("reset-password")
+
+        # Create a user and generate OTP
+        self.user = UserProfile.objects.create(
+            fullname="Test User",
+            email="test_user@jitendra.me",
+            password="oldpassword",
+            is_active=True,
+        )
+        self.user.generate_otp()
+        self.otp = SignUpOTP.objects.get(user=self.user).otp
+
+    def test_reset_password_valid_otp(self):
+        """Test resetting password with a valid OTP."""
+        data = {
+            "email": self.user.email,
+            "otp": self.otp,
+            "new_password": "newpassword123",
+        }
+        response = self.client.post(self.url, data)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data["message"], "Password reset successful.")
+
+        # Verify the password is updated
+        self.user.refresh_from_db()
+        self.assertTrue(self.user.is_password_valid("newpassword123"))
+
+    def test_reset_password_invalid_otp(self):
+        """Test resetting password with an invalid OTP."""
+        data = {
+            "email": self.user.email,
+            "otp": "000000",
+            "new_password": "newpassword123",
+        }
+        response = self.client.post(self.url, data)
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertEqual(response.data["otp"][0], "Incorrect OTP.")
+
+    def test_reset_password_nonexistent_user(self):
+        """Test resetting password for a nonexistent user."""
+        data = {
+            "email": "nonexistent@jitendra.me",
+            "otp": self.otp,
+            "new_password": "newpassword123",
+        }
+        response = self.client.post(self.url, data)
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertEqual(response.data["email"][0], "User does not exist.")
