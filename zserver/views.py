@@ -144,6 +144,17 @@ class SignUpTemplateView(View):
         return render(request, "signup.html", context)
 
 
+class ForgotPasswordTemplateView(View):
+
+    def get(self, request: Request) -> Response:
+        """Render the forgot password page."""
+        context = {
+            "title": "Forgot Password",
+            "env_var": get_env_var(),
+        }
+        return render(request, "forgot_password.html", context)
+
+
 class GoogleLoginView(APIView):
 
     def post(self, request: Request) -> Response:
