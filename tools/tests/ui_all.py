@@ -8,9 +8,11 @@ t1 = time.time()
 driver = setup_module()
 t2 = time.time()
 print(f"Setup time: {t2 - t1:.2f}s")
-
-test_signin(driver)
-test_signup(driver)
-test_signin_with_google(driver)
-
+try:
+    test_signin(driver)
+    test_signup(driver)
+    test_signin_with_google(driver)
+except Exception as e:
+    driver.save_screenshot(f"debug_screenshot_{time.time()}.png")
+    raise AssertionError(e) from e
 teardown_module(driver)
