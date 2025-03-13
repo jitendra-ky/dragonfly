@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from .models import Session, SignUpOTP, UserProfile
+from zserver.models import Session, SignUpOTP, UserProfile
 
 # Register your models here.
 admin.site.register(UserProfile)
