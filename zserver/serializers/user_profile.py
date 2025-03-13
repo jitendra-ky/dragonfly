@@ -1,6 +1,6 @@
 from rest_framework import serializers
 
-from .models import Session, SignUpOTP, UserProfile
+from zserver.models import Session, SignUpOTP, UserProfile
 
 
 # Serializer class for the UserProfile model

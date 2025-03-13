@@ -3,7 +3,7 @@ from django.urls import reverse
 from rest_framework import status
 from rest_framework.test import APIClient
 
-from .models import Session, SignUpOTP, UserProfile
+from zserver.models import Session, SignUpOTP, UserProfile
 
 
 class UserProfileViewTest(TestCase):
