@@ -38,6 +38,9 @@ $(function () {
       method: 'POST',
       data: JSON.stringify({ code: authorizationCode }),
       contentType: 'application/json',
+      headers: {
+        'X-CSRFToken': getCookie('csrftoken'),
+      },
       success: function (response) {
         console.log(response)
         if (response.session_id) {
