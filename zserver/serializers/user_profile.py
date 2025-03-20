@@ -10,6 +10,7 @@ class UserProfileSerializer(serializers.ModelSerializer):
 
         model = UserProfile  # Specify the model to be serialized
         fields = [
+            "id",
             "fullname",
             "email",
             "password",
