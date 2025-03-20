@@ -16,6 +16,9 @@ urlpatterns = [
     path("api/sign-up-otp/", views.SignUpOTPView.as_view(), name="sign-up-otp"),
     path("api/forgot-password/", views.ForgotPasswordView.as_view(), name="forgot-password"),
     path("api/reset-password/", views.ResetPasswordView.as_view(), name="reset-password"),
+    path("api/messages/", views.MessageView.as_view(), name="messages"),
+    path("api/contacts/", views.ContactView.as_view(), name="contacts"),
+    path("api/all-users/", views.AllUsersView.as_view(), name="all-users"),
 
     path("google-login/", views.GoogleLoginView.as_view(), name="google_login"),
 ]
