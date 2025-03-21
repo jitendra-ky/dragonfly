@@ -1,6 +1,58 @@
 import { getCookie } from './assets.js'
 import * as app_states from './app_states.js'
 
+let ws
+
+function connectWebSocket() {
+  // Create a new WebSocket connection to the Tornado server with user ID
+  const userId = app_states.userId
+  // Determine WebSocket URL based on environment
+  const wsProtocol = window.location.protocol === 'https:' ? 'wss' : 'ws'
+  const wsHost = window.location.hostname
+  const wsPort = '8888' // Tornado WebSocket server port
+
+  // Create WebSocket connection
+  ws = new WebSocket(
+    `${wsProtocol}://${wsHost}:${wsPort}/ws/chat?user_id=${userId}`
+  )
+
+  ws.onopen = function () {
+    console.log('WebSocket connection opened')
+  }
+
+  ws.onmessage = function (event) {
+    // Handle incoming messages from the WebSocket server
+    const message = JSON.parse(event.data)
+    console.log('Received message:', message)
+    // Update the chat UI with the new message
+    if (
+      message.sender.toString() === app_states.selectedContactId.toString() &&
+      message.receiver.toString() === app_states.userId.toString()
+    ) {
+      console.log('Received message:', message)
+      app_states.messages.push(message)
+      rerender_msg_view()
+    }
+  }
+
+  ws.onclose = function () {
+    console.log('WebSocket connection closed')
+  }
+
+  ws.onerror = function (error) {
+    console.log('WebSocket error:', error)
+  }
+}
+
+function sendMessageToWebSocket(message) {
+  // Send a message to the WebSocket server
+  if (ws && ws.readyState === WebSocket.OPEN) {
+    ws.send(JSON.stringify(message))
+  } else {
+    console.log('WebSocket is not open')
+  }
+}
+
 function rerender_msg_view() {
   // rerender the mes_view using the app_state message list
   const msgList = app_states.messages
@@ -141,6 +193,13 @@ function onClickSend() {
     },
     success: function (response) {
       console.log('Message sent:', response)
+      // Create a message object and send it to the WebSocket server
+      const wsMessage = {
+        sender: app_states.userId,
+        receiver: app_states.selectedContactId,
+        content: message,
+      }
+      sendMessageToWebSocket(wsMessage)
       app_states.messages.push(response)
       render_msg_view()
       $('#message-box').val('')
@@ -274,6 +333,8 @@ $(function () {
     console.log('add user details and logout button')
 
     rerender_contacts_view()
+
+    connectWebSocket()
 
     $('#chat-msg-send-btn').on('click', onClickSend)
 
