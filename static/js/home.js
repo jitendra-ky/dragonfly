@@ -2,6 +2,27 @@ import { getCookie } from './assets.js'
 import * as app_states from './app_states.js'
 
 function rerender_msg_view() {
+  // rerender the mes_view using the app_state message list
+  const msgList = app_states.messages
+  const chatBody = $('.chat-body')
+  chatBody.empty()
+  msgList.forEach((message) => {
+    const messageElement = $('<div>').addClass(
+      message.sender === app_states.userId
+        ? 'chat-message chat-message-sent'
+        : 'chat-message chat-message-received'
+    )
+    const profile = $('<div>').addClass('chat-message-profile')
+    const content = $('<div>').addClass('chat-message-content')
+    content.append($('<p>').text(message.content))
+    messageElement.append(profile, content)
+    chatBody.append(messageElement)
+  })
+  // scroll to bottom
+  $('.chat-body').scrollTop($('.chat-body')[0].scrollHeight)
+}
+
+function render_msg_view() {
   // reads the app_state and rerenders the message view
 
   // check if user is logged in
@@ -41,22 +62,7 @@ function rerender_msg_view() {
       console.log('Messages:', response)
       app_states.setMessages(response)
       // render the messages
-      const chatBody = $('.chat-body')
-      chatBody.empty()
-      response.forEach((message) => {
-        const messageElement = $('<div>').addClass(
-          message.sender === app_states.userId
-            ? 'chat-message chat-message-sent'
-            : 'chat-message chat-message-received'
-        )
-        const profile = $('<div>').addClass('chat-message-profile')
-        const content = $('<div>').addClass('chat-message-content')
-        content.append($('<p>').text(message.content))
-        messageElement.append(profile, content)
-        chatBody.append(messageElement)
-        // scroll to bottom
-        chatBody.scrollTop(chatBody[0].scrollHeight)
-      })
+      rerender_msg_view()
     },
     error: function (response) {
       console.log('Error:', response)
@@ -115,7 +121,7 @@ function onClickContact() {
   // on click of a contact, set the selectedContactId and rerender the message view
   const contactId = $(this).attr('id')
   app_states.setSelectedContactId(contactId)
-  rerender_msg_view()
+  render_msg_view()
 }
 
 function onClickSend() {
@@ -136,10 +142,8 @@ function onClickSend() {
     success: function (response) {
       console.log('Message sent:', response)
       app_states.messages.push(response)
-      rerender_msg_view()
+      render_msg_view()
       $('#message-box').val('')
-      // scroll to bottom
-      $('.chat-body').scrollTop($('.chat-body')[0].scrollHeight)
     },
     error: function (response) {
       console.log('Error:', response)
