@@ -1,0 +1,21 @@
+# Use official Python image as a base
+FROM python:3.10
+
+# Set environment variables
+ENV PYTHONUNBUFFERED=1
+
+# Set the working directory inside the container
+WORKDIR /app
+
+# Copy requirements and install dependencies
+COPY requirements/production.txt requirements.txt
+RUN pip install --no-cache-dir -r requirements.txt
+
+# Copy the rest of the application code
+COPY . .
+
+# Expose port 8888 for Tornado WebSocket server
+EXPOSE 8888
+
+# Run the Tornado server
+CMD ["python", "zserver/tornado/server.py"]

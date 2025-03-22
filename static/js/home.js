@@ -1,7 +1,75 @@
 import { getCookie } from './assets.js'
 import * as app_states from './app_states.js'
 
+let ws
+
+function connectWebSocket() {
+  // Create a new WebSocket connection to the Tornado server with user ID
+  const userId = app_states.userId
+
+  // Create WebSocket connection
+  const wsHost = env_var.TORNADO_HOSTNAME
+  ws = new WebSocket(`${wsHost}/ws/chat?user_id=${userId}`)
+
+  ws.onopen = function () {
+    console.log('WebSocket connection opened')
+  }
+
+  ws.onmessage = function (event) {
+    // Handle incoming messages from the WebSocket server
+    const message = JSON.parse(event.data)
+    console.log('Received message:', message)
+    // Update the chat UI with the new message
+    if (
+      message.sender.toString() === app_states.selectedContactId.toString() &&
+      message.receiver.toString() === app_states.userId.toString()
+    ) {
+      console.log('Received message:', message)
+      app_states.messages.push(message)
+      rerender_msg_view()
+    }
+  }
+
+  ws.onclose = function () {
+    console.log('WebSocket connection closed')
+  }
+
+  ws.onerror = function (error) {
+    console.log('WebSocket error:', error)
+  }
+}
+
+function sendMessageToWebSocket(message) {
+  // Send a message to the WebSocket server
+  if (ws && ws.readyState === WebSocket.OPEN) {
+    ws.send(JSON.stringify(message))
+  } else {
+    console.log('WebSocket is not open')
+  }
+}
+
 function rerender_msg_view() {
+  // rerender the mes_view using the app_state message list
+  const msgList = app_states.messages
+  const chatBody = $('.chat-body')
+  chatBody.empty()
+  msgList.forEach((message) => {
+    const messageElement = $('<div>').addClass(
+      message.sender === app_states.userId
+        ? 'chat-message chat-message-sent'
+        : 'chat-message chat-message-received'
+    )
+    const profile = $('<div>').addClass('chat-message-profile')
+    const content = $('<div>').addClass('chat-message-content')
+    content.append($('<p>').text(message.content))
+    messageElement.append(profile, content)
+    chatBody.append(messageElement)
+  })
+  // scroll to bottom
+  $('.chat-body').scrollTop($('.chat-body')[0].scrollHeight)
+}
+
+function render_msg_view() {
   // reads the app_state and rerenders the message view
 
   // check if user is logged in
@@ -41,22 +109,7 @@ function rerender_msg_view() {
       console.log('Messages:', response)
       app_states.setMessages(response)
       // render the messages
-      const chatBody = $('.chat-body')
-      chatBody.empty()
-      response.forEach((message) => {
-        const messageElement = $('<div>').addClass(
-          message.sender === app_states.userId
-            ? 'chat-message chat-message-sent'
-            : 'chat-message chat-message-received'
-        )
-        const profile = $('<div>').addClass('chat-message-profile')
-        const content = $('<div>').addClass('chat-message-content')
-        content.append($('<p>').text(message.content))
-        messageElement.append(profile, content)
-        chatBody.append(messageElement)
-        // scroll to bottom
-        chatBody.scrollTop(chatBody[0].scrollHeight)
-      })
+      rerender_msg_view()
     },
     error: function (response) {
       console.log('Error:', response)
@@ -115,7 +168,7 @@ function onClickContact() {
   // on click of a contact, set the selectedContactId and rerender the message view
   const contactId = $(this).attr('id')
   app_states.setSelectedContactId(contactId)
-  rerender_msg_view()
+  render_msg_view()
 }
 
 function onClickSend() {
@@ -135,11 +188,16 @@ function onClickSend() {
     },
     success: function (response) {
       console.log('Message sent:', response)
+      // Create a message object and send it to the WebSocket server
+      const wsMessage = {
+        sender: app_states.userId,
+        receiver: app_states.selectedContactId,
+        content: message,
+      }
+      sendMessageToWebSocket(wsMessage)
       app_states.messages.push(response)
-      rerender_msg_view()
+      render_msg_view()
       $('#message-box').val('')
-      // scroll to bottom
-      $('.chat-body').scrollTop($('.chat-body')[0].scrollHeight)
     },
     error: function (response) {
       console.log('Error:', response)
@@ -270,6 +328,8 @@ $(function () {
     console.log('add user details and logout button')
 
     rerender_contacts_view()
+
+    connectWebSocket()
 
     $('#chat-msg-send-btn').on('click', onClickSend)
 
