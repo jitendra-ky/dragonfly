@@ -6,15 +6,10 @@ let ws
 function connectWebSocket() {
   // Create a new WebSocket connection to the Tornado server with user ID
   const userId = app_states.userId
-  // Determine WebSocket URL based on environment
-  const wsProtocol = window.location.protocol === 'https:' ? 'wss' : 'ws'
-  const wsHost = window.location.hostname
-  const wsPort = '8888' // Tornado WebSocket server port
 
   // Create WebSocket connection
-  ws = new WebSocket(
-    `${wsProtocol}://${wsHost}:${wsPort}/ws/chat?user_id=${userId}`
-  )
+  const wsHost = env_var.TORNADO_HOSTNAME
+  ws = new WebSocket(`${wsHost}/ws/chat?user_id=${userId}`)
 
   ws.onopen = function () {
     console.log('WebSocket connection opened')
