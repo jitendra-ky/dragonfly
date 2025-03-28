@@ -517,7 +517,7 @@ body {
 
 @media (max-width: 1024px) {
   .signbox {
-    width: 600px;
+    width: 500px;
     background-color: white;
     .signbox-left {
       display: none;
@@ -529,19 +529,24 @@ body {
   }
 }
 
-@media (max-width: 650px) {
+@media (max-width: 510px) {
   .signbox {
-    text-align: center;
+    width: 100%;
+    margin: auto;
     border: none;
     box-shadow: none;
     height: 100vh;
-    font-size: 2rem;
-  }
-  .signbox-right {
-    border: none;
+    .signbox-right {
+      padding: 50px 20px;
+      border: none;
 
-    input {
-      font-size: 5rem;
+      h2 {
+        text-align: center;
+      }
+
+      input {
+        font-size: 5rem;
+      }
     }
   }
 }
