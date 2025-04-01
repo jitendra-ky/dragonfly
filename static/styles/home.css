@@ -162,7 +162,7 @@ body {
     }
   }
 }
-/*
+
 .sidebar-float {
   position: fixed;
   top: 50px;
@@ -171,13 +171,18 @@ body {
 }
 
 .sidebar-collapse {
-  width: 60px;
+  display: none;
 }
-*/
+
 /* media query for screen smaler than 600px */
+
 @media (max-width: 600px) {
+  /* use the style of sidebar-float */
   .sidebar {
-    width: 60px;
+    position: fixed;
+    top: 50px;
+    left: 0;
+    z-index: 1000;
   }
 }
 

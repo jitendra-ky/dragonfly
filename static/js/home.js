@@ -273,38 +273,37 @@ function onsendMessageToNewUserClick() {
     }
   })
 }
-/*
+
 function onSidebarToggleClick() {
   const sidebar = $('.sidebar')
   const screenWidth = $(window).width()
-  console.log('sidebar:', sidebar)
-  console.log('screenWidth:', screenWidth)
-  const currentClass = sidebar.attr('class')
-  console.log('currentClass:', currentClass)
+  const isSmallScreen = screenWidth < 600
 
-  if (screenWidth < 600) {
+  const SIDEBAR_DEFAULT = 'sidebar'
+  const SIDEBAR_FLOAT = 'sidebar sidebar-float'
+  const SIDEBAR_COLLAPSE = 'sidebar sidebar-collapse'
+
+  const currentClass = sidebar.attr('class')
+
+  if (isSmallScreen) {
+    // Toggle between float and collapse for small screens
     if (currentClass.includes('sidebar-float')) {
-      sidebar.removeClass('sidebar-float')
-      sidebar.addClass('sidebar sidebar-collapse')
+      sidebar.attr('class', SIDEBAR_COLLAPSE)
     } else if (currentClass.includes('sidebar-collapse')) {
-      sidebar.removeClass('sidebar-collapse')
-      sidebar.addClass('sidebar sidebar-float')
+      sidebar.attr('class', SIDEBAR_DEFAULT)
     } else {
-      sidebar.addClass('sidebar-collapse')
+      sidebar.attr('class', SIDEBAR_COLLAPSE)
     }
   } else {
-    if (currentClass.includes('sidebar')) {
-      sidebar.removeClass('sidebar')
-      sidebar.addClass('sidebar sidebar-collapse')
-    } else if (currentClass.includes('sidebar-collapse')) {
-      sidebar.removeClass('sidebar-collapse')
-      sidebar.addClass('sidebar')
+    // Toggle between default and collapse for larger screens
+    if (currentClass.includes('sidebar-collapse')) {
+      sidebar.attr('class', SIDEBAR_DEFAULT)
     } else {
-      sidebar.addClass('sidebar sidebar-collapse')
+      sidebar.attr('class', SIDEBAR_COLLAPSE)
     }
   }
 }
-*/
+
 $(function () {
   console.log('home.js loaded')
 
@@ -346,6 +345,6 @@ $(function () {
       onsendMessageToNewUserClick()
     })
 
-    // $('#sidebar-toggle').on('click', onSidebarToggleClick)
+    $('.left-list .one').on('click', onSidebarToggleClick)
   })
 })
