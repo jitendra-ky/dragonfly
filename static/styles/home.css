@@ -46,7 +46,10 @@ body {
       list-style: none;
       cursor: pointer;
       border-radius: 50%;
-      background-color: rgb(47, 154, 44);
+      font-size: xx-large;
+      display: flex;
+      justify-content: center;
+      align-items: center;
     }
   }
 }
