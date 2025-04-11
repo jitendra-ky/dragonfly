@@ -3,36 +3,44 @@ import string
 
 from django.db import models
 
-
-# the UserProfile is the model that will be used to store the user's profile information
-class UserProfile(models.Model):
+# Base model for user profiles
+class BaseUserProfile(models.Model):
     id = models.AutoField(primary_key=True)
     fullname = models.CharField(max_length=100, blank=False, null=False)
     email = models.EmailField(max_length=100, blank=False, null=False, unique=True)
     password = models.CharField(max_length=100, blank=False, null=False)
     created_at = models.DateTimeField(auto_now_add=True, blank=False, null=False)
     updated_at = models.DateTimeField(auto_now=True, blank=False, null=False)
-    is_active = models.BooleanField(default=False, blank=False, null=False)
+
+    class Meta:
+        abstract = True # don't create a table for this model
 
     def __str__(self) -> str:
         """Return the email of the user."""
         return self.email
 
-    def generate_otp(self) -> str:
-        """Generate a 6-digit OTP for the user."""
-        generated_opt = "".join(random.choices(string.digits, k=6))
-        otp = SignUpOTP(user=self, otp=generated_opt)
-        otp.save()
-        return generated_opt
-
     def is_password_valid(self, password: str) -> bool:
         """Check if the provided password is valid."""
         return self.password == password
 
+# Model for verified user profiles
+class UserProfile(BaseUserProfile):
+    is_active = models.BooleanField(default=False, blank=False, null=False)
 
-# let's create a signup otp model
+# Model for unverified user profiles
+class UnverifiedUserProfile(BaseUserProfile):
+    email = models.EmailField(max_length=100, blank=False, null=False, unique=False)
+    
+    def generate_otp(self) -> str:
+        """Generate a 6-digit OTP for the user."""
+        generated_otp = "".join(random.choices(string.digits, k=6))
+        otp = SignUpOTP(user=self, otp=generated_otp)
+        otp.save()
+        return generated_otp
+
+# Model for signup OTPs
 class SignUpOTP(models.Model):
-    user = models.ForeignKey(UserProfile, on_delete=models.CASCADE)
+    user = models.ForeignKey(UnverifiedUserProfile, on_delete=models.CASCADE)
     otp = models.CharField(max_length=6, blank=False, null=False)
     created_at = models.DateTimeField(auto_now_add=True, blank=False, null=False)
 
