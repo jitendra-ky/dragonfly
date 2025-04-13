@@ -166,6 +166,7 @@ function rerender_contacts_view() {
 
 function onClickContact() {
   // on click of a contact, set the selectedContactId and rerender the message view
+  $('.mainbox .welcome-page').hide()
   const contactId = $(this).attr('id')
   app_states.setSelectedContactId(contactId)
   render_msg_view()
