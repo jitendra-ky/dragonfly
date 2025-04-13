@@ -192,6 +192,31 @@ body {
   overflow: hidden;
   display: flex;
   flex-direction: column;
+  position: relative;
+
+  .welcome-page {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    text-align: center;
+    background-color: #dddddd;
+    .img-holder {
+      height: 200px;
+      width: 200px;
+      border-radius: 50%;
+      display: flex;
+      justify-content: center;
+      margin: 20px auto;
+      align-items: center;
+      overflow: hidden;
+      img {
+        width: 80%;
+        height: 80%;
+      }
+    }
+  }
 
   .chat-header {
     display: flex;
