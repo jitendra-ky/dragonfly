@@ -305,6 +305,17 @@ function onSidebarToggleClick() {
   }
 }
 
+function onToggleMagicSidebar() {
+  const $magicSidebar = $('.magic-sidebar')
+  if ($magicSidebar.css('display') === 'none') {
+    $magicSidebar.css('display', 'flex')
+    $('.mask').show()
+  } else {
+    $magicSidebar.css('display', 'none')
+    $('.mask').hide()
+  }
+}
+
 $(function () {
   console.log('home.js loaded')
 
@@ -317,15 +328,9 @@ $(function () {
     }
     console.log(app_states.sessionId)
     console.log(app_states.userEmail)
-    const $userDetails = $('<p>')
-      .attr('id', 'user-details')
-      .text(`${app_states.userEmail}`)
-    const $logoutButton = $('<button>')
-      .attr('id', 'logout-button')
-      .text('Logout')
-      .on('click', onLogoutClick)
-    $('.right-list ul').prepend($userDetails, $logoutButton)
-    console.log('add user details and logout button')
+
+    const username = app_states.userEmail.split('@')[0]
+    $('#username').text(username)
 
     rerender_contacts_view()
 
@@ -347,5 +352,9 @@ $(function () {
     })
 
     $('.left-list .one').on('click', onSidebarToggleClick)
+
+    $('.toggle-magic-sidebar').on('click', onToggleMagicSidebar)
+
+    $('.logout').on('click', onLogoutClick)
   })
 })
