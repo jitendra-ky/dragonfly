@@ -18,7 +18,7 @@ def test_signup(driver: webdriver.Firefox):
     # then click on logout button
     # again make sure that user is on "http://localhost:8000/login"
     if driver.current_url == home_url:
-        driver.find_element(By.ID, "logout-button").click()
+        driver.execute_script("document.getElementById('logout-button').click();")
         time.sleep(2)
         # change url to signup_url
         driver.get(signup_url)

@@ -78,6 +78,22 @@ function render_msg_view() {
     return
   }
 
+  // check if selected contact id is -1 and screen width is less than 600
+  const screenWidth = $(window).width()
+  const isSmallScreen = screenWidth < 600
+  if (isSmallScreen) {
+    if (app_states.selectedContactId === -1) {
+      $('.mainbox').removeClass('mainbox-fullscreen')
+      $('.sidebar').addClass('sidebar-fullscreen')
+    } else {
+      $('.sidebar').removeClass('sidebar-fullscreen')
+      $('.mainbox').addClass('mainbox-fullscreen')
+    }
+  } else {
+    $('.mainbox').removeClass('mainbox-fullscreen')
+    $('.sidebar').removeClass('sidebar-fullscreen')
+  }
+
   // check other validation
   if (
     app_states.selectedContactId === -1 || // check if a contact is selected
@@ -316,6 +332,11 @@ function onToggleMagicSidebar() {
   }
 }
 
+function onClickBackToContacts() {
+  app_states.setSelectedContactId(-1)
+  render_msg_view()
+}
+
 $(function () {
   console.log('home.js loaded')
 
@@ -333,6 +354,7 @@ $(function () {
     $('#username').text(username)
 
     rerender_contacts_view()
+    render_msg_view()
 
     connectWebSocket()
 
@@ -356,5 +378,12 @@ $(function () {
     $('.toggle-magic-sidebar').on('click', onToggleMagicSidebar)
 
     $('.logout').on('click', onLogoutClick)
+
+    $('.back-to-contact-list').on('click', onClickBackToContacts)
+
+    // An event listener that will triger of change of widge of body
+    $(window).on('resize', function () {
+      render_msg_view()
+    })
   })
 })
