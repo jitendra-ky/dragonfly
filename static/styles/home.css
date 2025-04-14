@@ -22,6 +22,19 @@ body {
   flex-direction: column;
 }
 
+.button {
+  background-color: white;
+  color: #4caf50;
+  border: none;
+  border-radius: 5px;
+  padding: 5px 10px;
+  cursor: pointer;
+
+  &:hover {
+    background-color: #45a049;
+  }
+}
+
 .navbar {
   height: 50px;
   display: flex;
@@ -80,19 +93,6 @@ body {
 
     h3 {
       margin: 0;
-    }
-
-    button {
-      background-color: white;
-      color: #4caf50;
-      border: none;
-      border-radius: 5px;
-      padding: 5px 10px;
-      cursor: pointer;
-    }
-
-    button:hover {
-      background-color: #45a049;
     }
   }
 
