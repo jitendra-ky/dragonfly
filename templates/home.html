@@ -4,26 +4,45 @@
 {% block title %}Home{% endblock %}
 
 {% block content %}
-<div class="navbar">
-    <div class="cont">
-        <div class="left-list">
-            <ul>
-                <li class="one"><i class="fas fa-bars"></i></li>
-            </ul>
-        </div>
-        <div class="right-list">
-            <ul>
-                <li class="user-profile"><i class="fas fa-user"></i></li>
-            </ul>
+
+<div class="mask toggle-magic-sidebar"></div>
+
+<div class="magic-sidebar">
+    <div class="magic-sidebar-header">
+        <img src="/static/images/dragonfly-icon-200.png" alt="Profile Picture" class="profile-pic">
+        <div class="user-info">
+            <p id="username">@username</p>
+            <span class="logout button" id="logout-button"><i class="fas fa-sign-out-alt"></i> Logout</span>
         </div>
     </div>
+    <ul class="magic-sidebar-menu"><!--
+        <li class="magic-sidebar-item"><i class="fas fa-user"></i> My Profile</li>
+        <li class="magic-sidebar-item"><i class="fas fa-users"></i> New Group</li>
+        <li class="magic-sidebar-item"><i class="fas fa-bullhorn"></i> New Channel</li>
+        <li class="magic-sidebar-item"><i class="fas fa-address-book"></i> Contacts</li>
+        <li class="magic-sidebar-item"><i class="fas fa-phone"></i> Calls</li>
+        <li class="magic-sidebar-item"><i class="fas fa-save"></i> Saved Messages</li>
+        <li class="magic-sidebar-item"><i class="fas fa-cog"></i> Settings</li>
+        <li class="magic-sidebar-item">
+            <i class="fas fa-moon"></i> Night Mode
+            <label class="switch">
+                <input type="checkbox">
+                <span class="slider"></span>
+            </label>
+        </li>-->
+    </ul>
+    <div class="magic-sidebar-footer">
+        <p>Dragonfly</p>
+        <p>Version 1.0.0 - Beta</p>
+    </div>
 </div>
+
 <div class="app">
     <div class="sidebar">
         <div class="header">
-            <!-- <button id="sidebar-toggle">|||</button> -->
+            <span class="button toggle-magic-sidebar"><i class="fas fa-bars"></i></span>
             <h3>Chat App</h3>
-            <button id="new-message-btn"><i class="fas fa-plus"></i></button>
+            <button id="new-message-btn" class="button"><i class="fas fa-plus"></i></button>
         </div>
         <div class="search-bar">
             <input type="text" placeholder="Search..." />
@@ -53,6 +72,9 @@
             <p>Chat with your friends and family</p>
         </div>
         <div class="chat-header">
+            <div class="back-to-contact-list button">
+                <i class="fas fa-arrow-left"></i>
+            </div>
             <div class="chat-header-profile"></div>
             <div class="chat-header-details">
                 <h4>Dragonfly</h4>
