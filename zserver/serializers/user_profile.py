@@ -1,6 +1,6 @@
 from rest_framework import serializers
 
-from zserver.models import Session, SignUpOTP, UserProfile
+from zserver.models import Session, SignUpOTP, UserProfile, UnverifiedUserProfile
 
 
 # Serializer class for the UserProfile model
@@ -32,6 +32,38 @@ class UserProfileSerializer(serializers.ModelSerializer):
         instance.password = validated_data.get("password", instance.password)
         instance.save()
         return instance
+
+
+# Serializer class for the UnverifiedUserProfile model
+class UnverifiedUserProfileSerializer(serializers.ModelSerializer):
+    class Meta:
+        """Meta class to specify the model and fields to be serialized."""
+
+        model = UnverifiedUserProfile
+        fields = [
+            "fullname",
+            "email",
+            "password",
+        ]  # Fields to be included in the serialization
+        extra_kwargs = {
+            "password": {"write_only": True},  # Make the password field write-only
+        }
+    
+    def validate_email(self, value: str) -> str:
+        """Validate that the email is not already in use."""
+        if UserProfile.objects.filter(email=value).exists():
+            raise serializers.ValidationError("Email is already in use.")
+        return value
+
+    def create(self, validated_data: dict) -> UnverifiedUserProfile:
+        """Create a new unverified user profile."""
+        if UnverifiedUserProfile.objects.filter(email=validated_data["email"]).exists():
+            UnverifiedUserProfile.objects.filter(email=validated_data["email"]).delete()
+        # Create a new unverified user profile
+        # and generate an OTP for verification
+        user = UnverifiedUserProfile.objects.create(**validated_data)
+        user.generate_otp()
+        return user
 
 
 # Serializer class for the SignUpOTP model
