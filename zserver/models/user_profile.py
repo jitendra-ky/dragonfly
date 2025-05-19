@@ -25,19 +25,9 @@ class BaseUserProfile(models.Model):
         return self.password == password
 
 
-# the UserProfile is the model that will be used to store the user's profile information
-class UserProfile(models.Model):
-    id = models.AutoField(primary_key=True)
-    fullname = models.CharField(max_length=100, blank=False, null=False)
-    email = models.EmailField(max_length=100, blank=False, null=False, unique=True)
-    password = models.CharField(max_length=100, blank=False, null=False)
-    created_at = models.DateTimeField(auto_now_add=True, blank=False, null=False)
-    updated_at = models.DateTimeField(auto_now=True, blank=False, null=False)
+# Model for verified user profiles
+class UserProfile(BaseUserProfile):
     is_active = models.BooleanField(default=False, blank=False, null=False)
-
-    def __str__(self) -> str:
-        """Return the email of the user."""
-        return self.email
 
     def generate_otp(self) -> str:
         """Generate a 6-digit OTP for the user."""
@@ -45,10 +35,6 @@ class UserProfile(models.Model):
         otp = SignUpOTP(user=self, otp=generated_opt)
         otp.save()
         return generated_opt
-
-    def is_password_valid(self, password: str) -> bool:
-        """Check if the provided password is valid."""
-        return self.password == password
 
 
 # let's create a signup otp model
