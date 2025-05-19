@@ -1,6 +1,6 @@
 from rest_framework import serializers
 
-from zserver.models import Session, SignUpOTP, UserProfile, UnverifiedUserProfile
+from zserver.models import Session, SignUpOTP, UserProfile, UnverifiedUserProfile, VerifyUserOTP
 
 
 # Serializer class for the UserProfile model
@@ -108,6 +108,51 @@ class SignUpOTPSerializer(serializers.ModelSerializer):
         """Delete the OTP."""
         user_otp = self.validated_data["user_otp"]
         user_otp.delete()
+
+
+# serializer for VerifyUserOTP model
+class VerifyUserOTPSerializer(serializers.ModelSerializer):
+    email = serializers.EmailField(max_length=100)
+    
+    class Meta:
+        """Meta class to specify the model and fields to be serialized."""
+
+        model = VerifyUserOTP
+        fields = ["otp", "email"]
+    
+    def validate(self, data: dict) -> dict:
+        """Validate the OTP and email."""
+        email = data.get("email")
+        otp = data.get("otp")
+
+        try:
+            user = UnverifiedUserProfile.objects.get(email=email)
+        except UnverifiedUserProfile.DoesNotExist as err:
+            raise serializers.ValidationError({"email": "User does not exist."}) from err
+
+        try:
+            user_otp = VerifyUserOTP.objects.get(user=user)
+        except VerifyUserOTP.DoesNotExist as err:
+            raise serializers.ValidationError({"otp": "OTP does not exist."}) from err
+
+        if user_otp.otp != otp:
+            raise serializers.ValidationError({"otp": "Incorrect OTP."})
+
+        data["user"] = user
+        data["user_otp"] = user_otp
+        return data
+    
+    def signup_user(self) -> None:
+        """ add user to UserProfile table and delete the OTP."""
+        user = self.validated_data["user"]
+        user_profile = UserProfile(
+            fullname=user.fullname,
+            email=user.email,
+            password=user.password,
+        )
+        user_profile.save()
+        user.delete()
+        self.validated_data["user_otp"].delete()
 
 
 class SessionSerializer(serializers.Serializer):
