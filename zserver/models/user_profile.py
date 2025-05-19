@@ -4,6 +4,27 @@ import string
 from django.db import models
 
 
+# Base model for user profiles
+class BaseUserProfile(models.Model):
+    id = models.AutoField(primary_key=True)
+    fullname = models.CharField(max_length=100, blank=False, null=False)
+    email = models.EmailField(max_length=100, blank=False, null=False, unique=True)
+    password = models.CharField(max_length=100, blank=False, null=False)
+    created_at = models.DateTimeField(auto_now_add=True, blank=False, null=False)
+    updated_at = models.DateTimeField(auto_now=True, blank=False, null=False)
+
+    class Meta:
+        abstract = True # don't create a table for this model
+
+    def __str__(self) -> str:
+        """Return the email of the user."""
+        return self.email
+
+    def is_password_valid(self, password: str) -> bool:
+        """Check if the provided password is valid."""
+        return self.password == password
+
+
 # the UserProfile is the model that will be used to store the user's profile information
 class UserProfile(models.Model):
     id = models.AutoField(primary_key=True)
