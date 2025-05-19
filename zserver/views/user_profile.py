@@ -17,6 +17,7 @@ from zserver.serializers import (
     SessionSerializer,
     SignUpOTPSerializer,
     UserProfileSerializer,
+    VerifyUserOTPSerializer,
 )
 from zserver.utils import get_env_var
 
@@ -108,6 +109,17 @@ class SignUpOTPView(APIView):
         if serializer.is_valid():
             serializer.make_user_active()
             serializer.delete_otp()
+            return Response(status=status.HTTP_200_OK)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+class VerifyUserOTPView(APIView):
+    
+    def post(self, request: Request) -> Response:
+        """verify OTP and signup user"""
+        serializer = VerifyUserOTPSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.signup_user()
             return Response(status=status.HTTP_200_OK)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
