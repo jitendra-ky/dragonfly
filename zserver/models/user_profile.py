@@ -37,6 +37,11 @@ class UserProfile(BaseUserProfile):
         return generated_opt
 
 
+# Model for unverified user profiles
+class UnverifiedUserProfile(BaseUserProfile):
+    email = models.EmailField(max_length=100, blank=False, null=False, unique=False)
+
+
 # let's create a signup otp model
 class SignUpOTP(models.Model):
     user = models.ForeignKey(UserProfile, on_delete=models.CASCADE)
