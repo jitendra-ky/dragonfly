@@ -15,7 +15,6 @@ from zserver.serializers import (
     ForgotPasswordSerializer,
     ResetPasswordSerializer,
     SessionSerializer,
-    SignUpOTPSerializer,
     UserProfileSerializer,
     UnverifiedUserProfileSerializer,
     VerifyUserOTPSerializer,

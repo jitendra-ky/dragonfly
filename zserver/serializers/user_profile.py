@@ -100,6 +100,7 @@ class VerifyUserOTPSerializer(serializers.ModelSerializer):
             email=user.email,
             password=user.password,
         )
+        user_profile.is_active = True
         user_profile.save()
         user.delete()
         self.validated_data["user_otp"].delete()

@@ -18,7 +18,7 @@ urlpatterns = [
     path("api/messages/", views.MessageView.as_view(), name="messages"),
     path("api/contacts/", views.ContactView.as_view(), name="contacts"),
     path("api/all-users/", views.AllUsersView.as_view(), name="all-users"),
-    path("api/verify-user-otp/", views.VerifyUserOTPView.as_view(), name="verify-user-otp"),
+    path("api/sign-up-otp/", views.VerifyUserOTPView.as_view(), name="sign-up-otp"),
 
     path("google-login/", views.GoogleLoginView.as_view(), name="google_login"),
 ]
