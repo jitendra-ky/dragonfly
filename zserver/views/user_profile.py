@@ -17,6 +17,7 @@ from zserver.serializers import (
     SessionSerializer,
     SignUpOTPSerializer,
     UserProfileSerializer,
+    UnverifiedUserProfileSerializer,
     VerifyUserOTPSerializer,
 )
 from zserver.utils import get_env_var
@@ -40,7 +41,7 @@ class UserProfileView(APIView):
 
     def post(self, request: Request) -> Response:
         """Create a new user profile."""
-        serializer = UserProfileSerializer(data=request.data)
+        serializer = UnverifiedUserProfileSerializer(data=request.data)
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)
