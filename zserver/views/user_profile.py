@@ -102,18 +102,6 @@ class SignInView(APIView):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
-class SignUpOTPView(APIView):
-
-    def post(self, request: Request) -> Response:
-        """Verify OTP and activate the user."""
-        serializer = SignUpOTPSerializer(data=request.data)
-        if serializer.is_valid():
-            serializer.make_user_active()
-            serializer.delete_otp()
-            return Response(status=status.HTTP_200_OK)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
-
 class VerifyUserOTPView(APIView):
     
     def post(self, request: Request) -> Response:

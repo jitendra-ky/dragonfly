@@ -13,7 +13,6 @@ urlpatterns = [
 
     path("api/user-profile/", views.UserProfileView.as_view(), name="user-profile"),
     path("api/sign-in/", views.SignInView.as_view(), name="sign-in"),
-    path("api/sign-up-otp/", views.SignUpOTPView.as_view(), name="sign-up-otp"),
     path("api/forgot-password/", views.ForgotPasswordView.as_view(), name="forgot-password"),
     path("api/reset-password/", views.ResetPasswordView.as_view(), name="reset-password"),
     path("api/messages/", views.MessageView.as_view(), name="messages"),

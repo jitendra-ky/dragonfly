@@ -66,50 +66,6 @@ class UnverifiedUserProfileSerializer(serializers.ModelSerializer):
         return user
 
 
-# Serializer class for the SignUpOTP model
-class SignUpOTPSerializer(serializers.ModelSerializer):
-    email = serializers.EmailField(max_length=100)
-
-    class Meta:
-        """Meta class to specify the model and fields to be serialized."""
-
-        model = SignUpOTP
-        fields = ["otp", "email"]
-
-    def validate(self, data: dict) -> dict:
-        """Validate the OTP and email."""
-        email = data.get("email")
-        otp = data.get("otp")
-
-        try:
-            user = UserProfile.objects.get(email=email)
-        except UserProfile.DoesNotExist as err:
-            raise serializers.ValidationError({"email": "User does not exist."}) from err
-
-        try:
-            user_otp = SignUpOTP.objects.get(user=user)
-        except SignUpOTP.DoesNotExist as err:
-            raise serializers.ValidationError({"otp": "OTP does not exist."}) from err
-
-        if user_otp.otp != otp:
-            raise serializers.ValidationError({"otp": "Incorrect OTP."})
-
-        data["user"] = user
-        data["user_otp"] = user_otp
-        return data
-
-    def make_user_active(self) -> None:
-        """Activate the user."""
-        user = self.validated_data["user"]
-        user.is_active = True
-        user.save()
-
-    def delete_otp(self) -> None:
-        """Delete the OTP."""
-        user_otp = self.validated_data["user_otp"]
-        user_otp.delete()
-
-
 # serializer for VerifyUserOTP model
 class VerifyUserOTPSerializer(serializers.ModelSerializer):
     email = serializers.EmailField(max_length=100)
