@@ -19,12 +19,6 @@ class UserProfileSerializer(serializers.ModelSerializer):
             "password": {"write_only": True},  # Make the password field write-only
         }
 
-    def create(self, validated_data: dict) -> UserProfile:
-        """Create a new user profile and generate OTP."""
-        user = UserProfile.objects.create(**validated_data)
-        user.generate_otp()
-        return user
-
     def update(self, instance: UserProfile, validated_data: dict) -> UserProfile:
         """Update an existing user profile."""
         instance.fullname = validated_data.get("fullname", instance.fullname)
