@@ -14,6 +14,8 @@ class BaseUserProfile(models.Model):
     updated_at = models.DateTimeField(auto_now=True, blank=False, null=False)
 
     class Meta:
+        """make this model abstract so that it doesn't create a table."""
+
         abstract = True # don't create a table for this model
 
     def __str__(self) -> str:
@@ -40,7 +42,7 @@ class UserProfile(BaseUserProfile):
 # Model for unverified user profiles
 class UnverifiedUserProfile(BaseUserProfile):
     email = models.EmailField(max_length=100, blank=False, null=False, unique=False)
-    
+
     def generate_otp(self) -> str:
         """Generate a 6-digit OTP for the user."""
         generated_opt = "".join(random.choices(string.digits, k=6))
@@ -65,9 +67,10 @@ class VerifyUserOTP(models.Model):
     user = models.ForeignKey(UnverifiedUserProfile, on_delete=models.CASCADE)
     otp = models.CharField(max_length=6, blank=False, null=False)
     created_at = models.DateTimeField(auto_now_add=True, blank=False, null=False)
-    
+
     def __str__(self) -> str:
-        return self.user.email + ' ' + self.otp
+        """Return the email of the user associated with the OTP."""
+        return self.user.email + " " + self.otp
 
 
 # let's create a modle for login sessions

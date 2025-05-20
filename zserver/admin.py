@@ -1,6 +1,13 @@
 from django.contrib import admin
 
-from zserver.models import Message, Session, SignUpOTP, UserProfile, VerifyUserOTP, UnverifiedUserProfile
+from zserver.models import (
+    Message,
+    Session,
+    SignUpOTP,
+    UnverifiedUserProfile,
+    UserProfile,
+    VerifyUserOTP,
+)
 
 # Register your models here.
 admin.site.register(UserProfile)

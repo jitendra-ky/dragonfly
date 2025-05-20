@@ -15,8 +15,8 @@ from zserver.serializers import (
     ForgotPasswordSerializer,
     ResetPasswordSerializer,
     SessionSerializer,
-    UserProfileSerializer,
     UnverifiedUserProfileSerializer,
+    UserProfileSerializer,
     VerifyUserOTPSerializer,
 )
 from zserver.utils import get_env_var
@@ -102,9 +102,9 @@ class SignInView(APIView):
 
 
 class VerifyUserOTPView(APIView):
-    
+
     def post(self, request: Request) -> Response:
-        """verify OTP and signup user"""
+        """Verify OTP and signup user."""
         serializer = VerifyUserOTPSerializer(data=request.data)
         if serializer.is_valid():
             serializer.signup_user()
