@@ -3,7 +3,7 @@ from django.urls import reverse
 from rest_framework import status
 from rest_framework.test import APIClient
 
-from zserver.models import Session, SignUpOTP, UserProfile
+from zserver.models import Session, SignUpOTP, UserProfile, UnverifiedUserProfile, VerifyUserOTP
 
 
 class UserProfileViewTest(TestCase):
@@ -83,24 +83,29 @@ class UserProfileViewTest(TestCase):
         self.assertEqual(response.data["email"], new_user["email"])
         # now check the user is created and opt is generated
         try:
-            user = UserProfile.objects.get(email=new_user["email"])
+            user = UnverifiedUserProfile.objects.get(email=new_user["email"])
             print("User created successfully")
-        except UserProfile.DoesNotExist:
+        except UnverifiedUserProfile.DoesNotExist:
             self.fail("User not created")
         try:
-            SignUpOTP.objects.get(user=user)
+            VerifyUserOTP.objects.get(user=user)
             print("OTP generated successfully")
-        except SignUpOTP.DoesNotExist:
+        except VerifyUserOTP.DoesNotExist:
             self.fail("OTP not generated")
 
         # this will send a post request to create a user that already exits
-        response = self.client.post(self.user_url, new_user)
+        existed_user = {
+            "fullname": self.active_user_without_session.fullname,
+            "email": self.active_user_without_session.email,
+            "password": self.active_user_without_session.password,
+        }
+        response = self.client.post(self.user_url, existed_user)
         print(f"POST response status: {response.status_code}")
         print(f"POST response data: {response.data}")
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
         self.assertEqual(
             response.data["email"][0],
-            "user profile with this email already exists.",
+            "Email is already in use.",
         )
 
     def test_update_user_profile(self):
@@ -280,7 +285,7 @@ class SignInViewTest(TestCase):
         self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
 
 
-class SignUpOTPTest(TestCase):
+class VerifyUserOTPTest(TestCase):
 
     def setUp(self):
         """Set up test data for SignUpOTPTest."""
@@ -302,7 +307,7 @@ class SignUpOTPTest(TestCase):
     def test_post(self):
         """Test verifying OTP and activating the user."""
         # first send the post request to create a user on 'user-profile' endpoint
-        # then read teh otp from the 'SignUpOTP' model
+        # then read teh otp from the 'VerifyUserOTP' model
         # then test the current endpoint by sending post request with the otp
 
         # create a user
@@ -314,8 +319,8 @@ class SignUpOTPTest(TestCase):
         response = self.client.post(reverse("user-profile"), new_user)
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
         # get the otp
-        user = UserProfile.objects.get(email=new_user["email"])
-        otp = SignUpOTP.objects.get(user=user)
+        user = UnverifiedUserProfile.objects.get(email=new_user["email"])
+        otp = VerifyUserOTP.objects.get(user=user)
         # test the otp
         data = {"email": new_user["email"], "otp": otp.otp}
         response = self.client.post(self.endpoint, data)
