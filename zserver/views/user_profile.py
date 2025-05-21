@@ -15,8 +15,9 @@ from zserver.serializers import (
     ForgotPasswordSerializer,
     ResetPasswordSerializer,
     SessionSerializer,
-    SignUpOTPSerializer,
+    UnverifiedUserProfileSerializer,
     UserProfileSerializer,
+    VerifyUserOTPSerializer,
 )
 from zserver.utils import get_env_var
 
@@ -39,7 +40,7 @@ class UserProfileView(APIView):
 
     def post(self, request: Request) -> Response:
         """Create a new user profile."""
-        serializer = UserProfileSerializer(data=request.data)
+        serializer = UnverifiedUserProfileSerializer(data=request.data)
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)
@@ -100,14 +101,13 @@ class SignInView(APIView):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
-class SignUpOTPView(APIView):
+class VerifyUserOTPView(APIView):
 
     def post(self, request: Request) -> Response:
-        """Verify OTP and activate the user."""
-        serializer = SignUpOTPSerializer(data=request.data)
+        """Verify OTP and signup user."""
+        serializer = VerifyUserOTPSerializer(data=request.data)
         if serializer.is_valid():
-            serializer.make_user_active()
-            serializer.delete_otp()
+            serializer.signup_user()
             return Response(status=status.HTTP_200_OK)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 

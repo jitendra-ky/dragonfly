@@ -1,6 +1,6 @@
 from rest_framework import serializers
 
-from zserver.models import Session, SignUpOTP, UserProfile
+from zserver.models import Session, SignUpOTP, UnverifiedUserProfile, UserProfile, VerifyUserOTP
 
 
 # Serializer class for the UserProfile model
@@ -19,12 +19,6 @@ class UserProfileSerializer(serializers.ModelSerializer):
             "password": {"write_only": True},  # Make the password field write-only
         }
 
-    def create(self, validated_data: dict) -> UserProfile:
-        """Create a new user profile and generate OTP."""
-        user = UserProfile.objects.create(**validated_data)
-        user.generate_otp()
-        return user
-
     def update(self, instance: UserProfile, validated_data: dict) -> UserProfile:
         """Update an existing user profile."""
         instance.fullname = validated_data.get("fullname", instance.fullname)
@@ -34,14 +28,46 @@ class UserProfileSerializer(serializers.ModelSerializer):
         return instance
 
 
-# Serializer class for the SignUpOTP model
-class SignUpOTPSerializer(serializers.ModelSerializer):
+# Serializer class for the UnverifiedUserProfile model
+class UnverifiedUserProfileSerializer(serializers.ModelSerializer):
+    class Meta:
+        """Meta class to specify the model and fields to be serialized."""
+
+        model = UnverifiedUserProfile
+        fields = [
+            "fullname",
+            "email",
+            "password",
+        ]  # Fields to be included in the serialization
+        extra_kwargs = {
+            "password": {"write_only": True},  # Make the password field write-only
+        }
+
+    def validate_email(self, value: str) -> str:
+        """Validate that the email is not already in use."""
+        if UserProfile.objects.filter(email=value).exists():
+            raise serializers.ValidationError("Email is already in use.")
+        return value
+
+    def create(self, validated_data: dict) -> UnverifiedUserProfile:
+        """Create a new unverified user profile."""
+        if UnverifiedUserProfile.objects.filter(email=validated_data["email"]).exists():
+            UnverifiedUserProfile.objects.filter(email=validated_data["email"]).delete()
+        # Create a new unverified user profile
+        # and generate an OTP for verification
+        user = UnverifiedUserProfile.objects.create(**validated_data)
+        user.generate_otp()
+        return user
+
+
+# serializer for VerifyUserOTP model
+class VerifyUserOTPSerializer(serializers.ModelSerializer):
     email = serializers.EmailField(max_length=100)
 
     class Meta:
         """Meta class to specify the model and fields to be serialized."""
 
-        model = SignUpOTP
+        model = VerifyUserOTP
         fields = ["otp", "email"]
 
     def validate(self, data: dict) -> dict:
@@ -50,13 +76,13 @@ class SignUpOTPSerializer(serializers.ModelSerializer):
         otp = data.get("otp")
 
         try:
-            user = UserProfile.objects.get(email=email)
-        except UserProfile.DoesNotExist as err:
+            user = UnverifiedUserProfile.objects.get(email=email)
+        except UnverifiedUserProfile.DoesNotExist as err:
             raise serializers.ValidationError({"email": "User does not exist."}) from err
 
         try:
-            user_otp = SignUpOTP.objects.get(user=user)
-        except SignUpOTP.DoesNotExist as err:
+            user_otp = VerifyUserOTP.objects.get(user=user)
+        except VerifyUserOTP.DoesNotExist as err:
             raise serializers.ValidationError({"otp": "OTP does not exist."}) from err
 
         if user_otp.otp != otp:
@@ -66,16 +92,18 @@ class SignUpOTPSerializer(serializers.ModelSerializer):
         data["user_otp"] = user_otp
         return data
 
-    def make_user_active(self) -> None:
-        """Activate the user."""
+    def signup_user(self) -> None:
+        """Add user to UserProfile table and delete the OTP."""
         user = self.validated_data["user"]
-        user.is_active = True
-        user.save()
-
-    def delete_otp(self) -> None:
-        """Delete the OTP."""
-        user_otp = self.validated_data["user_otp"]
-        user_otp.delete()
+        user_profile = UserProfile(
+            fullname=user.fullname,
+            email=user.email,
+            password=user.password,
+        )
+        user_profile.is_active = True
+        user_profile.save()
+        user.delete()
+        self.validated_data["user_otp"].delete()
 
 
 class SessionSerializer(serializers.Serializer):
