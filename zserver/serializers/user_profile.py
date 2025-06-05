@@ -1,10 +1,20 @@
+from django.db.models import Q  # Import Q object for building complex queries using OR conditions
 from rest_framework import serializers
 
-from zserver.models import Session, SignUpOTP, UnverifiedUserProfile, UserProfile, VerifyUserOTP
+from zserver.models import (
+    Message,
+    Session,
+    SignUpOTP,
+    UnverifiedUserProfile,
+    UserProfile,
+    VerifyUserOTP,
+)
 
 
 # Serializer class for the UserProfile model
 class UserProfileSerializer(serializers.ModelSerializer):
+    # Add dynamic field for last message between the user and the contact
+    last_message = serializers.SerializerMethodField()
     class Meta:
         """Meta class to specify the model and fields to be serialized."""
 
@@ -14,10 +24,26 @@ class UserProfileSerializer(serializers.ModelSerializer):
             "fullname",
             "email",
             "password",
+            "last_message",
         ]  # Fields to be included in the serialization
         extra_kwargs = {
             "password": {"write_only": True},  # Make the password field write-only
         }
+
+    def get_last_message(self, contact: UserProfile) -> str:
+        """Retrieve the last message exchanged with the given contact."""
+        # Get the authenticated user from serializer context
+        user = self.context.get("user")
+        if not user:
+            return None
+
+        # Fetch the latest message between user and this contact
+        last_msg = Message.objects.filter(
+            Q(sender=user, receiver=contact) | Q(sender=contact, receiver=user),
+        ).order_by("-timestamp").first()
+
+        # Return message text if available, else None
+        return last_msg.content if last_msg else None
 
     def update(self, instance: UserProfile, validated_data: dict) -> UserProfile:
         """Update an existing user profile."""

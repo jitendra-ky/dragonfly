@@ -168,7 +168,10 @@ function rerender_contacts_view() {
         const profile = $('<div>').addClass('chat-item-profile')
         const details = $('<div>').addClass('chat-item-details')
         details.append($('<h4>').text(contact.email))
-        details.append($('<p>').text('Hey, how are you?'))
+        // Append the actual last message from the contact if available
+        if (contact.last_message) {
+          details.append($('<p>').text(contact.last_message))
+        }
         contactContent.append(profile, details)
         contactElement.append(contactContent)
         chatList.append(contactElement)
