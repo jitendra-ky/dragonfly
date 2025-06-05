@@ -67,7 +67,8 @@ class ContactView(APIView):
         contacts_sender = { msg.receiver for msg in Message.objects.filter(sender=user) }
         contacts_receiver = { msg.sender for msg in Message.objects.filter(receiver=user) }
         contacts = contacts_sender.union(contacts_receiver)
-        serializer = UserProfileSerializer(contacts, many=True)
+        # With this one — pass the authenticated user via context for custom field logic
+        serializer = UserProfileSerializer(contacts, many=True, context={"user": user})
         return Response(serializer.data)
 
 
