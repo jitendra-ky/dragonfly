@@ -45,8 +45,11 @@ $(function () {
         console.log(response)
         if (response.session_id) {
           console.log('Login successful!')
-          // set session id to cookies
-          document.cookie = `session_id=${response.session_id}; path=/`
+          // set session id to cookies with long expiry (1 year)
+          const expires = new Date(
+            Date.now() + 1 * 365 * 24 * 60 * 60 * 1000
+          ).toUTCString()
+          document.cookie = `session_id=${response.session_id}; expires=${expires}; path=/`
           window.location.href = '/' // Redirect after login
         } else {
           alert('Login failed!')
@@ -91,7 +94,10 @@ $(function () {
       },
       success: function (response) {
         // Save session ID in cookies
-        document.cookie = `session_id=${response.session_id}; path=/;`
+        const expires = new Date(
+          Date.now() + 1 * 365 * 24 * 60 * 60 * 1000
+        ).toUTCString()
+        document.cookie = `session_id=${response.session_id}; expires=${expires}; path=/;`
         console.log('Session ID:', response.session_id)
         $('.success-drop-down').text('You have successfully signed in.')
         $('.success-drop-down').css('display', 'flex')
