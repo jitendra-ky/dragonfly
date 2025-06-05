@@ -15,3 +15,9 @@ In this project **Dragonfly**, I am developing a fully functional open-source ch
 ## Getting Started
 
 - for setting-up development environment read [setup-dev-environment](docs/setup-dev-environment.md).
+
+## Contributors
+
+Thanks to valuable contributors 💖
+
+- [@jitendra-ky](https://github.com/jitendra-ky)
