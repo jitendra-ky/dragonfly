@@ -115,7 +115,7 @@ function render_msg_view() {
 
   // get the messages
   $.ajax({
-    url: 'api/messages/',
+    url: '/api/messages/',
     method: 'GET',
     headers: {
       'session-id': app_states.sessionId,
@@ -149,7 +149,7 @@ function rerender_contacts_view() {
 
   // get the contacts
   $.ajax({
-    url: 'api/contacts/',
+    url: '/api/contacts/',
     method: 'GET',
     headers: {
       'session-id': app_states.sessionId,
@@ -196,7 +196,7 @@ function onClickSend() {
   const message = $('#message-box').val()
   console.log('Sending message:', message)
   $.ajax({
-    url: 'api/messages/',
+    url: '/api/messages/',
     method: 'POST',
     headers: {
       'session-id': app_states.sessionId,
@@ -235,7 +235,7 @@ function sendMessage(contactId, messageContent, callback) {
   // send message to a contact
   console.log('Sending message:', messageContent)
   $.ajax({
-    url: 'api/messages/',
+    url: '/api/messages/',
     method: 'POST',
     headers: {
       'session-id': app_states.sessionId,
@@ -259,7 +259,7 @@ function sendMessage(contactId, messageContent, callback) {
 function populateNewContactList() {
   // fetch all users and populate the select box
   $.ajax({
-    url: 'api/all-users/',
+    url: '/api/all-users/',
     method: 'GET',
     success: function (response) {
       const userSelect = $('#user-select')
