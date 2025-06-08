@@ -175,6 +175,7 @@ function rerender_contacts_view() {
         contactContent.append(profile, details)
         contactElement.append(contactContent)
         chatList.append(contactElement)
+        render_msg_view() // Call render_msg_view to update the message view
       })
     },
     error: function (response) {
@@ -356,7 +357,6 @@ $(function () {
     $('#username').text(username)
 
     rerender_contacts_view()
-    render_msg_view()
 
     connectWebSocket()
 
