@@ -187,6 +187,8 @@ function rerender_contacts_view() {
 function onClickContact() {
   // on click of a contact, set the selectedContactId and rerender the message view
   const contactId = $(this).attr('id')
+  // change the URL to reflect the selected contact
+  window.history.pushState(null, '', `/chat/${contactId}/`)
   app_states.setSelectedContactId(contactId)
   render_msg_view()
 }
@@ -353,6 +355,11 @@ $(function () {
     }
     console.log(app_states.sessionId)
     console.log(app_states.userEmail)
+
+    // if the url is like root/chat/4, then set the selectedContactId to 4
+    const match = window.location.pathname.match(/\/chat\/(\d+)\//)
+    const contactId = match ? parseInt(match[1]).toString() : -1
+    app_states.setSelectedContactId(contactId)
 
     const username = app_states.userEmail.split('@')[0]
     $('#username').text(username)
