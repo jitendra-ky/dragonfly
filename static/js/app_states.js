@@ -27,7 +27,7 @@ export function updateLoggedInUserState(callback) {
 
     // now get the other user details from the server
     $.ajax({
-      url: 'api/sign-in/',
+      url: '/api/sign-in/',
       method: 'GET',
       headers: {
         'session-id': sessionId,
