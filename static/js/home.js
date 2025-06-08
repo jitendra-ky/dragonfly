@@ -287,6 +287,7 @@ function onsendMessageToNewUserClick() {
       alert('Message sent successfully!')
       $('#new-message-modal').hide()
       // add this new contact in contacts list
+      app_states.setSelectedContactId(userId)
       rerender_contacts_view()
     } else {
       console.log('Error sending message')
