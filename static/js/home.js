@@ -99,7 +99,6 @@ function render_msg_view() {
     app_states.selectedContactId === -1 || // check if a contact is selected
     app_states.sessionId === '' || // check if session id is present
     app_states.userId === -1 || // check if user id is present
-    app_states.selectedContactId === -1 || // check if a contact is selected
     app_states.contacts.length === 0 // check if contacts are present
   ) {
     return
