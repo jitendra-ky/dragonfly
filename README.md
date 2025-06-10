@@ -1,13 +1,15 @@
-# DragonFly Overview
+# Dragonfly
 
-In this project **Dragonfly**, I am developing a fully functional open-source chatting application using industry best practices, which include:
+Dragonfly is a fully functional, open-source messaging application. Designed with inspiration from leading platforms such as WhatsApp, it's developed using industry best practices to ensure a robust and reliable user experience.
 
-- a highly architectured codebase,
-- automated testing of most of the code,
-- well-organized documentation,
-- industry-standard coding style and formatting,
-- structured git-version-control commit history,
-- organized issues and PRs with labels.
+We're committed to building Dragonfly with excellence, which is reflected in our approach to development:
+
+- **Highly architected codebase:** We prioritize a well-structured and scalable foundation for long-term maintainability.
+- **Comprehensive automated testing:** Most of our code is covered by automated tests to ensure reliability and prevent regressions.
+- **Well-organized documentation:** Our documentation is clear and easy to follow, helping both users and contributors.
+- **Industry-standard coding style and formatting:** We adhere to established coding styles for consistent and readable code.
+- **Structured Git version control history:** Our commit history is organized for transparent and traceable changes.
+- **Organized issues and pull requests with labels:** We use labels to keep our development workflow efficient and transparent.
 
 [![Ruff](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/astral-sh/ruff/main/assets/badge/v2.json)](https://github.com/astral-sh/ruff)
 [![code style: prettier](https://img.shields.io/badge/code_style-prettier-ff69b4.svg)](https://github.com/prettier/prettier)
