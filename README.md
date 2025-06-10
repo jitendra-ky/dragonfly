@@ -18,7 +18,19 @@ In this project **Dragonfly**, I am developing a fully functional open-source ch
 
 ## Contributors
 
-Thanks to valuable contributors 💖
+We appreciate everyone 💖 who has contributed their time, skills, and passion to make Dragonfly better 😊. Your efforts help drive this project forward—thank you for being a part of our community!
 
-- [@jitendra-ky](https://github.com/jitendra-ky)
-- [@sobhanvn7](https://github.com/sobhanvn7)
+<a href="https://github.com/jitendra-ky/dragonfly/graphs/contributors"> <img align="center" src="https://contrib.rocks/image?max=100&repo=jitendra-ky/dragonfly"/> </a>
+
+## 🤝 How to Contribute ?
+
+We welcome contributions from everyone! If you're interested in helping out, please take a moment to review our **[CONTRIBUTING.md](./CONTRIBUTING.md)** and **[CODE_OF_CONDUCT.md](./CODE_OF_CONDUCT.md)** before you get started.
+
+### Getting Started
+
+1.  **Fork and Clone:** Begin by forking this repository and then cloning it to your local machine.
+2.  **Create a Branch:** Create a new branch for the changes you plan to make.
+3.  **Make Your Updates:** Implement your changes and thoroughly test them.
+4.  **Open a Pull Request:** Submit a pull request for us to review your contributions.
+
+For a more detailed guide, please refer to the **[CONTRIBUTING.md](./CONTRIBUTING.md)** file.
