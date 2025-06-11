@@ -11,8 +11,16 @@ We're committed to building Dragonfly with excellence, which is reflected in our
 - **Structured Git version control history:** Our commit history is organized for transparent and traceable changes.
 - **Organized issues and pull requests with labels:** We use labels to keep our development workflow efficient and transparent.
 
+[![release](https://img.shields.io/github/v/tag/jitendra-ky/dragonfly?label=release&color=blue)](https://github.com/jitendra-ky/dragonfly/releases)
 [![Ruff](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/astral-sh/ruff/main/assets/badge/v2.json)](https://github.com/astral-sh/ruff)
 [![code style: prettier](https://img.shields.io/badge/code_style-prettier-ff69b4.svg)](https://github.com/prettier/prettier)
+[![code style: prettier](https://badges.frapsoft.com/os/v1/open-source.svg?v=103)](https://github.com/jitendra-ky/dragonfly)
+[![Maintained? yes](https://img.shields.io/badge/Maintained%3F-yes-brightgreen.svg?v=103)](https://github.com/jitendra-ky/)
+[![MIT License](https://img.shields.io/badge/MIT-License-blue.svg?v=103)](https://github.com/jitendra-ky/dragonfly/blob/main/LICENSE)
+[![Contributors](https://img.shields.io/github/contributors/jitendra-ky/dragonfly?color=brightgreen)](https://github.com/jitendra-ky/dragonfly/graphs/contributors)
+[![GitHub Stars](https://img.shields.io/github/stars/jitendra-ky/dragonfly?color=0059b3)](https://github.com/jitendra-ky/dragonfly/stargazers)
+[![GitHub Forks](https://img.shields.io/github/forks/jitendra-ky/dragonfly?color=yellow)](https://github.com/jitendra-ky/dragonfly/network/members)
+[![GitHub Issues](https://img.shields.io/github/issues/jitendra-ky/dragonfly?color=0059b3)](https://github.com/jitendra-ky/dragonfly/issues)
 
 ## Getting Started
 
