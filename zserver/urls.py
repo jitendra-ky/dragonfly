@@ -1,4 +1,5 @@
 from django.urls import path
+from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
 
 from . import views
 
@@ -10,6 +11,8 @@ urlpatterns = [
     path("forgot-password/",
          views.ForgotPasswordTemplateView.as_view(),
          name="forgot-password-page"),
+    path('api/token/', TokenObtainPairView.as_view(), name='token_obtain_pair'),
+    path('api/token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
 
     path("api/user-profile/", views.UserProfileView.as_view(), name="user-profile"),
     path("api/sign-in/", views.SignInView.as_view(), name="sign-in"),
