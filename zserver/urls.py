@@ -13,6 +13,9 @@ urlpatterns = [
          name="forgot-password-page"),
     path('api/token/', TokenObtainPairView.as_view(), name='token_obtain_pair'),
     path('api/token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
+    
+    path('api/v2/user_detail/', views.UserDetailView.as_view(), name='v2_user_detail'),
+    path('api/v2/user_registration/', views.UserRegistrationView.as_view(), name='v2_user_registration'),
 
     path("api/user-profile/", views.UserProfileView.as_view(), name="user-profile"),
     path("api/sign-in/", views.SignInView.as_view(), name="sign-in"),
