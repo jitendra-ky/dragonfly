@@ -41,7 +41,7 @@ urlpatterns = [
     path(
         "api/forgot-password/",
         views.ForgotPasswordView.as_view(),
-        name="forgot-password",  # noqa: E501
+        name="forgot-password",
     ),
     path(
         "api/reset-password/",
