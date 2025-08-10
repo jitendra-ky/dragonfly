@@ -9,3 +9,4 @@ selenium==4.29.0
 geckodriver-autoinstaller==0.1.0
 psycopg2-binary==2.9.10
 tornado==6.4.2
+djangorestframework-simplejwt==5.5.0
