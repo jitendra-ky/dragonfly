@@ -78,6 +78,7 @@ urlpatterns = [
 
 
     # new auth system (JWT based)
+    # and use User model for authentication not UserProfile.
     path(
         "api/token/",
         TokenObtainPairView.as_view(),
