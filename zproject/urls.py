@@ -8,4 +8,5 @@ urlpatterns = [
     path("api-auth/", include("rest_framework.urls"), name="api-auth"),
     path("", include("zserver.urls")),
     path("health-check/", views.HealthCheckView.as_view(), name="health-check"),
+    path("api/", views.api_index_view, name="api-index"),
 ]
