@@ -7,10 +7,10 @@
         <h2> here are the available endpoints </h2>
         <ul>
             <li>
-                <a href="/api/v1/endpoint1/">API Endpoint 1</a> fake endpoint
+                <a href="{% url 'auth_token_obtain_pair' %}">api/v2/auth/token/</a> fake endpoint
             </li>
             <li>
-                <a href="/api/v1/endpoint2/">API Endpoint 2</a> fake endpoint
+                <a href="{% url 'auth_token_refresh' %}">api/v2/auth/token/refresh/</a> fake endpoint
             </li>
         </ul>
     </body>
