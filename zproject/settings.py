@@ -41,6 +41,7 @@ INSTALLED_APPS = [
     "rest_framework",
     "rest_framework.authtoken",
     "dj_rest_auth",
+    "zauth",
 ]
 
 MIDDLEWARE = [
@@ -111,6 +112,7 @@ REST_FRAMEWORK = {
     ]
 }
 
+AUTH_USER_MODEL = "zauth.User"
 
 # Internationalization
 # https://docs.djangoproject.com/en/5.1/topics/i18n/
