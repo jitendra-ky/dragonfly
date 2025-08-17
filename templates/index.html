@@ -7,10 +7,25 @@
         <h2> here are the available endpoints </h2>
         <ul>
             <li> <a href="{% url 'user' %}">
-                /api/zauth/users/ <br />
-            </a></li>
-            GET: Retrieve user information <br />
+                /api/auth/users/ <br />
+            </a>
+            GET: Retrieve user information (requires authentication) <br />
             POST: Create a new user <br />
+            </li>
+            <br />
+            <li> <a href="{% url 'token_obtain_pair' %}">
+                /api/auth/token/ <br />
+            </a>
+            POST: Obtain JWT access and refresh tokens <br />
+            Body: {"username": "your_username", "password": "your_password"} <br />
+            </li>
+            <br />
+            <li> <a href="{% url 'token_refresh' %}">
+                /api/auth/token/refresh/ <br />
+            </a>
+            POST: Refresh JWT access token <br />
+            Body: {"refresh": "your_refresh_token"} <br />
+            </li>
         </ul>
     </body>
 </html>
