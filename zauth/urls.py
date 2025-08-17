@@ -10,4 +10,6 @@ urlpatterns = [
     # dj-rest-auth/ password/reset/?$ [name='rest_password_reset']
     # dj-rest-auth/ password/reset/confirm/?$ [name='rest_password_reset_confirm']
     # dj-rest-auth/ password/change/?$ [name='rest_password_change']
+
+    path('dj-rest-auth/registration/', include('dj_rest_auth.registration.urls')),
 ]
