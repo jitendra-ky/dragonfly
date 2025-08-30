@@ -21,4 +21,6 @@ urlpatterns = [
     path("api/sign-up-otp/", views.VerifyUserOTPView.as_view(), name="sign-up-otp"),
 
     path("google-login/", views.GoogleLoginView.as_view(), name="google_login"),
+
+    path("chat/<int:contact_id>/", views.Chat.as_view()),
 ]
