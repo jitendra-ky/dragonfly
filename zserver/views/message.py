@@ -1,12 +1,15 @@
 from urllib.request import Request
 
+from django.contrib.auth import get_user_model
 from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from zserver.models import Message, Session, UserProfile
+from zserver.models import Message, Session
 from zserver.serializers.message import MessageSerializer
 from zserver.serializers.user_profile import UserProfileSerializer
+
+User = get_user_model()
 
 
 class MessageView(APIView):
@@ -77,6 +80,6 @@ class AllUsersView(APIView):
     def get(self, request: Request) -> Response:
         """Retrieve all users."""
         print(request.headers)
-        users = UserProfile.objects.all()
+        users = User.objects.all()
         serializer = UserProfileSerializer(users, many=True)
         return Response(serializer.data)
