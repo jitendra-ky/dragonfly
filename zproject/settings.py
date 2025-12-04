@@ -27,6 +27,10 @@ DEBUG = True
 ALLOWED_HOSTS = ["*"]
 
 
+# Custom User Model
+AUTH_USER_MODEL = "zserver.User"
+
+
 # Application definition
 
 INSTALLED_APPS = [

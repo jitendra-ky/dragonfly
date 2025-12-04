@@ -1,5 +1,6 @@
 import os
 
+from django.contrib.auth import get_user_model
 from django.shortcuts import render
 from django.views import View
 from dotenv import load_dotenv
@@ -10,7 +11,7 @@ from rest_framework.request import Request
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from zserver.models import Session, UserProfile
+from zserver.models import Session
 from zserver.serializers import (
     ForgotPasswordSerializer,
     ResetPasswordSerializer,
@@ -22,6 +23,8 @@ from zserver.serializers import (
 from zserver.utils import get_env_var
 
 load_dotenv()
+
+User = get_user_model()
 
 class UserProfileView(APIView):
 
@@ -180,8 +183,15 @@ class GoogleLoginView(APIView):
             name = id_info.get("name", "")
 
             # Create or get user
-            user, created = UserProfile.objects.get_or_create(
-                email=email, defaults={"fullname": name})
+            user, created = User.objects.get_or_create(
+                email=email,
+                defaults={"contact": name, "is_active": True, "email_verified": True}
+            )
+            # For Google OAuth users, set unusable password
+            if created:
+                user.set_unusable_password()
+                user.save()
+            
             user_session = SessionSerializer().create({"user": user})
             session_id = user_session.session_id
 

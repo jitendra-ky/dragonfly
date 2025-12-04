@@ -1,22 +1,25 @@
+from django.contrib.auth import get_user_model
 from django.urls import reverse
 from rest_framework import status
 from rest_framework.test import APIClient, APITestCase
 
-from zserver.models import Message, Session, UserProfile
+from zserver.models import Message, Session
+
+User = get_user_model()
 
 
 class MessageViewTest(APITestCase):
     def setUp(self):
         """Set up test data for MessageViewTest."""
         self.client = APIClient()
-        self.sender = UserProfile.objects.create(
-            fullname="Sender User",
+        self.sender = User.objects.create_user(
+            contact="Sender User",
             email="sender_user@jitendra.me",
             password="password123",
             is_active=True,
         )
-        self.receiver = UserProfile.objects.create(
-            fullname="Receiver User",
+        self.receiver = User.objects.create_user(
+            contact="Receiver User",
             email="receiver_user@jitendra.me",
             password="password123",
             is_active=True,
@@ -65,14 +68,14 @@ class ContactViewTest(APITestCase):
     def setUp(self):
         """Set up test data for ContactViewTest."""
         self.client = APIClient()
-        self.user = UserProfile.objects.create(
-            fullname="Test User",
+        self.user = User.objects.create_user(
+            contact="Test User",
             email="test_user@jitendra.me",
             password="password123",
             is_active=True,
         )
-        self.contact = UserProfile.objects.create(
-            fullname="Contact User",
+        self.contact = User.objects.create_user(
+            contact="Contact User",
             email="contact_user@jitendra.me",
             password="password123",
             is_active=True,
@@ -103,14 +106,14 @@ class AllUsersViewTest(APITestCase):
     def setUp(self):
         """Set up test data for AllUsersViewTest."""
         self.client = APIClient()
-        self.user1 = UserProfile.objects.create(
-            fullname="User One",
+        self.user1 = User.objects.create_user(
+            contact="User One",
             email="user1@jitendra.me",
             password="password123",
             is_active=True,
         )
-        self.user2 = UserProfile.objects.create(
-            fullname="User Two",
+        self.user2 = User.objects.create_user(
+            contact="User Two",
             email="user2@jitendra.me",
             password="password123",
             is_active=True,
