@@ -119,7 +119,7 @@ function render_msg_view() {
     url: 'api/messages/',
     method: 'GET',
     headers: {
-      'Authorization': `Bearer ${app_states.accessToken}`,
+      Authorization: `Bearer ${app_states.accessToken}`,
       receiver: app_states.selectedContactId,
     },
     success: function (response) {
@@ -153,7 +153,7 @@ function rerender_contacts_view() {
     url: 'api/contacts/',
     method: 'GET',
     headers: {
-      'Authorization': `Bearer ${app_states.accessToken}`,
+      Authorization: `Bearer ${app_states.accessToken}`,
     },
     success: function (response) {
       console.log('Contacts:', response)
@@ -200,7 +200,7 @@ function onClickSend() {
     url: 'api/messages/',
     method: 'POST',
     headers: {
-      'Authorization': `Bearer ${app_states.accessToken}`,
+      Authorization: `Bearer ${app_states.accessToken}`,
       'X-CSRFToken': getCookie('csrftoken'),
     },
     data: {
@@ -241,7 +241,7 @@ function sendMessage(contactId, messageContent, callback) {
     url: 'api/messages/',
     method: 'POST',
     headers: {
-      'Authorization': `Bearer ${app_states.accessToken}`,
+      Authorization: `Bearer ${app_states.accessToken}`,
       'X-CSRFToken': getCookie('csrftoken'),
     },
     data: {

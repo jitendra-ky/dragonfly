@@ -49,7 +49,7 @@ export function updateLoggedInUserState(callback) {
       url: 'api/sign-in/',
       method: 'GET',
       headers: {
-        'Authorization': `Bearer ${accessToken}`,
+        Authorization: `Bearer ${accessToken}`,
       },
       success: function (response) {
         console.log('user details', response)
