@@ -56,7 +56,7 @@ class UserProfileViewTest(TestCase):
         """Test retrieving user profile."""
         print("_________test_get_user_profile_________")
         # test get request with JWT token
-        self.client.credentials(HTTP_AUTHORIZATION=f'Bearer {self.access_token}')
+        self.client.credentials(HTTP_AUTHORIZATION=f"Bearer {self.access_token}")
         response = self.client.get(self.user_url)
         print(f"GET response status: {response.status_code}")
         print(f"GET response data: {response.data}")
@@ -122,7 +122,7 @@ class UserProfileViewTest(TestCase):
             "email": self.active_user_with_token.email,
             "password": "updated_password",
         }
-        self.client.credentials(HTTP_AUTHORIZATION=f'Bearer {self.access_token}')
+        self.client.credentials(HTTP_AUTHORIZATION=f"Bearer {self.access_token}")
         response = self.client.put(
             self.user_url,
             updated_user,
@@ -144,7 +144,7 @@ class UserProfileViewTest(TestCase):
         """Test deleting a user profile."""
         print("_________test_delete_user_profile_________")
         # test delete request with JWT token
-        self.client.credentials(HTTP_AUTHORIZATION=f'Bearer {self.access_token}')
+        self.client.credentials(HTTP_AUTHORIZATION=f"Bearer {self.access_token}")
         response = self.client.delete(self.user_url)
         print(f"DELETE response status: {response.status_code}")
         self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
@@ -267,7 +267,7 @@ class SignInViewTest(TestCase):
         """Test retrieving user profile with JWT token."""
         print("_________test_get_________")
         # test get request with valid JWT token
-        self.client.credentials(HTTP_AUTHORIZATION=f'Bearer {self.access_token}')
+        self.client.credentials(HTTP_AUTHORIZATION=f"Bearer {self.access_token}")
         response = self.client.get(self.user_url)
         print(f"GET response status: {response.status_code}")
         print(f"GET response data: {response.data}")
@@ -275,7 +275,7 @@ class SignInViewTest(TestCase):
         self.assertEqual(response.data["email"], self.active_user_with_token.email)
 
         # test get request with invalid JWT token
-        self.client.credentials(HTTP_AUTHORIZATION='Bearer invalid_token')
+        self.client.credentials(HTTP_AUTHORIZATION="Bearer invalid_token")
         response = self.client.get(self.user_url)
         print(f"GET response status: {response.status_code}")
         print(f"GET response data: {response.data}")

@@ -37,7 +37,7 @@ class MessageViewTest(APITestCase):
             "receiver": self.receiver.id,
             "content": "Hello, this is a test message.",
         }
-        self.client.credentials(HTTP_AUTHORIZATION=f'Bearer {self.access_token}')
+        self.client.credentials(HTTP_AUTHORIZATION=f"Bearer {self.access_token}")
         response = self.client.post(
             self.message_url,
             data,
@@ -55,7 +55,7 @@ class MessageViewTest(APITestCase):
         Message.objects.create(
             sender=self.receiver, receiver=self.sender, content="Test message 2",
         )
-        self.client.credentials(HTTP_AUTHORIZATION=f'Bearer {self.access_token}')
+        self.client.credentials(HTTP_AUTHORIZATION=f"Bearer {self.access_token}")
         response = self.client.get(
             self.message_url,
             HTTP_RECEIVER=str(self.receiver.id),
@@ -91,7 +91,7 @@ class ContactViewTest(APITestCase):
     def test_retrieve_contacts(self):
         """Test retrieving contacts for the authenticated user."""
         print("Starting test_retrieve_contacts")
-        self.client.credentials(HTTP_AUTHORIZATION=f'Bearer {self.access_token}')
+        self.client.credentials(HTTP_AUTHORIZATION=f"Bearer {self.access_token}")
         response = self.client.get(
             self.contact_url,
         )
@@ -124,7 +124,7 @@ class AllUsersViewTest(APITestCase):
     def test_retrieve_all_users(self):
         """Test retrieving all users."""
         print("Starting test_retrieve_all_users")
-        self.client.credentials(HTTP_AUTHORIZATION=f'Bearer {self.access_token}')
+        self.client.credentials(HTTP_AUTHORIZATION=f"Bearer {self.access_token}")
         response = self.client.get(self.all_users_url)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(len(response.data), 2)

@@ -9,7 +9,7 @@ from django.db import models
 class UserManager(BaseUserManager):
     """Custom user manager for email-based authentication."""
 
-    def create_user(self, email, password=None, **extra_fields):
+    def create_user(self, email: str, password: str | None = None, **extra_fields: bool) -> "User":
         """Create and save a regular user with the given email and password."""
         if not email:
             raise ValueError("The Email field must be set")
@@ -22,7 +22,8 @@ class UserManager(BaseUserManager):
         user.save(using=self._db)
         return user
 
-    def create_superuser(self, email, password=None, **extra_fields):
+    def create_superuser(
+            self, email: str, password: str | None = None, **extra_fields: bool) -> "User":
         """Create and save a superuser with the given email and password."""
         extra_fields.setdefault("is_staff", True)
         extra_fields.setdefault("is_superuser", True)
@@ -54,6 +55,8 @@ class User(AbstractBaseUser, PermissionsMixin):
     REQUIRED_FIELDS = ["contact"]
 
     class Meta:
+        """Meta options for User model."""
+
         db_table = "zserver_user"
         verbose_name = "User"
         verbose_name_plural = "Users"
@@ -80,6 +83,8 @@ class UnverifiedUser(models.Model):
     updated_at = models.DateTimeField(auto_now=True)
 
     class Meta:
+        """Meta options for UnverifiedUser model."""
+
         db_table = "zserver_unverifieduser"
 
     def __str__(self) -> str:
@@ -102,6 +107,8 @@ class SignUpOTP(models.Model):
     created_at = models.DateTimeField(auto_now_add=True, blank=False, null=False)
 
     class Meta:
+        """Meta options for SignUpOTP model."""
+
         db_table = "zserver_signupotp"
 
     def __str__(self) -> str:
@@ -116,6 +123,8 @@ class VerifyUserOTP(models.Model):
     created_at = models.DateTimeField(auto_now_add=True, blank=False, null=False)
 
     class Meta:
+        """Meta options for VerifyUserOTP model."""
+
         db_table = "zserver_verifyuserotp"
 
     def __str__(self) -> str:
