@@ -1,4 +1,5 @@
-from django.contrib.auth import authenticate, get_user_model
+from django.contrib.auth import get_user_model
+from django.contrib.auth.hashers import make_password
 from django.db.models import Q  # Import Q object for building complex queries using OR conditions
 from rest_framework import serializers
 from rest_framework_simplejwt.tokens import RefreshToken
@@ -52,11 +53,11 @@ class UserProfileSerializer(serializers.ModelSerializer):
         """Update an existing user profile."""
         instance.contact = validated_data.get("contact", instance.contact)
         instance.email = validated_data.get("email", instance.email)
-        
+
         # Use set_password for proper hashing
         if "password" in validated_data:
             instance.set_password(validated_data["password"])
-        
+
         instance.save()
         return instance
 
@@ -89,7 +90,6 @@ class UnverifiedUserProfileSerializer(serializers.ModelSerializer):
         # Create a new unverified user profile
         # and generate an OTP for verification
         # Hash the password before storing
-        from django.contrib.auth.hashers import make_password
         validated_data["password"] = make_password(validated_data["password"])
         user = UnverifiedUser.objects.create(**validated_data)
         user.generate_otp()
@@ -142,10 +142,10 @@ class VerifyUserOTPSerializer(serializers.ModelSerializer):
         user.save()
         unverified_user.delete()
         self.validated_data["user_otp"].delete()
-        
+
         # Generate JWT tokens for the new user
         refresh = RefreshToken.for_user(user)
-        
+
         return {
             "refresh": str(refresh),
             "access": str(refresh.access_token),
@@ -153,13 +153,13 @@ class VerifyUserOTPSerializer(serializers.ModelSerializer):
                 "id": user.id,
                 "email": user.email,
                 "contact": user.contact,
-            }
+            },
         }
 
 
 class LoginSerializer(serializers.Serializer):
     """Serializer for user login that returns JWT tokens."""
-    
+
     email = serializers.EmailField(max_length=100)
     password = serializers.CharField(write_only=True)
 
@@ -173,11 +173,11 @@ class LoginSerializer(serializers.Serializer):
             user = User.objects.get(email=email)
         except User.DoesNotExist as err:
             raise serializers.ValidationError({"email": "User does not exist."}) from err
-        
+
         # Check password manually (works for both active and inactive users)
         if not user.check_password(password):
             raise serializers.ValidationError({"password": "Incorrect password."})
-        
+
         # Check if user is active
         if not user.is_active:
             raise serializers.ValidationError({"user": "User is not active."})
@@ -189,7 +189,7 @@ class LoginSerializer(serializers.Serializer):
         """Generate and return JWT tokens for the user."""
         user = self.validated_data["user"]
         refresh = RefreshToken.for_user(user)
-        
+
         return {
             "refresh": str(refresh),
             "access": str(refresh.access_token),
@@ -197,7 +197,7 @@ class LoginSerializer(serializers.Serializer):
                 "id": user.id,
                 "email": user.email,
                 "contact": user.contact,
-            }
+            },
         }
 
 

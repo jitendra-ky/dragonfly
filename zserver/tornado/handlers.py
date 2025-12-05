@@ -1,11 +1,9 @@
 import json
-import os
 
 import tornado.websocket
-from django.conf import settings
 from django.contrib.auth import get_user_model
-from rest_framework_simplejwt.tokens import UntypedToken
 from rest_framework_simplejwt.exceptions import InvalidToken, TokenError
+from rest_framework_simplejwt.tokens import AccessToken, UntypedToken
 
 User = get_user_model()
 
@@ -19,21 +17,20 @@ class ChatWebSocketHandler(tornado.websocket.WebSocketHandler):
         try:
             # Get JWT token from query parameter
             token = self.get_argument("token", None)
-            
+
             if not token:
                 self.close(code=4001, reason="Authentication token required")
                 return
-            
+
             # Validate JWT token
             try:
                 # Decode and validate the token
                 UntypedToken(token)
-                
+
                 # Extract user_id from token
-                from rest_framework_simplejwt.tokens import AccessToken
                 access_token = AccessToken(token)
-                user_id = access_token['user_id']
-                
+                user_id = access_token["user_id"]
+
                 # Verify user exists
                 try:
                     user = User.objects.get(id=user_id)
@@ -43,18 +40,18 @@ class ChatWebSocketHandler(tornado.websocket.WebSocketHandler):
                 except User.DoesNotExist:
                     self.close(code=4004, reason="User not found")
                     return
-                
+
                 # Store connection with user_id
                 self.user_id = str(user_id)
                 self.connections[self.user_id] = self
                 print(f"WebSocket connection opened for user {self.user_id}")
-                
+
             except (InvalidToken, TokenError) as e:
-                self.close(code=4002, reason=f"Invalid token: {str(e)}")
+                self.close(code=4002, reason=f"Invalid token: {e!s}")
                 return
-                
+
         except Exception as e:
-            print(f"WebSocket authentication error: {str(e)}")
+            print(f"WebSocket authentication error: {e!s}")
             self.close(code=4000, reason="Authentication failed")
             return
 
@@ -75,7 +72,7 @@ class ChatWebSocketHandler(tornado.websocket.WebSocketHandler):
 
     def on_close(self) -> None:
         """Close the WebSocket connection."""
-        if hasattr(self, 'user_id') and self.user_id in self.connections:
+        if hasattr(self, "user_id") and self.user_id in self.connections:
             del self.connections[self.user_id]
             print(f"WebSocket connection closed for user {self.user_id}")
 

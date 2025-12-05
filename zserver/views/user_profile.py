@@ -28,13 +28,13 @@ load_dotenv()
 User = get_user_model()
 
 class UserProfileView(APIView):
-    
+
     def get_permissions(self):
-        """
-        Instantiate and return the list of permissions that this view requires.
+        """Instantiate and return the list of permissions that this view requires.
+
         POST (signup) is public, other methods require authentication.
         """
-        if self.request.method == 'POST':
+        if self.request.method == "POST":
             return [AllowAny()]
         return [IsAuthenticated()]
 
@@ -66,12 +66,10 @@ class UserProfileView(APIView):
 
 
 class SignInView(APIView):
-    
+
     def get_permissions(self):
-        """
-        GET requires authentication, POST (login) is public.
-        """
-        if self.request.method == 'GET':
+        """GET requires authentication, POST (login) is public."""
+        if self.request.method == "GET":
             return [IsAuthenticated()]
         return [AllowAny()]
 
@@ -172,16 +170,16 @@ class GoogleLoginView(APIView):
             # Create or get user
             user, created = User.objects.get_or_create(
                 email=email,
-                defaults={"contact": name, "is_active": True, "email_verified": True}
+                defaults={"contact": name, "is_active": True, "email_verified": True},
             )
             # For Google OAuth users, set unusable password
             if created:
                 user.set_unusable_password()
                 user.save()
-            
+
             # Generate JWT tokens
             refresh = RefreshToken.for_user(user)
-            
+
             return Response({
                 "message": "Login successful!",
                 "refresh": str(refresh),
@@ -190,7 +188,7 @@ class GoogleLoginView(APIView):
                     "id": user.id,
                     "email": user.email,
                     "contact": user.contact,
-                }
+                },
             }, status=status.HTTP_200_OK)
 
         except Exception as e:
