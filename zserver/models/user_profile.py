@@ -121,26 +121,3 @@ class VerifyUserOTP(models.Model):
     def __str__(self) -> str:
         """Return the email of the user associated with the OTP."""
         return self.user.email + " " + self.otp
-
-
-# let's create a modle for login sessions
-class Session(models.Model):
-    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
-    session_id = models.CharField(max_length=100, blank=False, null=False)
-    created_at = models.DateTimeField(auto_now_add=True, blank=False, null=False)
-
-    class Meta:
-        db_table = "zserver_session"
-
-    def __str__(self) -> str:
-        """Return the email of the user associated with the session."""
-        return self.user.email
-
-    def generate_session_id(self) -> str:
-        """Generate a unique session ID for the session."""
-        generated_session_id = "".join(
-            random.choices(string.ascii_letters + string.digits, k=100),
-        )
-        self.session_id = generated_session_id
-        self.save()
-        return generated_session_id
