@@ -1,26 +1,24 @@
 from urllib.request import Request
 
+from django.contrib.auth import get_user_model
 from rest_framework import status
+from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from zserver.models import Message, Session, UserProfile
+from zserver.models import Message
 from zserver.serializers.message import MessageSerializer
 from zserver.serializers.user_profile import UserProfileSerializer
 
+User = get_user_model()
+
 
 class MessageView(APIView):
+    permission_classes = [IsAuthenticated]
 
     def get(self, request: Request) -> Response:
         """Retrieve all messages for the authenticated user."""
-        session_id = request.headers.get("session-id")
-        if session_id is None:
-            return Response(status=status.HTTP_401_UNAUTHORIZED)
-        try:
-            session = Session.objects.get(session_id=session_id)
-        except Session.DoesNotExist:
-            return Response(status=status.HTTP_401_UNAUTHORIZED)
-        user = session.user
+        user = request.user
 
         receiver = request.headers.get("receiver")
         if receiver is not None:
@@ -34,14 +32,7 @@ class MessageView(APIView):
 
     def post(self, request: Request) -> Response:
         """Send a new message."""
-        session_id = request.headers.get("session-id")
-        if session_id is None:
-            return Response(status=status.HTTP_401_UNAUTHORIZED)
-        try:
-            session = Session.objects.get(session_id=session_id)
-        except Session.DoesNotExist:
-            return Response(status=status.HTTP_401_UNAUTHORIZED)
-        user = session.user
+        user = request.user
 
         data = request.data.copy()
         data["sender"] = user.id
@@ -53,17 +44,11 @@ class MessageView(APIView):
 
 
 class ContactView(APIView):
+    permission_classes = [IsAuthenticated]
 
     def get(self, request: Request) -> Response:
         """Retrieve all contacts for the authenticated user."""
-        session_id = request.headers.get("session-id")
-        if session_id is None:
-            return Response(status=status.HTTP_401_UNAUTHORIZED)
-        try:
-            session = Session.objects.get(session_id=session_id)
-        except Session.DoesNotExist:
-            return Response(status=status.HTTP_401_UNAUTHORIZED)
-        user = session.user
+        user = request.user
         contacts_sender = { msg.receiver for msg in Message.objects.filter(sender=user) }
         contacts_receiver = { msg.sender for msg in Message.objects.filter(receiver=user) }
         contacts = contacts_sender.union(contacts_receiver)
@@ -73,10 +58,11 @@ class ContactView(APIView):
 
 
 class AllUsersView(APIView):
+    permission_classes = [IsAuthenticated]
 
     def get(self, request: Request) -> Response:
         """Retrieve all users."""
         print(request.headers)
-        users = UserProfile.objects.all()
+        users = User.objects.all()
         serializer = UserProfileSerializer(users, many=True)
         return Response(serializer.data)
