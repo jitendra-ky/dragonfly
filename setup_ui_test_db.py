@@ -7,26 +7,26 @@ os.environ.setdefault("DJANGO_SETTINGS_MODULE", "zproject.settings")
 # Initialize Django
 django.setup()
 
-from zserver.models import UserProfile  # noqa: E402
+from zserver.models import User  # noqa: E402
 
 
 def ensure_active_user_exists():
     """Ensure the active test user exists in the database."""
     email_active = "active_user@jitendra.me"
     password_active = "rootroot"
-    if not UserProfile.objects.filter(email=email_active).exists():
-        UserProfile.objects.create(
-            fullname="Test User",
+    if not User.objects.filter(email=email_active).exists():
+        User.objects.create_user(
             email=email_active,
             password=password_active,
+            contact="1234567890",
             is_active=True,
         )
 
 def ensure_unregistered_user_does_not_exist():
     """Ensure the unregistered test user does not exist in the database."""
     email_unregistered = "unregistered@jitendra.me"
-    if UserProfile.objects.filter(email=email_unregistered).exists():
-        UserProfile.objects.filter(email=email_unregistered).delete()
+    if User.objects.filter(email=email_unregistered).exists():
+        User.objects.filter(email=email_unregistered).delete()
 
 if __name__ == "__main__":
     ensure_active_user_exists()
