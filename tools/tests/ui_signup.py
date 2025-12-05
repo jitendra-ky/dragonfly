@@ -3,30 +3,25 @@ import time
 from common import setup_module, teardown_module
 from selenium import webdriver
 from selenium.webdriver.common.by import By
+from selenium.webdriver.support import expected_conditions as ec
+from selenium.webdriver.support.ui import WebDriverWait
 
 
 def test_signup(driver: webdriver.Firefox):
     start_time = time.time()
 
     signup_url = "http://localhost:8000/signup/"
-    home_url = "http://localhost:8000/"
+
+    # Clear localStorage to ensure clean state
+    driver.execute_script("localStorage.clear();")
 
     driver.get(signup_url)
     time.sleep(1)
 
-    # check if the user is redirected to the "http://localhost:8000/"
-    # then click on logout button
-    # again make sure that user is on "http://localhost:8000/login"
-    if driver.current_url == home_url:
-        driver.execute_script("document.getElementById('logout-button').click();")
-        time.sleep(2)
-        # change url to signup_url
-        driver.get(signup_url)
-        if not driver.current_url == signup_url:
-            raise AssertionError("Failed to redirect to signup URL")
-
-    # check the signup page with some dummy data
-    fullname = driver.find_element(By.ID, "fullname")
+    # Wait for signup form to be visible (in case JavaScript tries to redirect)
+    fullname = WebDriverWait(driver, 10).until(
+        ec.visibility_of_element_located((By.ID, "fullname")),
+    )
     email = driver.find_element(By.ID, "email")
     password = driver.find_element(By.ID, "password")
     confirm_password = driver.find_element(By.ID, "confirm-password")
@@ -37,10 +32,15 @@ def test_signup(driver: webdriver.Firefox):
     password.send_keys("rootroot")
     confirm_password.send_keys("rootroot")
     submit.click()
+
+    # Wait for AJAX call and OTP form to appear (JavaScript hides signup and shows OTP form)
     time.sleep(2)
 
-    # check if OTP page is displayed
-    otp_input = driver.find_element(By.ID, "otp")
+    # Wait for OTP input to be visible
+    otp_input = WebDriverWait(driver, 10).until(
+        ec.visibility_of_element_located((By.ID, "otp")),
+    )
+
     if otp_input is None:
         raise AssertionError("OTP input not found")
 
@@ -50,9 +50,12 @@ def test_signup(driver: webdriver.Firefox):
     otp_submit.click()
     time.sleep(2)
 
-    # check if the user is redirected to the home page
-    if driver.current_url == home_url:
-        raise AssertionError("User was redirected to the home page")
+    # check if wrong OTP error message is displayed
+    error_message = WebDriverWait(driver, 10).until(
+        ec.presence_of_element_located((By.CSS_SELECTOR, "#otp-form .error-message")),
+    )
+    if error_message is None:
+        raise AssertionError("Error message not found")
 
     end_time = time.time()
     elapsed_time = end_time - start_time

@@ -3,6 +3,8 @@ import time
 from common import setup_module, teardown_module
 from selenium import webdriver
 from selenium.webdriver.common.by import By
+from selenium.webdriver.support import expected_conditions as ec
+from selenium.webdriver.support.ui import WebDriverWait
 
 
 def test_signin(driver: webdriver.Firefox):
@@ -12,19 +14,12 @@ def test_signin(driver: webdriver.Firefox):
     home_url = "http://localhost:8000/"
 
     driver.get(signin_url)
+    time.sleep(1)
 
-    # check if the user is redirected to the "http://localhost:8000/"
-    # then click on logout button
-    # again make sure that user is on "http://localhost:8000/login"
-    if driver.current_url == home_url:
-        driver.execute_script("document.getElementById('logout-button').click();")
-        time.sleep(2)
-        if driver.current_url != signin_url:
-            raise AssertionError("User is not redirected to signin URL")
+    # Clear localStorage to ensure clean state
+    driver.execute_script("localStorage.clear();")
 
-    # check the login page with some dummy data
-    # if the user is redirected to the "http://localhost:8000/"
-    # then the test passed
+    # check the login page with valid credentials
     username = driver.find_element(By.ID, "email")
     password = driver.find_element(By.ID, "password")
     submit = driver.find_element(By.CSS_SELECTOR, "#signin-form .submit-btn")
@@ -32,9 +27,22 @@ def test_signin(driver: webdriver.Firefox):
     username.send_keys("active_user@jitendra.me")
     password.send_keys("rootroot")
     submit.click()
+
+    # Wait for AJAX call to complete and JavaScript to redirect
+    # The success message appears for 1 second before redirect
     time.sleep(2)
+
+    # Wait for redirect to home page
+    WebDriverWait(driver, 10).until(
+        ec.url_to_be(home_url),
+    )
+
     if driver.current_url != home_url:
-        raise AssertionError("User is not redirected to home URL")
+        msg = (
+            f"User is not redirected to home URL. "
+            f"Current URL: {driver.current_url}"
+        )
+        raise AssertionError(msg)
 
     end_time = time.time()
     elapsed_time = end_time - start_time

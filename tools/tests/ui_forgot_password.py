@@ -3,7 +3,7 @@ import time
 from common import setup_module, teardown_module
 from selenium import webdriver
 from selenium.webdriver.common.by import By
-from selenium.webdriver.support import expected_conditions as EC  # noqa: N812
+from selenium.webdriver.support import expected_conditions as ec
 from selenium.webdriver.support.ui import WebDriverWait
 
 
@@ -25,7 +25,7 @@ def test_forgot_password(driver: webdriver.Firefox):
 
     # check if OTP input is displayed
     otp_input = WebDriverWait(driver, 10).until(
-        EC.element_to_be_clickable((By.ID, "otp")),
+        ec.element_to_be_clickable((By.ID, "otp")),
     )
     if otp_input is None:
         raise AssertionError("OTP input not found")
@@ -38,10 +38,15 @@ def test_forgot_password(driver: webdriver.Firefox):
     otp_submit.click()
     time.sleep(2)
 
-    # check if wrong OTP error message is displayed
-    error_message = driver.find_element(By.CSS_SELECTOR, ".error-message")
-    if error_message is None:
-        raise AssertionError("Error message not found")
+    # Wait for error message to appear with text
+    error_message = WebDriverWait(driver, 10).until(
+        ec.presence_of_element_located((By.CSS_SELECTOR, ".error-message")),
+    )
+
+    # Verify error message has text content
+    WebDriverWait(driver, 5).until(
+        lambda _d: len(error_message.text.strip()) > 0,
+    )
 
     end_time = time.time()
     elapsed_time = end_time - start_time

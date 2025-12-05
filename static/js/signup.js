@@ -94,7 +94,7 @@ $(function () {
     }
 
     const formData = {
-      fullname: $('#fullname').val(),
+      contact: $('#fullname').val(),
       email: $('#email').val(),
       password: password,
       csrfmiddlewaretoken: $('input[name=csrfmiddlewaretoken]').val(),
