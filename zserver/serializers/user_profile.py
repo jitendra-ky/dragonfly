@@ -1,10 +1,10 @@
 from django.contrib.auth import authenticate, get_user_model
 from django.db.models import Q  # Import Q object for building complex queries using OR conditions
 from rest_framework import serializers
+from rest_framework_simplejwt.tokens import RefreshToken
 
 from zserver.models import (
     Message,
-    Session,
     SignUpOTP,
     UnverifiedUser,
     VerifyUserOTP,
@@ -128,8 +128,8 @@ class VerifyUserOTPSerializer(serializers.ModelSerializer):
         data["user_otp"] = user_otp
         return data
 
-    def signup_user(self) -> None:
-        """Add user to User table and delete the OTP."""
+    def signup_user(self) -> dict:
+        """Add user to User table, delete the OTP, and return JWT tokens."""
         unverified_user = self.validated_data["user"]
         # Create verified user with already-hashed password
         user = User(
@@ -142,14 +142,29 @@ class VerifyUserOTPSerializer(serializers.ModelSerializer):
         user.save()
         unverified_user.delete()
         self.validated_data["user_otp"].delete()
+        
+        # Generate JWT tokens for the new user
+        refresh = RefreshToken.for_user(user)
+        
+        return {
+            "refresh": str(refresh),
+            "access": str(refresh.access_token),
+            "user": {
+                "id": user.id,
+                "email": user.email,
+                "contact": user.contact,
+            }
+        }
 
 
-class SessionSerializer(serializers.Serializer):
+class LoginSerializer(serializers.Serializer):
+    """Serializer for user login that returns JWT tokens."""
+    
     email = serializers.EmailField(max_length=100)
     password = serializers.CharField(write_only=True)
 
     def validate(self, data: dict) -> dict:
-        """Validate the email and password using Django's authenticate."""
+        """Validate the email and password."""
         email = data.get("email")
         password = data.get("password")
 
@@ -168,17 +183,22 @@ class SessionSerializer(serializers.Serializer):
             raise serializers.ValidationError({"user": "User is not active."})
 
         data["user"] = user
-
-        data["user"] = user
         return data
 
-    def create(self, validated_data: dict) -> Session:
-        """Create a new session for the user."""
-        user = validated_data["user"]
-        session = Session(user=user)
-        session.generate_session_id()
-        session.save()
-        return session
+    def get_tokens(self) -> dict:
+        """Generate and return JWT tokens for the user."""
+        user = self.validated_data["user"]
+        refresh = RefreshToken.for_user(user)
+        
+        return {
+            "refresh": str(refresh),
+            "access": str(refresh.access_token),
+            "user": {
+                "id": user.id,
+                "email": user.email,
+                "contact": user.contact,
+            }
+        }
 
 
 class ForgotPasswordSerializer(serializers.Serializer):

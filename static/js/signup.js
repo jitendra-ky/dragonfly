@@ -1,10 +1,10 @@
 import { getCookie } from './assets.js'
 
 $(function () {
-  // Check if session_id cookie exists
-  const sessionId = getCookie('session_id')
-  console.log(sessionId)
-  if (sessionId) {
+  // Check if access_token exists in localStorage
+  const accessToken = localStorage.getItem('access_token')
+  console.log(accessToken)
+  if (accessToken) {
     window.location.href = '/'
     return
   }
@@ -43,10 +43,14 @@ $(function () {
       },
       success: function (response) {
         console.log(response)
-        if (response.session_id) {
+        if (response.access && response.refresh) {
           console.log('Login successful!')
-          // set session id to cookies
-          document.cookie = `session_id=${response.session_id}; path=/`
+          // Store JWT tokens in localStorage
+          localStorage.setItem('access_token', response.access)
+          localStorage.setItem('refresh_token', response.refresh)
+          if (response.user) {
+            localStorage.setItem('user', JSON.stringify(response.user))
+          }
           window.location.href = '/' // Redirect after login
         } else {
           alert('Login failed!')
@@ -145,14 +149,22 @@ $(function () {
         'X-CSRFToken': formData.csrfmiddlewaretoken,
       },
       success: function (response) {
+        // Store JWT tokens in localStorage
+        if (response.access && response.refresh) {
+          localStorage.setItem('access_token', response.access)
+          localStorage.setItem('refresh_token', response.refresh)
+          if (response.user) {
+            localStorage.setItem('user', JSON.stringify(response.user))
+          }
+        }
         $('.success-drop-down').text(
-          'Email verified successfully. redirecting to sign-in page.'
+          'Email verified successfully. Redirecting to home page.'
         )
         $('.success-drop-down').css('display', 'flex')
         setTimeout(() => {
           $('.success-drop-down').css('display', 'none')
           // redirect to home page
-          window.location.href = '/signin/'
+          window.location.href = '/'
         }, 1000)
       },
       error: function (response) {

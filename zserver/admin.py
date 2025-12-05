@@ -4,7 +4,6 @@ from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
 
 from zserver.models import (
     Message,
-    Session,
     SignUpOTP,
     UnverifiedUser,
     VerifyUserOTP,
@@ -41,7 +40,6 @@ class UserAdmin(BaseUserAdmin):
 # Register your models here.
 admin.site.register(User, UserAdmin)
 admin.site.register(SignUpOTP)
-admin.site.register(Session)
 admin.site.register(VerifyUserOTP)
 admin.site.register(UnverifiedUser)
 admin.site.register(Message)
