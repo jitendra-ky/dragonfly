@@ -4,12 +4,13 @@ import * as app_states from './app_states.js'
 let ws
 
 function connectWebSocket() {
-  // Create a new WebSocket connection to the Tornado server with user ID
+  // Create a new WebSocket connection to the Tornado server with JWT token
   const userId = app_states.userId
+  const accessToken = app_states.accessToken
 
-  // Create WebSocket connection
+  // Create WebSocket connection with token as query parameter
   const wsHost = env_var.TORNADO_HOSTNAME
-  ws = new WebSocket(`${wsHost}/ws/chat?user_id=${userId}`)
+  ws = new WebSocket(`${wsHost}/ws/chat?token=${accessToken}`)
 
   ws.onopen = function () {
     console.log('WebSocket connection opened')
@@ -97,7 +98,7 @@ function render_msg_view() {
   // check other validation
   if (
     app_states.selectedContactId === -1 || // check if a contact is selected
-    app_states.sessionId === '' || // check if session id is present
+    app_states.accessToken === '' || // check if access token is present
     app_states.userId === -1 || // check if user id is present
     app_states.selectedContactId === -1 || // check if a contact is selected
     app_states.contacts.length === 0 // check if contacts are present
@@ -118,7 +119,7 @@ function render_msg_view() {
     url: 'api/messages/',
     method: 'GET',
     headers: {
-      'session-id': app_states.sessionId,
+      Authorization: `Bearer ${app_states.accessToken}`,
       receiver: app_states.selectedContactId,
     },
     success: function (response) {
@@ -143,7 +144,7 @@ function rerender_contacts_view() {
   }
 
   // check other validation
-  if (app_states.sessionId === '' || app_states.userId === -1) {
+  if (app_states.accessToken === '' || app_states.userId === -1) {
     return
   }
 
@@ -152,7 +153,7 @@ function rerender_contacts_view() {
     url: 'api/contacts/',
     method: 'GET',
     headers: {
-      'session-id': app_states.sessionId,
+      Authorization: `Bearer ${app_states.accessToken}`,
     },
     success: function (response) {
       console.log('Contacts:', response)
@@ -199,7 +200,7 @@ function onClickSend() {
     url: 'api/messages/',
     method: 'POST',
     headers: {
-      'session-id': app_states.sessionId,
+      Authorization: `Bearer ${app_states.accessToken}`,
       'X-CSRFToken': getCookie('csrftoken'),
     },
     data: {
@@ -227,7 +228,9 @@ function onClickSend() {
 
 function onLogoutClick() {
   // on click of logout button, logout the user
-  document.cookie = 'session_id=; Max-Age=0; path=/;'
+  localStorage.removeItem('access_token')
+  localStorage.removeItem('refresh_token')
+  localStorage.removeItem('user')
   window.location.href = '/signin/'
 }
 
@@ -238,7 +241,7 @@ function sendMessage(contactId, messageContent, callback) {
     url: 'api/messages/',
     method: 'POST',
     headers: {
-      'session-id': app_states.sessionId,
+      Authorization: `Bearer ${app_states.accessToken}`,
       'X-CSRFToken': getCookie('csrftoken'),
     },
     data: {
@@ -345,12 +348,12 @@ $(function () {
 
   app_states.updateLoggedInUserState(() => {
     console.log('app_states:', app_states)
-    const sessionId = app_states.sessionId
-    if (!sessionId) {
+    const accessToken = app_states.accessToken
+    if (!accessToken) {
       window.location.href = '/signin/'
       return
     }
-    console.log(app_states.sessionId)
+    console.log(app_states.accessToken)
     console.log(app_states.userEmail)
 
     const username = app_states.userEmail.split('@')[0]

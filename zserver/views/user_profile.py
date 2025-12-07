@@ -1,20 +1,22 @@
 import os
 
+from django.contrib.auth import get_user_model
 from django.shortcuts import render
 from django.views import View
 from dotenv import load_dotenv
 from google.auth.transport import requests
 from google.oauth2 import id_token
 from rest_framework import status
+from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.request import Request
 from rest_framework.response import Response
 from rest_framework.views import APIView
+from rest_framework_simplejwt.tokens import RefreshToken
 
-from zserver.models import Session, UserProfile
 from zserver.serializers import (
     ForgotPasswordSerializer,
+    LoginSerializer,
     ResetPasswordSerializer,
-    SessionSerializer,
     UnverifiedUserProfileSerializer,
     UserProfileSerializer,
     VerifyUserOTPSerializer,
@@ -23,19 +25,22 @@ from zserver.utils import get_env_var
 
 load_dotenv()
 
+User = get_user_model()
+
 class UserProfileView(APIView):
+
+    def get_permissions(self):
+        """Instantiate and return the list of permissions that this view requires.
+
+        POST (signup) is public, other methods require authentication.
+        """
+        if self.request.method == "POST":
+            return [AllowAny()]
+        return [IsAuthenticated()]
 
     def get(self, request: Request) -> Response:
         """Retrieve the profile of the signed-in user."""
-        session_id = request.headers.get("session-id")
-        if session_id is None:
-            return Response(status=status.HTTP_401_UNAUTHORIZED)
-        try:
-            session = Session.objects.get(session_id=session_id)
-        except Session.DoesNotExist:
-            return Response(status=status.HTTP_401_UNAUTHORIZED)
-        user = session.user
-        serializer = UserProfileSerializer(user)
+        serializer = UserProfileSerializer(request.user)
         return Response(serializer.data)
 
     def post(self, request: Request) -> Response:
@@ -48,15 +53,7 @@ class UserProfileView(APIView):
 
     def put(self, request: Request) -> Response:
         """Update the profile of the signed-in user."""
-        session_id = request.headers.get("session-id")
-        if session_id is None:
-            return Response(status=status.HTTP_401_UNAUTHORIZED)
-        try:
-            session = Session.objects.get(session_id=session_id)
-        except Session.DoesNotExist:
-            return Response(status=status.HTTP_401_UNAUTHORIZED)
-        user = session.user
-        serializer = UserProfileSerializer(user, data=request.data)
+        serializer = UserProfileSerializer(request.user, data=request.data)
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data)
@@ -64,51 +61,41 @@ class UserProfileView(APIView):
 
     def delete(self, request: Request) -> Response:
         """Delete the profile of the signed-in user."""
-        session_id = request.headers.get("session-id")
-        if session_id is None:
-            return Response(status=status.HTTP_401_UNAUTHORIZED)
-        try:
-            session = Session.objects.get(session_id=session_id)
-        except Session.DoesNotExist:
-            return Response(status=status.HTTP_401_UNAUTHORIZED)
-        user = session.user
-        user.delete()
+        request.user.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
 
 
 class SignInView(APIView):
 
+    def get_permissions(self):
+        """GET requires authentication, POST (login) is public."""
+        if self.request.method == "GET":
+            return [IsAuthenticated()]
+        return [AllowAny()]
+
     def get(self, request: Request) -> Response:
         """Retrieve the profile of the signed-in user."""
-        session_id = request.headers.get("session-id")
-        if session_id is None:
-            return Response(status=status.HTTP_401_UNAUTHORIZED)
-        try:
-            session = Session.objects.get(session_id=session_id)
-        except Session.DoesNotExist:
-            return Response(status=status.HTTP_401_UNAUTHORIZED)
-        user = session.user
-        serializer = UserProfileSerializer(user)
+        serializer = UserProfileSerializer(request.user)
         return Response(serializer.data)
 
     def post(self, request: Request) -> Response:
-        """Create a new session for the user."""
-        serializer = SessionSerializer(data=request.data)
+        """Authenticate user and return JWT tokens."""
+        serializer = LoginSerializer(data=request.data)
         if serializer.is_valid():
-            session = serializer.save()
-            return Response({"session_id": session.session_id},
-                            status=status.HTTP_201_CREATED)
+            tokens = serializer.get_tokens()
+            return Response(tokens, status=status.HTTP_200_OK)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
 class VerifyUserOTPView(APIView):
+    permission_classes = [AllowAny]
 
     def post(self, request: Request) -> Response:
-        """Verify OTP and signup user."""
+        """Verify OTP, signup user, and return JWT tokens."""
         serializer = VerifyUserOTPSerializer(data=request.data)
         if serializer.is_valid():
-            serializer.signup_user()
-            return Response(status=status.HTTP_200_OK)
+            tokens = serializer.signup_user()
+            return Response(tokens, status=status.HTTP_200_OK)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
@@ -156,9 +143,10 @@ class ForgotPasswordTemplateView(View):
 
 
 class GoogleLoginView(APIView):
+    permission_classes = [AllowAny]
 
     def post(self, request: Request) -> Response:
-        """Handle Google login and create a session for the user."""
+        """Handle Google login and return JWT tokens for the user."""
         try:
             authorization_code = request.data.get("code")
 
@@ -180,14 +168,28 @@ class GoogleLoginView(APIView):
             name = id_info.get("name", "")
 
             # Create or get user
-            user, created = UserProfile.objects.get_or_create(
-                email=email, defaults={"fullname": name})
-            user_session = SessionSerializer().create({"user": user})
-            session_id = user_session.session_id
+            user, created = User.objects.get_or_create(
+                email=email,
+                defaults={"contact": name, "is_active": True, "email_verified": True},
+            )
+            # For Google OAuth users, set unusable password
+            if created:
+                user.set_unusable_password()
+                user.save()
 
-            return Response({"message": "Login successful!",
-                             "session_id": session_id},
-                            status=status.HTTP_200_OK)
+            # Generate JWT tokens
+            refresh = RefreshToken.for_user(user)
+
+            return Response({
+                "message": "Login successful!",
+                "refresh": str(refresh),
+                "access": str(refresh.access_token),
+                "user": {
+                    "id": user.id,
+                    "email": user.email,
+                    "contact": user.contact,
+                },
+            }, status=status.HTTP_200_OK)
 
         except Exception as e:
             return Response({"message": str(e)}, status=status.HTTP_400_BAD_REQUEST)
@@ -221,6 +223,7 @@ class GoogleLoginView(APIView):
 
 
 class ForgotPasswordView(APIView):
+    permission_classes = [AllowAny]
 
     def post(self, request: Request) -> Response:
         """Handle forgot password request."""
@@ -232,6 +235,7 @@ class ForgotPasswordView(APIView):
 
 
 class ResetPasswordView(APIView):
+    permission_classes = [AllowAny]
 
     def post(self, request: Request) -> Response:
         """Handle password reset using OTP."""

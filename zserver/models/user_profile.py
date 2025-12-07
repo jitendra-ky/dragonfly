@@ -1,61 +1,115 @@
 import random
 import string
 
+from django.conf import settings
+from django.contrib.auth.models import AbstractBaseUser, BaseUserManager, PermissionsMixin
 from django.db import models
 
 
-# Base model for user profiles
-class BaseUserProfile(models.Model):
-    id = models.AutoField(primary_key=True)
-    fullname = models.CharField(max_length=100, blank=False, null=False)
-    email = models.EmailField(max_length=100, blank=False, null=False, unique=True)
-    password = models.CharField(max_length=100, blank=False, null=False)
-    created_at = models.DateTimeField(auto_now_add=True, blank=False, null=False)
-    updated_at = models.DateTimeField(auto_now=True, blank=False, null=False)
+class UserManager(BaseUserManager):
+    """Custom user manager for email-based authentication."""
+
+    def create_user(self, email: str, password: str | None = None, **extra_fields: bool) -> "User":
+        """Create and save a regular user with the given email and password."""
+        if not email:
+            raise ValueError("The Email field must be set")
+        email = self.normalize_email(email)
+        user = self.model(email=email, **extra_fields)
+        if password:
+            user.set_password(password)
+        else:
+            user.set_unusable_password()
+        user.save(using=self._db)
+        return user
+
+    def create_superuser(
+            self, email: str, password: str | None = None, **extra_fields: bool) -> "User":
+        """Create and save a superuser with the given email and password."""
+        extra_fields.setdefault("is_staff", True)
+        extra_fields.setdefault("is_superuser", True)
+        extra_fields.setdefault("is_active", True)
+        extra_fields.setdefault("email_verified", True)
+
+        if extra_fields.get("is_staff") is not True:
+            raise ValueError("Superuser must have is_staff=True.")
+        if extra_fields.get("is_superuser") is not True:
+            raise ValueError("Superuser must have is_superuser=True.")
+
+        return self.create_user(email, password, **extra_fields)
+
+
+class User(AbstractBaseUser, PermissionsMixin):
+    """Custom user model using email as the unique identifier."""
+
+    email = models.EmailField(max_length=100, unique=True, blank=False, null=False)
+    contact = models.CharField(max_length=100, blank=False, null=False)
+    email_verified = models.BooleanField(default=False)
+    is_active = models.BooleanField(default=False)
+    is_staff = models.BooleanField(default=False)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    objects = UserManager()
+
+    USERNAME_FIELD = "email"
+    REQUIRED_FIELDS = ["contact"]
 
     class Meta:
-        """make this model abstract so that it doesn't create a table."""
+        """Meta options for User model."""
 
-        abstract = True # don't create a table for this model
+        db_table = "zserver_user"
+        verbose_name = "User"
+        verbose_name_plural = "Users"
 
     def __str__(self) -> str:
         """Return the email of the user."""
         return self.email
 
-    def is_password_valid(self, password: str) -> bool:
-        """Check if the provided password is valid."""
-        return self.password == password
-
-
-# Model for verified user profiles
-class UserProfile(BaseUserProfile):
-    is_active = models.BooleanField(default=False, blank=False, null=False)
-
     def generate_otp(self) -> str:
         """Generate a 6-digit OTP for the user."""
-        generated_opt = "".join(random.choices(string.digits, k=6))
-        otp = SignUpOTP(user=self, otp=generated_opt)
+        generated_otp = "".join(random.choices(string.digits, k=6))
+        otp = SignUpOTP(user=self, otp=generated_otp)
         otp.save()
-        return generated_opt
+        return generated_otp
 
 
-# Model for unverified user profiles
-class UnverifiedUserProfile(BaseUserProfile):
-    email = models.EmailField(max_length=100, blank=False, null=False, unique=False)
+class UnverifiedUser(models.Model):
+    """Temporary storage for users pending email verification."""
+
+    email = models.EmailField(max_length=100, blank=False, null=False)
+    contact = models.CharField(max_length=100, blank=False, null=False)
+    password = models.CharField(max_length=128, blank=False, null=False)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        """Meta options for UnverifiedUser model."""
+
+        db_table = "zserver_unverifieduser"
+
+    def __str__(self) -> str:
+        """Return the email of the unverified user."""
+        return self.email
 
     def generate_otp(self) -> str:
-        """Generate a 6-digit OTP for the user."""
-        generated_opt = "".join(random.choices(string.digits, k=6))
-        otp = VerifyUserOTP(user=self, otp=generated_opt)
+        """Generate a 6-digit OTP for the unverified user."""
+        generated_otp = "".join(random.choices(string.digits, k=6))
+        otp = VerifyUserOTP(user=self, otp=generated_otp)
         otp.save()
-        return generated_opt
+        return generated_otp
+
 
 
 # let's create a signup otp model
 class SignUpOTP(models.Model):
-    user = models.ForeignKey(UserProfile, on_delete=models.CASCADE)
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     otp = models.CharField(max_length=6, blank=False, null=False)
     created_at = models.DateTimeField(auto_now_add=True, blank=False, null=False)
+
+    class Meta:
+        """Meta options for SignUpOTP model."""
+
+        db_table = "zserver_signupotp"
 
     def __str__(self) -> str:
         """Return the email of the user associated with the OTP."""
@@ -64,34 +118,15 @@ class SignUpOTP(models.Model):
 
 # let's create a VerifyUserOTP model
 class VerifyUserOTP(models.Model):
-    user = models.ForeignKey(UnverifiedUserProfile, on_delete=models.CASCADE)
+    user = models.ForeignKey(UnverifiedUser, on_delete=models.CASCADE)
     otp = models.CharField(max_length=6, blank=False, null=False)
     created_at = models.DateTimeField(auto_now_add=True, blank=False, null=False)
+
+    class Meta:
+        """Meta options for VerifyUserOTP model."""
+
+        db_table = "zserver_verifyuserotp"
 
     def __str__(self) -> str:
         """Return the email of the user associated with the OTP."""
         return self.user.email + " " + self.otp
-
-
-# let's create a modle for login sessions
-class Session(models.Model):
-    user = models.ForeignKey(UserProfile, on_delete=models.CASCADE)
-    session_id = models.CharField(max_length=100, blank=False, null=False)
-    created_at = models.DateTimeField(auto_now_add=True, blank=False, null=False)
-
-    def __str__(self) -> str:
-        """Return the email of the user associated with the session."""
-        return self.user.email
-
-    def is_password_valid(self, password: str) -> bool:
-        """Check if the provided password is valid."""
-        return self.user.is_password_valid(password)
-
-    def generate_session_id(self) -> str:
-        """Generate a unique session ID for the session."""
-        generated_session_id = "".join(
-            random.choices(string.ascii_letters + string.digits, k=100),
-        )
-        self.session_id = generated_session_id
-        self.save()
-        return generated_session_id
