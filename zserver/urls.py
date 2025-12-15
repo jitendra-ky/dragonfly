@@ -31,4 +31,6 @@ urlpatterns = [
     path("api/token/verify/", TokenVerifyView.as_view(), name="token_verify"),
 
     path("google-login/", views.GoogleLoginView.as_view(), name="google_login"),
+
+    path("chat/<int:contact_id>/", views.Chat.as_view()),
 ]

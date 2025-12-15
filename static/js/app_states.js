@@ -46,7 +46,7 @@ export function updateLoggedInUserState(callback) {
 
     // Fetch user details from the server if not in localStorage
     $.ajax({
-      url: 'api/sign-in/',
+      url: '/api/sign-in/',
       method: 'GET',
       headers: {
         Authorization: `Bearer ${accessToken}`,

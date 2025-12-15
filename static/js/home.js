@@ -100,7 +100,6 @@ function render_msg_view() {
     app_states.selectedContactId === -1 || // check if a contact is selected
     app_states.accessToken === '' || // check if access token is present
     app_states.userId === -1 || // check if user id is present
-    app_states.selectedContactId === -1 || // check if a contact is selected
     app_states.contacts.length === 0 // check if contacts are present
   ) {
     return
@@ -116,7 +115,7 @@ function render_msg_view() {
 
   // get the messages
   $.ajax({
-    url: 'api/messages/',
+    url: '/api/messages/',
     method: 'GET',
     headers: {
       Authorization: `Bearer ${app_states.accessToken}`,
@@ -124,6 +123,7 @@ function render_msg_view() {
     },
     success: function (response) {
       console.log('Messages:', response)
+      $('.mainbox .welcome-page').hide()
       app_states.setMessages(response)
       // render the messages
       rerender_msg_view()
@@ -150,7 +150,7 @@ function rerender_contacts_view() {
 
   // get the contacts
   $.ajax({
-    url: 'api/contacts/',
+    url: '/api/contacts/',
     method: 'GET',
     headers: {
       Authorization: `Bearer ${app_states.accessToken}`,
@@ -176,6 +176,7 @@ function rerender_contacts_view() {
         contactContent.append(profile, details)
         contactElement.append(contactContent)
         chatList.append(contactElement)
+        render_msg_view() // Call render_msg_view to update the message view
       })
     },
     error: function (response) {
@@ -186,8 +187,9 @@ function rerender_contacts_view() {
 
 function onClickContact() {
   // on click of a contact, set the selectedContactId and rerender the message view
-  $('.mainbox .welcome-page').hide()
   const contactId = $(this).attr('id')
+  // change the URL to reflect the selected contact
+  window.history.pushState(null, '', `/chat/${contactId}/`)
   app_states.setSelectedContactId(contactId)
   render_msg_view()
 }
@@ -197,7 +199,7 @@ function onClickSend() {
   const message = $('#message-box').val()
   console.log('Sending message:', message)
   $.ajax({
-    url: 'api/messages/',
+    url: '/api/messages/',
     method: 'POST',
     headers: {
       Authorization: `Bearer ${app_states.accessToken}`,
@@ -238,7 +240,7 @@ function sendMessage(contactId, messageContent, callback) {
   // send message to a contact
   console.log('Sending message:', messageContent)
   $.ajax({
-    url: 'api/messages/',
+    url: '/api/messages/',
     method: 'POST',
     headers: {
       Authorization: `Bearer ${app_states.accessToken}`,
@@ -262,7 +264,7 @@ function sendMessage(contactId, messageContent, callback) {
 function populateNewContactList() {
   // fetch all users and populate the select box
   $.ajax({
-    url: 'api/all-users/',
+    url: '/api/all-users/',
     method: 'GET',
     success: function (response) {
       const userSelect = $('#user-select')
@@ -290,6 +292,7 @@ function onsendMessageToNewUserClick() {
       alert('Message sent successfully!')
       $('#new-message-modal').hide()
       // add this new contact in contacts list
+      app_states.setSelectedContactId(userId)
       rerender_contacts_view()
     } else {
       console.log('Error sending message')
@@ -356,11 +359,15 @@ $(function () {
     console.log(app_states.accessToken)
     console.log(app_states.userEmail)
 
+    // if the url is like root/chat/4, then set the selectedContactId to 4
+    const match = window.location.pathname.match(/\/chat\/(\d+)\//)
+    const contactId = match ? parseInt(match[1]).toString() : -1
+    app_states.setSelectedContactId(contactId)
+
     const username = app_states.userEmail.split('@')[0]
     $('#username').text(username)
 
     rerender_contacts_view()
-    render_msg_view()
 
     connectWebSocket()
 
