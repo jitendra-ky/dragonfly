@@ -1,16 +1,26 @@
-# DragonFly Overview
+# Dragonfly
 
-In this project **Dragonfly**, I am developing a fully functional open-source chatting application using industry best practices, which include:
+Dragonfly is a fully functional, open-source messaging application. Designed with inspiration from leading platforms such as WhatsApp, it's developed using industry best practices to ensure a robust and reliable user experience.
 
-- a highly architectured codebase,
-- automated testing of most of the code,
-- well-organized documentation,
-- industry-standard coding style and formatting,
-- structured git-version-control commit history,
-- organized issues and PRs with labels.
+We're committed to building Dragonfly with excellence, which is reflected in our approach to development:
 
+- **Highly architected codebase:** We prioritize a well-structured and scalable foundation for long-term maintainability.
+- **Comprehensive automated testing:** Most of our code is covered by automated tests to ensure reliability and prevent regressions.
+- **Well-organized documentation:** Our documentation is clear and easy to follow, helping both users and contributors.
+- **Industry-standard coding style and formatting:** We adhere to established coding styles for consistent and readable code.
+- **Structured Git version control history:** Our commit history is organized for transparent and traceable changes.
+- **Organized issues and pull requests with labels:** We use labels to keep our development workflow efficient and transparent.
+
+[![release](https://img.shields.io/github/v/tag/jitendra-ky/dragonfly?label=release&color=blue)](https://github.com/jitendra-ky/dragonfly/releases)
 [![Ruff](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/astral-sh/ruff/main/assets/badge/v2.json)](https://github.com/astral-sh/ruff)
 [![code style: prettier](https://img.shields.io/badge/code_style-prettier-ff69b4.svg)](https://github.com/prettier/prettier)
+[![code style: prettier](https://badges.frapsoft.com/os/v1/open-source.svg?v=103)](https://github.com/jitendra-ky/dragonfly)
+[![Maintained? yes](https://img.shields.io/badge/Maintained%3F-yes-brightgreen.svg?v=103)](https://github.com/jitendra-ky/)
+[![MIT License](https://img.shields.io/badge/MIT-License-blue.svg?v=103)](https://github.com/jitendra-ky/dragonfly/blob/main/LICENSE)
+[![Contributors](https://img.shields.io/github/contributors/jitendra-ky/dragonfly?color=brightgreen)](https://github.com/jitendra-ky/dragonfly/graphs/contributors)
+[![GitHub Stars](https://img.shields.io/github/stars/jitendra-ky/dragonfly?color=0059b3)](https://github.com/jitendra-ky/dragonfly/stargazers)
+[![GitHub Forks](https://img.shields.io/github/forks/jitendra-ky/dragonfly?color=yellow)](https://github.com/jitendra-ky/dragonfly/network/members)
+[![GitHub Issues](https://img.shields.io/github/issues/jitendra-ky/dragonfly?color=0059b3)](https://github.com/jitendra-ky/dragonfly/issues)
 
 ## Getting Started
 
@@ -18,7 +28,19 @@ In this project **Dragonfly**, I am developing a fully functional open-source ch
 
 ## Contributors
 
-Thanks to valuable contributors 💖
+We appreciate everyone 💖 who has contributed their time, skills, and passion to make Dragonfly better 😊. Your efforts help drive this project forward—thank you for being a part of our community!
 
-- [@jitendra-ky](https://github.com/jitendra-ky)
-- [@sobhanvn7](https://github.com/sobhanvn7)
+<a href="https://github.com/jitendra-ky/dragonfly/graphs/contributors"> <img align="center" src="https://contrib.rocks/image?max=100&repo=jitendra-ky/dragonfly"/> </a>
+
+## 🤝 How to Contribute ?
+
+We welcome contributions from everyone! If you're interested in helping out, please take a moment to review our **[CONTRIBUTING.md](./CONTRIBUTING.md)** and **[CODE_OF_CONDUCT.md](./CODE_OF_CONDUCT.md)** before you get started.
+
+### Getting Started
+
+1.  **Fork and Clone:** Begin by forking this repository and then cloning it to your local machine.
+2.  **Create a Branch:** Create a new branch for the changes you plan to make.
+3.  **Make Your Updates:** Implement your changes and thoroughly test them.
+4.  **Open a Pull Request:** Submit a pull request for us to review your contributions.
+
+For a more detailed guide, please refer to the **[CONTRIBUTING.md](./CONTRIBUTING.md)** file.
