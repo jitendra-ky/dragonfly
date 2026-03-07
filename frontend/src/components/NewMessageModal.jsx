@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import useChatStore from '../store/chatStore';
-import api from '../utils/axios';
+import { chatService } from '../services';
 import Modal from './Modal';
 import Avatar from './Avatar';
 import LoadingSpinner from './LoadingSpinner';
@@ -20,11 +20,11 @@ function NewMessageModal({ isOpen, onClose }) {
         setLoading(true);
         setError(null);
         try {
-          const response = await api.get('/api/all-users/');
-          console.log('Fetched users:', response.data);
+          const users = await chatService.getAllUsers();
+          console.log('Fetched users:', users);
           // Only update state if component is still mounted
           if (isMounted) {
-            setUsers(Array.isArray(response.data) ? response.data : []);
+            setUsers(Array.isArray(users) ? users : []);
           }
         } catch (error) {
           console.error('Error fetching users:', error);
@@ -51,9 +51,9 @@ function NewMessageModal({ isOpen, onClose }) {
     setLoading(true);
     setError(null);
     try {
-      const response = await api.get('/api/all-users/');
-      console.log('Fetched users:', response.data);
-      setUsers(Array.isArray(response.data) ? response.data : []);
+      const users = await chatService.getAllUsers();
+      console.log('Fetched users:', users);
+      setUsers(Array.isArray(users) ? users : []);
     } catch (error) {
       console.error('Error fetching users:', error);
       setError('Failed to load users. Please try again.');

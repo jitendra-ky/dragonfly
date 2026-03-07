@@ -1,13 +1,14 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { useAuth } from '../contexts/AuthContext';
+import useAuthStore from '../store/authStore';
 import Button from '../components/Button';
 import Input from '../components/Input';
 import LoadingSpinner from '../components/LoadingSpinner';
 
 function ForgotPassword() {
   const navigate = useNavigate();
-  const { forgotPassword, resetPassword } = useAuth();
+  const forgotPassword = useAuthStore((state) => state.forgotPassword);
+  const resetPassword = useAuthStore((state) => state.resetPassword);
   const [step, setStep] = useState(1); // 1: email input, 2: OTP and new password
   const [email, setEmail] = useState('');
   const [formData, setFormData] = useState({

@@ -1,16 +1,17 @@
 import { useState, useEffect } from 'react';
-import { useAuth } from '../contexts/AuthContext';
+import useAuthStore from '../store/authStore';
 import { useNavigate } from 'react-router-dom';
 import useChatStore from '../store/chatStore';
 import useWebSocket from '../hooks/useWebSocket';
-import api from '../utils/axios';
-import ContactList from '../components/ContactList';
-import ChatView from '../components/ChatView';
-import NewMessageModal from '../components/NewMessageModal';
-import Avatar from '../components/Avatar';
+import { chatService } from '../services';
+import ContactList from './ContactList';
+import ChatView from './ChatView';
+import NewMessageModal from './NewMessageModal';
+import Avatar from './Avatar';
 
 function ChatLayout() {
-  const { user, signout } = useAuth();
+  const user = useAuthStore((state) => state.user);
+  const signOut = useAuthStore((state) => state.signOut);
   const navigate = useNavigate();
   const [showUserMenu, setShowUserMenu] = useState(false);
   const [showSidebar, setShowSidebar] = useState(true);
@@ -24,8 +25,8 @@ function ChatLayout() {
   useEffect(() => {
     const fetchContacts = async () => {
       try {
-        const response = await api.get('/api/contacts/');
-        setContacts(response.data);
+        const contacts = await chatService.getContacts();
+        setContacts(contacts);
       } catch (error) {
         console.error('Error fetching contacts:', error);
       }
@@ -35,7 +36,7 @@ function ChatLayout() {
   }, [setContacts]);
 
   const handleLogout = () => {
-    signout();
+    signOut();
     navigate('/signin');
   };
 

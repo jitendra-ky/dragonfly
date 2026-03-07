@@ -1,5 +1,5 @@
 import { Routes, Route, Navigate } from 'react-router-dom';
-import { useAuth } from './contexts/AuthContext';
+import useAuthStore from './store/authStore';
 import SignIn from './pages/SignIn';
 import SignUp from './pages/SignUp';
 import ForgotPassword from './pages/ForgotPassword';
@@ -7,7 +7,8 @@ import Home from './pages/Home';
 
 // Protected Route wrapper
 function ProtectedRoute({ children }) {
-  const { user, loading } = useAuth();
+  const user = useAuthStore((state) => state.user);
+  const loading = useAuthStore((state) => state.loading);
 
   if (loading) {
     return (

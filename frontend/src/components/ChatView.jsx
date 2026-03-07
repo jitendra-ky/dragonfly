@@ -1,13 +1,13 @@
 import { useState, useEffect, useRef } from 'react';
-import { useAuth } from '../contexts/AuthContext';
+import useAuthStore from '../store/authStore';
 import useChatStore from '../store/chatStore';
-import api from '../utils/axios';
+import { chatService } from '../services';
 import Avatar from './Avatar';
 import MessageInput from './MessageInput';
 import LoadingSpinner from './LoadingSpinner';
 
 function ChatView() {
-  const { user } = useAuth();
+  const user = useAuthStore((state) => state.user);
   const { selectedContactId, contacts, messages, setMessages } = useChatStore();
   const [loading, setLoading] = useState(false);
   const messagesEndRef = useRef(null);
@@ -22,8 +22,8 @@ function ChatView() {
 
       setLoading(true);
       try {
-        const response = await api.get(`/api/messages/?other_user_id=${selectedContactId}`);
-        setMessages(selectedContactId, response.data);
+        const messages = await chatService.getMessages(selectedContactId);
+        setMessages(selectedContactId, messages);
       } catch (error) {
         console.error('Error fetching messages:', error);
       } finally {

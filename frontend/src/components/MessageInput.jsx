@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import useChatStore from '../store/chatStore';
 import useWebSocket from '../hooks/useWebSocket';
-import api from '../utils/axios';
+import { chatService } from '../services';
 import Button from './Button';
 
 function MessageInput() {
@@ -25,24 +25,18 @@ function MessageInput() {
         const sent = sendMessage(selectedContactId, messageContent);
         if (sent) {
           // Message sent via WebSocket, also save to backend
-          await api.post('/api/messages/', {
-            receiver_id: selectedContactId,
-            content: messageContent,
-          });
+          await chatService.sendMessage(selectedContactId, messageContent);
           setSending(false);
           return;
         }
       }
 
       // Fallback to HTTP if WebSocket not available
-      const response = await api.post('/api/messages/', {
-        receiver_id: selectedContactId,
-        content: messageContent,
-      });
+      const response = await chatService.sendMessage(selectedContactId, messageContent);
 
       // Add message to store manually if WebSocket didn't handle it
       if (!isConnected) {
-        addMessage(selectedContactId, response.data);
+        addMessage(selectedContactId, response);
       }
     } catch (error) {
       console.error('Error sending message:', error);

@@ -1,11 +1,12 @@
 import { useEffect, useCallback, useRef } from 'react';
-import { useAuth } from '../contexts/AuthContext';
+import useAuthStore from '../store/authStore';
 import useChatStore from '../store/chatStore';
+import { STORAGE_KEYS } from '../constants';
 
 const WS_URL = import.meta.env.VITE_WS_URL || 'ws://localhost:8888';
 
 function useWebSocket() {
-  const { user } = useAuth();
+  const user = useAuthStore((state) => state.user);
   const wsRef = useRef(null);
   const reconnectTimeoutRef = useRef(null);
   const reconnectAttempts = useRef(0);
@@ -16,7 +17,7 @@ function useWebSocket() {
   const connect = useCallback(() => {
     if (!user) return;
 
-    const token = localStorage.getItem('access_token');
+    const token = localStorage.getItem(STORAGE_KEYS.ACCESS_TOKEN);
     if (!token) return;
 
     try {

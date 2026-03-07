@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { useAuth } from '../contexts/AuthContext';
+import useAuthStore from '../store/authStore';
 import Button from '../components/Button';
 import Input from '../components/Input';
 import Modal from '../components/Modal';
@@ -8,7 +8,10 @@ import LoadingSpinner from '../components/LoadingSpinner';
 
 function SignUp() {
   const navigate = useNavigate();
-  const { user, signup, verifyOTP, googleSignIn } = useAuth();
+  const user = useAuthStore((state) => state.user);
+  const signUp = useAuthStore((state) => state.signUp);
+  const verifyOTP = useAuthStore((state) => state.verifyOTP);
+  const googleSignIn = useAuthStore((state) => state.googleSignIn);
   const [step, setStep] = useState(1); // 1: signup form, 2: OTP verification
   const [formData, setFormData] = useState({
     full_name: '',
@@ -55,7 +58,7 @@ function SignUp() {
     setLoading(true);
 
     try {
-      await signup(formData.full_name, formData.email, formData.password);
+      await signUp(formData.full_name, formData.email, formData.password);
       setStep(2);
       setShowOTPModal(true);
     } catch (err) {
@@ -85,7 +88,7 @@ function SignUp() {
     setLoading(true);
 
     try {
-      await signup(formData.full_name, formData.email, formData.password);
+      await signUp(formData.full_name, formData.email, formData.password);
       setError('');
       // Show success message
       alert('OTP has been resent to your email');

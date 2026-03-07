@@ -1,4 +1,4 @@
-import ChatLayout from '../layouts/ChatLayout';
+import ChatLayout from '../components/ChatLayout';
 
 function Home() {
   return <ChatLayout />;

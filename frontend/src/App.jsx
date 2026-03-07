@@ -1,13 +1,18 @@
 import { BrowserRouter } from 'react-router-dom';
-import { AuthProvider } from './contexts/AuthContext';
+import { useEffect } from 'react';
+import useAuthStore from './store/authStore';
 import AppRoutes from './routes';
 
 function App() {
+  const initialize = useAuthStore((state) => state.initialize);
+
+  useEffect(() => {
+    initialize();
+  }, [initialize]);
+
   return (
     <BrowserRouter>
-      <AuthProvider>
-        <AppRoutes />
-      </AuthProvider>
+      <AppRoutes />
     </BrowserRouter>
   );
 }

@@ -1,13 +1,15 @@
 import { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { useAuth } from '../contexts/AuthContext';
+import useAuthStore from '../store/authStore';
 import Button from '../components/Button';
 import Input from '../components/Input';
 import LoadingSpinner from '../components/LoadingSpinner';
 
 function SignIn() {
   const navigate = useNavigate();
-  const { user, signin, googleSignIn } = useAuth();
+  const user = useAuthStore((state) => state.user);
+  const signIn = useAuthStore((state) => state.signIn);
+  const googleSignIn = useAuthStore((state) => state.googleSignIn);
   const [formData, setFormData] = useState({
     email: '',
     password: '',
@@ -36,7 +38,7 @@ function SignIn() {
     setLoading(true);
 
     try {
-      await signin(formData.email, formData.password);
+      await signIn(formData.email, formData.password);
       navigate('/');
     } catch (err) {
       setError(err.response?.data?.detail || 'Invalid email or password');
