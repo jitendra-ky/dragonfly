@@ -22,8 +22,16 @@ function ChatView() {
 
       setLoading(true);
       try {
-        const messages = await chatService.getMessages(selectedContactId);
-        setMessages(selectedContactId, messages);
+        const fetchedMessages = await chatService.getMessages(selectedContactId);
+        // Ensure each message has proper structure
+        const normalizedMessages = fetchedMessages.map(msg => ({
+          ...msg,
+          sender_id: msg.sender_id || msg.sender || msg.user_id,
+          receiver_id: msg.receiver_id || msg.receiver,
+          content: msg.content || msg.message,
+          timestamp: msg.timestamp || msg.created_at || new Date().toISOString()
+        }));
+        setMessages(selectedContactId, normalizedMessages);
       } catch (error) {
         console.error('Error fetching messages:', error);
       } finally {
@@ -69,18 +77,25 @@ function ChatView() {
   }
 
   return (
-    <div className="flex-1 flex flex-col bg-white">
+    <div className="flex-1 flex flex-col bg-white h-full">
       {/* Chat Header */}
-      <div className="p-4 border-b border-gray-200 flex items-center">
-        <Avatar name={selectedContact.full_name} size="md" />
+      <div className="p-4 border-b border-gray-200 flex items-center flex-shrink-0">
+        <Avatar 
+          name={selectedContact.full_name || selectedContact.contact || selectedContact.email || 'Unknown'} 
+          size="md" 
+        />
         <div className="ml-3">
-          <p className="text-sm font-medium text-gray-900">{selectedContact.full_name}</p>
-          <p className="text-xs text-gray-500">{selectedContact.email}</p>
+          <p className="text-sm font-medium text-gray-900">
+            {selectedContact.full_name || selectedContact.contact || selectedContact.email || 'Unknown Contact'}
+          </p>
+          <p className="text-xs text-gray-500">
+            {selectedContact.email || 'No email available'}
+          </p>
         </div>
       </div>
 
       {/* Messages */}
-      <div className="flex-1 overflow-y-auto p-4 scrollbar-thin bg-gray-50">
+      <div className="flex-1 overflow-y-auto p-4 scrollbar-thin bg-gray-50 min-h-0">
         {loading ? (
           <div className="flex items-center justify-center h-full">
             <LoadingSpinner size="lg" />
@@ -102,27 +117,37 @@ function ChatView() {
 
                 {/* Messages */}
                 {msgs.map((message, index) => {
-                  const isSentByMe = message.sender_id === user.id;
+                  // More robust sender ID comparison
+                  const messageSenderId = message.sender_id || message.sender || message.user_id;
+                  const currentUserId = user?.id || user?.user_id;
+                  const isSentByMe = String(messageSenderId) === String(currentUserId);
+                  
+                  // Temporary debug to understand the data structure
+                  if (index === 0) {
+                    console.log('Sample message structure:', { message, user, messageSenderId, currentUserId, isSentByMe });
+                  }
 
                   return (
                     <div
-                      key={index}
+                      key={`${message.id || index}-${message.timestamp}`}
                       className={`flex mb-4 ${isSentByMe ? 'justify-end' : 'justify-start'}`}
                     >
+                      {/* Avatar for received messages (left side) */}
                       {!isSentByMe && (
                         <Avatar
                           name={selectedContact.full_name}
                           size="sm"
-                          className="mr-2 flex-shrink-0"
+                          className="mr-3 flex-shrink-0 self-end"
                         />
                       )}
 
-                      <div className={`max-w-xs lg:max-w-md ${isSentByMe ? 'order-1' : ''}`}>
+                      {/* Message content */}
+                      <div className={`max-w-xs lg:max-w-md xl:max-w-lg ${isSentByMe ? 'order-2' : 'order-1'}`}>
                         <div
-                          className={`px-4 py-2 rounded-lg ${
+                          className={`px-4 py-2 rounded-2xl ${
                             isSentByMe
-                              ? 'bg-primary-600 text-white'
-                              : 'bg-white border border-gray-200 text-gray-900'
+                              ? 'bg-blue-500 text-white rounded-br-md'
+                              : 'bg-white border border-gray-200 text-gray-900 rounded-bl-md'
                           }`}
                         >
                           <p className="text-sm break-words">{message.content}</p>
@@ -136,11 +161,12 @@ function ChatView() {
                         </span>
                       </div>
 
+                      {/* Avatar for sent messages (right side) */}
                       {isSentByMe && (
                         <Avatar
-                          name={user.full_name}
+                          name={user?.full_name || user?.name}
                           size="sm"
-                          className="ml-2 flex-shrink-0"
+                          className="ml-3 flex-shrink-0 self-end order-3"
                         />
                       )}
                     </div>
@@ -154,7 +180,9 @@ function ChatView() {
       </div>
 
       {/* Message Input */}
-      <MessageInput />
+      <div className="flex-shrink-0">
+        <MessageInput />
+      </div>
     </div>
   );
 }

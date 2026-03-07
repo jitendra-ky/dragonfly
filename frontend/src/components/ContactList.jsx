@@ -93,7 +93,7 @@ function ContactList() {
                   <div className="ml-3 flex-1 min-w-0 text-left">
                     <div className="flex items-baseline justify-between">
                       <p className="text-sm font-medium text-gray-900 truncate">
-                        {contact.contact || contact.full_name || contact.email || 'Unknown Contact'}
+                        {contact.email || contact.contact || contact.full_name || 'Unknown Contact'}
                       </p>
                       {lastMessage && (
                         <span className="text-xs text-gray-500 ml-2">
@@ -101,6 +101,11 @@ function ContactList() {
                         </span>
                       )}
                     </div>
+                    {(contact.full_name || contact.contact) && contact.email !== (contact.full_name || contact.contact) && (
+                      <p className="text-xs text-gray-600 truncate">
+                        {contact.full_name || contact.contact || 'No name'}
+                      </p>
+                    )}
                     {lastMessage && (
                       <p className="text-sm text-gray-500 truncate">
                         {lastMessage.content}

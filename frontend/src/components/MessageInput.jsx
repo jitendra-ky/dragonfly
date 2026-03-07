@@ -1,10 +1,12 @@
 import { useState } from 'react';
+import useAuthStore from '../store/authStore';
 import useChatStore from '../store/chatStore';
 import useWebSocket from '../hooks/useWebSocket';
 import { chatService } from '../services';
 import Button from './Button';
 
 function MessageInput() {
+  const user = useAuthStore((state) => state.user);
   const { selectedContactId, addMessage, isConnected } = useChatStore();
   const { sendMessage } = useWebSocket();
   const [message, setMessage] = useState('');
@@ -36,7 +38,15 @@ function MessageInput() {
 
       // Add message to store manually if WebSocket didn't handle it
       if (!isConnected) {
-        addMessage(selectedContactId, response);
+        // Ensure the message has the correct sender_id
+        const messageToAdd = {
+          ...response,
+          sender_id: user?.id,
+          receiver_id: selectedContactId,
+          content: messageContent,
+          timestamp: response.timestamp || new Date().toISOString()
+        };
+        addMessage(selectedContactId, messageToAdd);
       }
     } catch (error) {
       console.error('Error sending message:', error);
