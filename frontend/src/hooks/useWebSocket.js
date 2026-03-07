@@ -37,12 +37,12 @@ function useWebSocket() {
           const { sender, receiver, content, timestamp } = data;
 
           // Determine the contact ID (the other person in the conversation)
-          const contactId = sender === user.id ? receiver : sender;
+          const contactId = String(sender) === String(user?.id) ? receiver : sender;
 
           // Add message to store
           addMessage(contactId, {
-            sender_id: sender,
-            receiver_id: receiver,
+            sender_id: String(sender),
+            receiver_id: String(receiver),
             content,
             timestamp: timestamp || new Date().toISOString(),
           });
@@ -93,8 +93,8 @@ function useWebSocket() {
     (receiverId, content) => {
       if (wsRef.current && wsRef.current.readyState === WebSocket.OPEN) {
         const message = {
-          sender: user.id,
-          receiver: receiverId,
+          sender: String(user?.id),
+          receiver: String(receiverId),
           content,
         };
         wsRef.current.send(JSON.stringify(message));
