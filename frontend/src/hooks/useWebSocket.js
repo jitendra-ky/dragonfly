@@ -3,7 +3,7 @@ import useAuthStore from '../store/authStore';
 import useChatStore from '../store/chatStore';
 import { STORAGE_KEYS } from '../constants';
 
-const WS_URL = import.meta.env.VITE_WS_URL || 'ws://localhost:8888';
+const WS_URL = import.meta.env.VITE_WS_URL || 'ws://localhost:8000/ws/chat';
 
 function useWebSocket() {
   const user = useAuthStore((state) => state.user);
@@ -21,7 +21,7 @@ function useWebSocket() {
     if (!token) return;
 
     try {
-      const ws = new WebSocket(`${WS_URL}/websocket?token=${token}`);
+      const ws = new WebSocket(`${WS_URL}?token=${token}`);
 
       ws.onopen = () => {
         console.log('WebSocket connected');
