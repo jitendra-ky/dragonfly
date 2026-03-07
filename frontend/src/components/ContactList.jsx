@@ -7,9 +7,13 @@ function ContactList() {
   const [searchQuery, setSearchQuery] = useState('');
 
   // Filter contacts based on search query
-  const filteredContacts = contacts.filter((contact) =>
-    contact.full_name.toLowerCase().includes(searchQuery.toLowerCase())
-  );
+  const filteredContacts = contacts.filter((contact) => {
+    const contactName = contact.contact || contact.full_name || '';
+    const contactEmail = contact.email || '';
+    
+    return contactName.toLowerCase().includes(searchQuery.toLowerCase()) ||
+           contactEmail.toLowerCase().includes(searchQuery.toLowerCase());
+  });
 
   // Get last message for a contact
   const getLastMessage = (contactId) => {
@@ -80,12 +84,16 @@ function ContactList() {
                     isSelected ? 'bg-primary-50 border-l-4 border-primary-600' : ''
                   }`}
                 >
-                  <Avatar name={contact.full_name} size="md" className="flex-shrink-0" />
+                  <Avatar 
+                    name={contact.contact || contact.full_name || contact.email || 'Unknown'} 
+                    size="md" 
+                    className="flex-shrink-0" 
+                  />
                   
                   <div className="ml-3 flex-1 min-w-0 text-left">
                     <div className="flex items-baseline justify-between">
                       <p className="text-sm font-medium text-gray-900 truncate">
-                        {contact.full_name}
+                        {contact.contact || contact.full_name || contact.email || 'Unknown Contact'}
                       </p>
                       {lastMessage && (
                         <span className="text-xs text-gray-500 ml-2">
