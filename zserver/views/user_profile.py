@@ -1,8 +1,6 @@
 import os
 
 from django.contrib.auth import get_user_model
-from django.shortcuts import render
-from django.views import View
 from dotenv import load_dotenv
 from google.auth.transport import requests
 from google.oauth2 import id_token
@@ -97,49 +95,6 @@ class VerifyUserOTPView(APIView):
             tokens = serializer.signup_user()
             return Response(tokens, status=status.HTTP_200_OK)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
-
-class HomeView(View):
-
-    def get(self, request: Request) -> Response:
-        """Render the home page."""
-        context = {
-            "name" : "John Doe",
-            "env_var" : get_env_var(),
-        }
-        return render(request, "home.html", context)
-
-class SignInTemplateView(View):
-
-    def get(self, request: Request) -> Response:
-        """Render the sign-in page."""
-        context = {
-            "title" : "Sign In",
-            "env_var" : get_env_var(),
-        }
-        return render(request, "signin.html", context)
-
-
-class SignUpTemplateView(View):
-
-    def get(self, request: Request) -> Response:
-        """Render the sign-up page."""
-        context = {
-            "title" : "Sign Up",
-            "env_var" : get_env_var,
-        }
-        return render(request, "signup.html", context)
-
-
-class ForgotPasswordTemplateView(View):
-
-    def get(self, request: Request) -> Response:
-        """Render the forgot password page."""
-        context = {
-            "title": "Forgot Password",
-            "env_var": get_env_var(),
-        }
-        return render(request, "forgot_password.html", context)
 
 
 class GoogleLoginView(APIView):
