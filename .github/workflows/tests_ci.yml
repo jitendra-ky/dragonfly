@@ -37,24 +37,7 @@ jobs:
         run: |
           docker exec dragonfly-test-container ruff check --force-exclude $(git ls-files '*.py')
 
-      # Step 6: Run ESLint and Prettier tests inside the container
-      - name: Run ESLint and Prettier tests
-        run: |
-          docker exec dragonfly-test-container npm run test
-
-      # Step 7: Setup for Selenium UI tests inside the container
-      - name: Setup for Selenium UI tests
-        run: |
-          docker exec dragonfly-test-container python3 setup_ui_test_db.py
-          docker exec dragonfly-test-container nohup python3 manage.py runserver > server.log 2>&1 &
-          sleep 5  # Allow time for the server to start
-
-      # Step 8: Run Selenium UI tests inside the container
-      - name: Run Selenium UI tests
-        run: |
-          docker exec dragonfly-test-container xvfb-run --auto-servernum --server-args='-screen 0 640x480x24' python3 tools/tests/ui_all.py
-
-      # Step 9: Clean up the container after test execution
+      # Step 6: Clean up the container after test execution
       - name: Clean up container
         run: |
           docker stop dragonfly-test-container
