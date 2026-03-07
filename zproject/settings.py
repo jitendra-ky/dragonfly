@@ -35,13 +35,14 @@ AUTH_USER_MODEL = "zserver.User"
 # Application definition
 
 INSTALLED_APPS = [
+    "daphne",
     "django.contrib.admin",
     "django.contrib.auth",
     "django.contrib.contenttypes",
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
-    "corsheaders",
+    "channels",
     "corsheaders",
     "rest_framework",
     "zserver",
@@ -50,7 +51,6 @@ INSTALLED_APPS = [
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
-    "corsheaders.middleware.CorsMiddleware",
     "corsheaders.middleware.CorsMiddleware",
     "django.middleware.common.CommonMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
@@ -78,6 +78,7 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = "zproject.wsgi.application"
+ASGI_APPLICATION = "zproject.asgi.application"
 
 
 # Database
@@ -179,3 +180,10 @@ CORS_ALLOW_HEADERS = [
     'receiver',  # Custom header for chat messages
     '*',  # Allow all headers (use with caution in production)
 ]
+
+# Django Channels Configuration
+CHANNEL_LAYERS = {
+    "default": {
+        "BACKEND": "channels.layers.InMemoryChannelLayer"
+    }
+}
