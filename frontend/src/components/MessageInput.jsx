@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 import useAuthStore from '../store/authStore';
 import useChatStore from '../store/chatStore';
 import useWebSocket from '../hooks/useWebSocket';
@@ -11,6 +11,7 @@ function MessageInput() {
   const { sendMessage } = useWebSocket();
   const [message, setMessage] = useState('');
   const [sending, setSending] = useState(false);
+  const textareaRef = useRef(null);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -26,9 +27,17 @@ function MessageInput() {
       if (isConnected) {
         const sent = sendMessage(selectedContactId, messageContent);
         if (sent) {
-          // Message sent via WebSocket, also save to backend
+          // Add message to sender's view immediately (server only forwards to receiver)
+          addMessage(selectedContactId, {
+            sender_id: user?.id,
+            receiver_id: selectedContactId,
+            content: messageContent,
+            timestamp: new Date().toISOString(),
+          });
+          // Also save to backend
           await chatService.sendMessage(selectedContactId, messageContent);
           setSending(false);
+          setTimeout(() => textareaRef.current?.focus(), 0);
           return;
         }
       }
@@ -36,23 +45,20 @@ function MessageInput() {
       // Fallback to HTTP if WebSocket not available
       const response = await chatService.sendMessage(selectedContactId, messageContent);
 
-      // Add message to store manually if WebSocket didn't handle it
-      if (!isConnected) {
-        // Ensure the message has the correct sender_id
-        const messageToAdd = {
-          ...response,
-          sender_id: user?.id,
-          receiver_id: selectedContactId,
-          content: messageContent,
-          timestamp: response.timestamp || new Date().toISOString()
-        };
-        addMessage(selectedContactId, messageToAdd);
-      }
+      // Add message to store so sender sees it
+      addMessage(selectedContactId, {
+        ...response,
+        sender_id: user?.id,
+        receiver_id: selectedContactId,
+        content: messageContent,
+        timestamp: response.timestamp || new Date().toISOString(),
+      });
     } catch (error) {
       console.error('Error sending message:', error);
       setMessage(messageContent); // Restore message on error
     } finally {
       setSending(false);
+      setTimeout(() => textareaRef.current?.focus(), 0);
     }
   };
 
@@ -67,6 +73,7 @@ function MessageInput() {
     <form onSubmit={handleSubmit} className="p-4 border-t border-gray-200 bg-white">
       <div className="flex items-end space-x-2">
         <textarea
+          ref={textareaRef}
           value={message}
           onChange={(e) => setMessage(e.target.value)}
           onKeyPress={handleKeyPress}
@@ -74,7 +81,6 @@ function MessageInput() {
           rows="1"
           className="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 resize-none"
           style={{ maxHeight: '120px' }}
-          disabled={sending}
         />
         <Button
           type="submit"
