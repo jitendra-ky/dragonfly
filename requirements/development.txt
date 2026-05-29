@@ -12,3 +12,4 @@ geckodriver-autoinstaller==0.1.0
 psycopg2-binary==2.9.10
 channels==4.3.2
 channels-redis==4.3.0
+daphne>=4.0.0

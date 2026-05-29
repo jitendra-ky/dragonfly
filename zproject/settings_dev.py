@@ -1,9 +1,9 @@
-"""
-Development Django settings for zproject.
+"""Development Django settings for zproject.
+
 Extends common settings with development-specific configuration.
 """
 
-from .settings_common import *  # noqa: F403, F401
+from .settings_common import *  # noqa: F403
 
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = "django-insecure-^k!mmd@-uypekdtuyuj65duylqvj=w-2vhh6y^$be*qzq^+zfu"

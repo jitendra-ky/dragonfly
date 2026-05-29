@@ -56,7 +56,7 @@ class ChatConsumer(AsyncWebsocketConsumer):
             await self.close(code=4000)
             return
 
-    async def disconnect(self, close_code: int) -> None:
+    async def disconnect(self, _close_code: int) -> None:
         """Close the WebSocket connection."""
         if hasattr(self, "user_id") and self.user_id in connections:
             del connections[self.user_id]

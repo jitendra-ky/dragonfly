@@ -1,5 +1,4 @@
-"""
-Main Django settings loader for zproject.
+"""Main Django settings loader for zproject.
 
 Loads environment-specific settings based on DJANGO_ENV environment variable:
 - 'production' or 'prod': Uses settings_prod.py

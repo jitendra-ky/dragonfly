@@ -19,7 +19,6 @@ from zserver.serializers import (
     UserProfileSerializer,
     VerifyUserOTPSerializer,
 )
-from zserver.utils import get_env_var
 
 load_dotenv()
 
@@ -204,6 +203,6 @@ class ResetPasswordView(APIView):
 class HealthCheckView(APIView):
     permission_classes = [AllowAny]
 
-    def get(self, request: Request) -> Response:
+    def get(self, _request: Request) -> Response:
         """Health check endpoint for deployment monitoring."""
         return Response({"status": "healthy"}, status=status.HTTP_200_OK)

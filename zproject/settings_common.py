@@ -1,5 +1,5 @@
-"""
-Common Django settings for all environments.
+"""Common Django settings for all environments.
+
 This file contains shared configuration for both development and production.
 """
 
@@ -129,22 +129,22 @@ SIMPLE_JWT = {
 CORS_ALLOW_CREDENTIALS = True
 
 CORS_ALLOW_HEADERS = [
-    'accept',
-    'accept-encoding',
-    'authorization',
-    'content-type',
-    'dnt',
-    'origin',
-    'user-agent',
-    'x-csrftoken',
-    'x-requested-with',
-    'receiver',  # Custom header for chat messages
-    '*',  # Allow all headers (use with caution in production)
+    "accept",
+    "accept-encoding",
+    "authorization",
+    "content-type",
+    "dnt",
+    "origin",
+    "user-agent",
+    "x-csrftoken",
+    "x-requested-with",
+    "receiver",  # Custom header for chat messages
+    "*",  # Allow all headers (use with caution in production)
 ]
 
 # Django Channels Configuration
 CHANNEL_LAYERS = {
     "default": {
-        "BACKEND": "channels.layers.InMemoryChannelLayer"
-    }
+        "BACKEND": "channels.layers.InMemoryChannelLayer",
+    },
 }

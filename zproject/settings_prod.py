@@ -1,14 +1,13 @@
-"""
-Production Django settings for zproject.
+"""Production Django settings for zproject.
+
 Extends common settings with production-specific configuration.
 """
 
 import os
-from pathlib import Path
 
 from dotenv import load_dotenv
 
-from .settings_common import *  # noqa: F403, F401
+from .settings_common import *  # noqa: F403
 
 # Load environment variables from .env file
 load_dotenv()
@@ -40,7 +39,7 @@ DATABASES = {
         "OPTIONS": {
             "sslmode": "require",
         },
-    }
+    },
 }
 
 # Static files settings for production
