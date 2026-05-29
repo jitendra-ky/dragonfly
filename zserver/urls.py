@@ -8,6 +8,9 @@ from rest_framework_simplejwt.views import (
 from . import views
 
 urlpatterns = [
+    # Health check endpoint for deployment monitoring
+    path("api/health/", views.HealthCheckView.as_view(), name="health-check"),
+
     # API endpoints for React frontend
     path("api/user-profile/", views.UserProfileView.as_view(), name="user-profile"),
     path("api/sign-in/", views.SignInView.as_view(), name="sign-in"),

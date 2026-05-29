@@ -199,3 +199,11 @@ class ResetPasswordView(APIView):
             serializer.reset_password()
             return Response({"message": "Password reset successful."}, status=status.HTTP_200_OK)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+class HealthCheckView(APIView):
+    permission_classes = [AllowAny]
+
+    def get(self, request: Request) -> Response:
+        """Health check endpoint for deployment monitoring."""
+        return Response({"status": "healthy"}, status=status.HTTP_200_OK)
