@@ -1,9 +1,9 @@
 name: Build, Push Docker Image
 
 on:
-  push:
-    paths:
-      - 'tools/dockerfiles/Dockerfile.tests' # Triggers on changes to the specified file
+  # push:
+  #   paths:
+  #     - 'tools/dockerfiles/Dockerfile.tests' # Triggers on changes to the specified file
   workflow_dispatch:
 
 jobs:

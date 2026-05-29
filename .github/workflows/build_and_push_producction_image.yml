@@ -1,9 +1,9 @@
 name: CI - Build and Push Production Image
 
 on:
-  push:
-    branches:
-      - 'main' # Triggers on push to any branch
+  # push:
+  #   branches:
+  #     - 'main' # Triggers on push to any branch
   workflow_dispatch:
 
 jobs:
