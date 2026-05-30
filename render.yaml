@@ -1,0 +1,10 @@
+services:
+  - type: web
+    name: dragonfly-api
+    env: python
+    plan: free
+    buildCommand: pip install -r requirements/production.txt && python manage.py collectstatic --noinput
+    startCommand: daphne -b 0.0.0.0 -p $PORT zproject.asgi:application
+    envVars:
+      - key: DJANGO_ENV
+        value: production
