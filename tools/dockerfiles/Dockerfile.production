@@ -4,7 +4,7 @@ FROM python:3.10
 # Set environment variables
 ENV PYTHONUNBUFFERED=1
 # so that during build use production settings
-ENV DJANGO_SETTINGS_MODULE="zproject.settings_production"
+ENV DJANGO_ENV=production
 
 # Set the working directory inside the container
 WORKDIR /app
