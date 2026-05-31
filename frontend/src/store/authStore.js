@@ -1,7 +1,7 @@
 import { create } from 'zustand';
 import { authService } from '../services';
 
-const useAuthStore = create((set, get) => ({
+const useAuthStore = create((set) => ({
   user: null,
   loading: true,
 
@@ -13,77 +13,50 @@ const useAuthStore = create((set, get) => ({
 
   // Sign in action
   signIn: async (email, password) => {
-    try {
-      const data = await authService.signIn(email, password);
-      const { user, access, refresh } = data;
-      
-      authService.storeTokens(access, refresh, user);
-      set({ user });
-      
-      return data;
-    } catch (error) {
-      throw error;
-    }
+    const data = await authService.signIn(email, password);
+    const { user, access, refresh } = data;
+
+    authService.storeTokens(access, refresh, user);
+    set({ user });
+
+    return data;
   },
 
   // Sign up action
   signUp: async (fullName, email, password) => {
-    try {
-      const data = await authService.signUp(fullName, email, password);
-      return data;
-    } catch (error) {
-      throw error;
-    }
+    return await authService.signUp(fullName, email, password);
   },
 
   // Verify OTP action
   verifyOTP: async (email, otp) => {
-    try {
-      const data = await authService.verifyOTP(email, otp);
-      const { user, access, refresh } = data;
-      
-      authService.storeTokens(access, refresh, user);
-      set({ user });
-      
-      return data;
-    } catch (error) {
-      throw error;
-    }
+    const data = await authService.verifyOTP(email, otp);
+    const { user, access, refresh } = data;
+
+    authService.storeTokens(access, refresh, user);
+    set({ user });
+
+    return data;
   },
 
   // Google sign in action
   googleSignIn: async (code) => {
-    try {
-      const data = await authService.googleSignIn(code);
-      const { user, access, refresh } = data;
-      
-      authService.storeTokens(access, refresh, user);
-      set({ user });
-      
-      return data;
-    } catch (error) {
-      throw error;
-    }
+    const data = await authService.googleSignIn(code);
+    const { user, access, refresh } = data;
+
+    authService.storeTokens(access, refresh, user);
+    set({ user });
+
+    return data;
   },
 
   // Forgot password action
   forgotPassword: async (email) => {
-    try {
-      const data = await authService.forgotPassword(email);
-      return data;
-    } catch (error) {
-      throw error;
-    }
+    return await authService.forgotPassword(email);
   },
 
   // Reset password action
   resetPassword: async (email, otp, newPassword) => {
-    try {
-      const data = await authService.resetPassword(email, otp, newPassword);
-      return data;
-    } catch (error) {
-      throw error;
-    }
+    return await authService.resetPassword(email, otp, newPassword);
   },
 
   // Sign out action
