@@ -92,7 +92,7 @@ function SignUp() {
       setError('');
       // Show success message
       alert('OTP has been resent to your email');
-    } catch (err) {
+    } catch {
       setError('Failed to resend OTP. Please try again.');
     } finally {
       setLoading(false);
@@ -121,7 +121,7 @@ function SignUp() {
         try {
           await googleSignIn(code);
           navigate('/');
-        } catch (err) {
+        } catch {
           setError('Google sign-up failed. Please try again.');
         } finally {
           setLoading(false);

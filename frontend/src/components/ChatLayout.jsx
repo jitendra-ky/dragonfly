@@ -16,7 +16,7 @@ function ChatLayout() {
   const [showUserMenu, setShowUserMenu] = useState(false);
   const [showSidebar, setShowSidebar] = useState(true);
   const [showNewMessageModal, setShowNewMessageModal] = useState(false);
-  const { contacts, setContacts, selectedContactId } = useChatStore();
+  const { setContacts, selectedContactId } = useChatStore();
   const userMenuRef = useRef(null);
 
   // Initialize WebSocket
@@ -26,8 +26,8 @@ function ChatLayout() {
   useEffect(() => {
     const fetchContacts = async () => {
       try {
-        const contacts = await chatService.getContacts();
-        setContacts(contacts);
+        const fetchedContacts = await chatService.getContacts();
+        setContacts(fetchedContacts);
       } catch (error) {
         console.error('Error fetching contacts:', error);
       }
