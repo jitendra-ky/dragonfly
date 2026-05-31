@@ -2,6 +2,8 @@ import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import NewMessageModal from './NewMessageModal';
 
+import { vi } from 'vitest';
+
 const { setSelectedContact, setContacts, mockGetAllUsers } = vi.hoisted(() => ({
   setSelectedContact: vi.fn(),
   setContacts: vi.fn(),

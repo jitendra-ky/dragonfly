@@ -1,3 +1,7 @@
+
+/* eslint-env jest */
+import { vi } from 'vitest';
+
 const mockAuthService = {
   getStoredUser: vi.fn(),
   signIn: vi.fn(),

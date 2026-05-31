@@ -1,4 +1,6 @@
-import { renderHook, act, waitFor } from '@testing-library/react';
+import { renderHook, waitFor } from '@testing-library/react';
+/* eslint-env jest */
+import { vi } from 'vitest';
 import useWebSocket from './useWebSocket';
 import { STORAGE_KEYS } from '../constants';
 

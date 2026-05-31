@@ -1,7 +1,11 @@
+
 import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { MemoryRouter } from 'react-router-dom';
 import SignIn from './SignIn';
+
+/* eslint-env jest */
+import { vi } from 'vitest';
 
 const mockNavigate = vi.fn();
 const mockSignIn = vi.fn();

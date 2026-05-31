@@ -1,3 +1,4 @@
+/* eslint-env jest */
 import * as typesModule from './index';
 
 describe('types module', () => {

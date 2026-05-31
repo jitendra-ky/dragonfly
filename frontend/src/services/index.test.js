@@ -1,3 +1,5 @@
+
+/* eslint-env jest */
 import * as services from './index';
 
 describe('services index', () => {

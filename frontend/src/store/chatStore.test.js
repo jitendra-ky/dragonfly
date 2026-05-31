@@ -1,4 +1,5 @@
-import useChatStore from './chatStore';
+import { vi } from 'vitest'
+import useChatStore from './chatStore'
 
 describe('chatStore', () => {
   beforeEach(() => {

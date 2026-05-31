@@ -1,7 +1,11 @@
+
 import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { MemoryRouter } from 'react-router-dom';
 import ChatLayout from './ChatLayout';
+
+/* eslint-env jest */
+import { vi } from 'vitest';
 
 const { mockNavigate, mockSignOut, mockSetContacts, mockGetContacts } = vi.hoisted(() => ({
   mockNavigate: vi.fn(),

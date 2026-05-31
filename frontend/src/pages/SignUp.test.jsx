@@ -1,6 +1,10 @@
+
 import { fireEvent, render, screen, waitFor } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
 import SignUp from './SignUp';
+
+/* eslint-env jest */
+import { vi } from 'vitest';
 
 const mockNavigate = vi.fn();
 const mockSignUp = vi.fn();

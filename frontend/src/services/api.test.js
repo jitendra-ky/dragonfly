@@ -1,4 +1,7 @@
+
 import { API_CONFIG, STORAGE_KEYS } from '../constants';
+/* eslint-env jest */
+import { vi } from 'vitest';
 
 let createdApi;
 const mockAxiosPost = vi.fn();

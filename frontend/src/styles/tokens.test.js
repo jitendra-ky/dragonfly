@@ -1,3 +1,4 @@
+
 import { colors, spacing, typography, borderRadius, shadows, breakpoints } from './tokens';
 
 describe('style tokens', () => {
@@ -13,3 +14,4 @@ describe('style tokens', () => {
     expect(breakpoints.lg).toBe('1024px');
   });
 });
+/* eslint-env jest */

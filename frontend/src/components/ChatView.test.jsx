@@ -1,5 +1,9 @@
+
 import { render, screen, waitFor } from '@testing-library/react';
 import ChatView from './ChatView';
+
+/* eslint-env jest */
+import { vi } from 'vitest';
 
 const { setMessages, mockGetMessages } = vi.hoisted(() => ({
   setMessages: vi.fn(),

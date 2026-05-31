@@ -1,3 +1,6 @@
+
+/* eslint-env jest */
+import { vi } from 'vitest';
 import { API_CONFIG } from '../constants';
 
 const mockApi = {

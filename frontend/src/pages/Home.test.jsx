@@ -1,4 +1,8 @@
+
 import { render, screen } from '@testing-library/react';
+
+/* eslint-env jest */
+import { vi } from 'vitest';
 
 vi.mock('../components/ChatLayout', () => ({
   default: () => <div>Chat Layout</div>,
