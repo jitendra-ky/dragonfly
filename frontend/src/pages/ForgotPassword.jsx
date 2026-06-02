@@ -78,7 +78,7 @@ function ForgotPassword() {
     try {
       await forgotPassword(email);
       alert('Reset code has been resent to your email');
-    } catch (err) {
+    } catch {
       setError('Failed to resend code. Please try again.');
     } finally {
       setLoading(false);

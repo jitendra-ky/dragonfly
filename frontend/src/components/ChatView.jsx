@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useMemo } from 'react';
 import useAuthStore from '../store/authStore';
 import useChatStore from '../store/chatStore';
 import { chatService } from '../services';
@@ -13,7 +13,7 @@ function ChatView() {
   const messagesEndRef = useRef(null);
 
   const selectedContact = contacts.find((c) => c.id === selectedContactId);
-  const currentMessages = messages[selectedContactId] || [];
+  const currentMessages = useMemo(() => messages[selectedContactId] || [], [messages, selectedContactId]);
 
   // Fetch messages when contact is selected
   useEffect(() => {
@@ -70,7 +70,7 @@ function ChatView() {
     return groups;
   };
 
-  const messageGroups = groupMessagesByDate(currentMessages);
+  const messageGroups = useMemo(() => groupMessagesByDate(currentMessages), [currentMessages]);
 
   if (!selectedContact) {
     return null;

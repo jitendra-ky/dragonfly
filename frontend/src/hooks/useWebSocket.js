@@ -12,7 +12,8 @@ function useWebSocket() {
   const reconnectAttempts = useRef(0);
   const maxReconnectAttempts = 5;
 
-  const { setWsConnection, setIsConnected, addMessage, selectedContactId } = useChatStore();
+  const { setWsConnection, setIsConnected, addMessage, selectedContactId: _selectedContactId } = useChatStore();
+  const connectRef = useRef(null);
 
   const connect = useCallback(() => {
     if (!user) return;
@@ -68,7 +69,7 @@ function useWebSocket() {
           
           reconnectTimeoutRef.current = setTimeout(() => {
             reconnectAttempts.current += 1;
-            connect();
+            if (connectRef.current) connectRef.current();
           }, delay);
         }
       };
@@ -76,6 +77,11 @@ function useWebSocket() {
       console.error('Error creating WebSocket connection:', error);
     }
   }, [user, setIsConnected, setWsConnection, addMessage]);
+
+  // keep a ref to the latest connect function to avoid use-before-declare issues
+  useEffect(() => {
+    connectRef.current = connect;
+  }, [connect]);
 
   const disconnect = useCallback(() => {
     if (reconnectTimeoutRef.current) {

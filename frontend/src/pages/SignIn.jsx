@@ -69,7 +69,7 @@ function SignIn() {
         try {
           await googleSignIn(code);
           navigate('/');
-        } catch (err) {
+        } catch {
           setError('Google sign-in failed. Please try again.');
         } finally {
           setLoading(false);
