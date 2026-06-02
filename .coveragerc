@@ -1,0 +1,16 @@
+[run]
+source =
+    zserver
+    zproject
+omit =
+    */migrations/*
+    */tests/*
+    */__init__.py
+    manage.py
+    zproject/settings*.py
+
+[report]
+show_missing = True
+exclude_lines =
+    pragma: no cover
+    if __name__ == .__main__.:
