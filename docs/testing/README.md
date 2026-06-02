@@ -71,6 +71,12 @@ To run ESLint and Prettier check.
 npm run test
 ```
 
+to get the test coverage report
+
+```bash
+python -m coverage report
+```
+
 ### Tools
 
 - Ruff for linting Python code.
