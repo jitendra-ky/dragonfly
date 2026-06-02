@@ -27,17 +27,34 @@ jobs:
           docker run --name dragonfly-test-container -d \
             dragonfly-test-img
 
-      # Step 4: Run Django tests inside the container
-      - name: Run Django tests
+      # Step 4: Run Django tests with coverage inside the container
+      - name: Run Django tests with coverage
         run: |
-          docker exec dragonfly-test-container python manage.py test
+          docker exec dragonfly-test-container python -m coverage run manage.py test --noinput
+          docker exec dragonfly-test-container python -m coverage xml
+          docker exec dragonfly-test-container python -m coverage report
 
-      # Step 5: Run Ruff linter inside the container
+      # Step 5: Copy coverage report from the container
+      - name: Copy coverage report
+        run: |
+          docker cp dragonfly-test-container:/app/coverage.xml ./coverage.xml
+
+      # Step 6: Upload coverage report to Codecov
+      - name: Upload coverage to Codecov
+        uses: codecov/codecov-action@v4
+        with:
+          files: ./coverage.xml
+          flags: backend
+          fail_ci_if_error: true
+        env:
+          CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
+
+      # Step 7: Run Ruff linter inside the container
       - name: Run Ruff linter
         run: |
           docker exec dragonfly-test-container ruff check --force-exclude $(git ls-files '*.py')
 
-      # Step 6: Clean up the container after test execution
+      # Step 8: Clean up the container after test execution
       - name: Clean up container
         run: |
           docker stop dragonfly-test-container

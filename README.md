@@ -12,6 +12,7 @@ We're committed to building Dragonfly with excellence, which is reflected in our
 - **Organized issues and pull requests with labels:** We use labels to keep our development workflow efficient and transparent.
 
 [![release](https://img.shields.io/github/v/tag/jitendra-ky/dragonfly?label=release&color=blue)](https://github.com/jitendra-ky/dragonfly/releases)
+[![Codecov](https://codecov.io/gh/jitendra-ky/dragonfly/branch/main/graph/badge.svg?flag=backend)](https://codecov.io/gh/jitendra-ky/dragonfly)
 [![Ruff](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/astral-sh/ruff/main/assets/badge/v2.json)](https://github.com/astral-sh/ruff)
 [![code style: prettier](https://img.shields.io/badge/code_style-prettier-ff69b4.svg)](https://github.com/prettier/prettier)
 [![code style: prettier](https://badges.frapsoft.com/os/v1/open-source.svg?v=103)](https://github.com/jitendra-ky/dragonfly)

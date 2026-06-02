@@ -4,3 +4,5 @@ db.sqlite3
 .vscode
 .env
 node_modules
+.coverage
+htmlcov/

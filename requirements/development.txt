@@ -7,6 +7,7 @@ google-auth==2.38.0
 google-auth-oauthlib==1.2.1
 google-auth-httplib2==0.2.0
 ruff==0.9.6
+coverage==7.6.10
 selenium==4.29.0
 geckodriver-autoinstaller==0.1.0
 psycopg2-binary==2.9.10
