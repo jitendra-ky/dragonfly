@@ -25,6 +25,21 @@ python manage.py test
 
 We use Django's built-in test framework for testing API endpoints.
 
+## Backend Coverage
+
+Generate a coverage report for the backend tests:
+
+```bash
+python -m coverage run manage.py test --noinput
+python -m coverage report
+```
+
+Generate the HTML report and open `htmlcov/index.html` in a browser:
+
+```bash
+python -m coverage html
+```
+
 ## UI Tests
 
 ### Overview
@@ -69,12 +84,6 @@ To run ESLint and Prettier check.
 
 ```bash
 npm run test
-```
-
-to get the test coverage report
-
-```bash
-python -m coverage report
 ```
 
 ### Tools
