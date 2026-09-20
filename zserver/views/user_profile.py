@@ -1,6 +1,5 @@
 import os
 
-from django.contrib.auth import get_user_model
 from dotenv import load_dotenv
 from google.auth.transport import requests
 from google.oauth2 import id_token
@@ -11,6 +10,7 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework_simplejwt.tokens import RefreshToken
 
+from zserver.repositories import UserRepository
 from zserver.serializers import (
     ForgotPasswordSerializer,
     LoginSerializer,
@@ -21,8 +21,6 @@ from zserver.serializers import (
 )
 
 load_dotenv()
-
-User = get_user_model()
 
 class UserProfileView(APIView):
 
@@ -122,14 +120,10 @@ class GoogleLoginView(APIView):
             name = id_info.get("name", "")
 
             # Create or get user
-            user, created = User.objects.get_or_create(
+            user, _created = UserRepository().get_or_create_google_user(
                 email=email,
-                defaults={"contact": name, "is_active": True, "email_verified": True},
+                contact=name,
             )
-            # For Google OAuth users, set unusable password
-            if created:
-                user.set_unusable_password()
-                user.save()
 
             # Generate JWT tokens
             refresh = RefreshToken.for_user(user)

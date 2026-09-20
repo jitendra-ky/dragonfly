@@ -1,11 +1,10 @@
 import json
 
 from channels.generic.websocket import AsyncWebsocketConsumer
-from django.contrib.auth import get_user_model
 from rest_framework_simplejwt.exceptions import InvalidToken, TokenError
 from rest_framework_simplejwt.tokens import AccessToken, UntypedToken
 
-User = get_user_model()
+from zserver.repositories import UserRepository
 
 # Dictionary to keep track of user connections
 connections: dict[str, "ChatConsumer"] = {}
@@ -32,12 +31,8 @@ class ChatConsumer(AsyncWebsocketConsumer):
                 access_token = AccessToken(token_param)
                 user_id = access_token["user_id"]
 
-                try:
-                    user = await User.objects.aget(id=user_id)
-                    if not user.is_active:
-                        await self.close(code=4003)
-                        return
-                except User.DoesNotExist:
+                user = await UserRepository().get_active_user(user_id)
+                if user is None:
                     await self.close(code=4004)
                     return
 

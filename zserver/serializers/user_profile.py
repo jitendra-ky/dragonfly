@@ -1,65 +1,45 @@
 from django.contrib.auth import get_user_model
 from django.contrib.auth.hashers import make_password
-from django.db.models import Q  # Import Q object for building complex queries using OR conditions
 from rest_framework import serializers
 from rest_framework_simplejwt.tokens import RefreshToken
 
-from zserver.models import (
-    Message,
-    SignUpOTP,
-    UnverifiedUser,
-    VerifyUserOTP,
-)
+from zserver.domain.entities import User as UserEntity
+from zserver.models import SignUpOTP, UnverifiedUser, VerifyUserOTP
+from zserver.repositories import MessageRepository, UserRepository, VerificationRepository
 
 User = get_user_model()
 
 
 # Serializer class for the User model
-class UserProfileSerializer(serializers.ModelSerializer):
+class UserProfileSerializer(serializers.Serializer):
     # Add dynamic field for last message between the user and the contact
     last_message = serializers.SerializerMethodField()
+    id = serializers.IntegerField(read_only=True)
+    contact = serializers.CharField()
+    email = serializers.EmailField()
+    password = serializers.CharField(write_only=True, required=False)
 
-    class Meta:
-        """Meta class to specify the model and fields to be serialized."""
-
-        model = User  # Specify the model to be serialized
-        fields = [
-            "id",
-            "contact",
-            "email",
-            "password",
-            "last_message",
-        ]  # Fields to be included in the serialization
-        extra_kwargs = {
-            "password": {"write_only": True},  # Make the password field write-only
-        }
-
-    def get_last_message(self, contact: User) -> str:
+    def get_last_message(self, contact: User | UserEntity) -> str | None:
         """Retrieve the last message exchanged with the given contact."""
         # Get the authenticated user from serializer context
         user = self.context.get("user")
         if not user:
             return None
 
-        # Fetch the latest message between user and this contact
-        last_msg = Message.objects.filter(
-            Q(sender=user, receiver=contact) | Q(sender=contact, receiver=user),
-        ).order_by("-timestamp").first()
-
-        # Return message text if available, else None
-        return last_msg.content if last_msg else None
+        messages = MessageRepository().conversation(
+            user_id=user.id,
+            contact_id=contact.id,
+        )
+        return messages[-1].content if messages else None
 
     def update(self, instance: User, validated_data: dict) -> User:
         """Update an existing user profile."""
-        instance.contact = validated_data.get("contact", instance.contact)
-        instance.email = validated_data.get("email", instance.email)
-
-        # Use set_password for proper hashing
-        if "password" in validated_data:
-            instance.set_password(validated_data["password"])
-
-        instance.save()
-        return instance
+        return UserRepository().update(
+            instance,
+            contact=validated_data.get("contact", instance.contact),
+            email=validated_data.get("email", instance.email),
+            password=validated_data.get("password"),
+        )
 
 
 # Serializer class for the UnverifiedUser model
@@ -79,21 +59,14 @@ class UnverifiedUserProfileSerializer(serializers.ModelSerializer):
 
     def validate_email(self, value: str) -> str:
         """Validate that the email is not already in use."""
-        if User.objects.filter(email=value).exists():
+        if UserRepository().email_exists(value):
             raise serializers.ValidationError("Email is already in use.")
         return value
 
     def create(self, validated_data: dict) -> UnverifiedUser:
         """Create a new unverified user profile."""
-        if UnverifiedUser.objects.filter(email=validated_data["email"]).exists():
-            UnverifiedUser.objects.filter(email=validated_data["email"]).delete()
-        # Create a new unverified user profile
-        # and generate an OTP for verification
-        # Hash the password before storing
         validated_data["password"] = make_password(validated_data["password"])
-        user = UnverifiedUser.objects.create(**validated_data)
-        user.generate_otp()
-        return user
+        return VerificationRepository().create_unverified_user(**validated_data)
 
 
 # serializer for VerifyUserOTP model
@@ -112,12 +85,12 @@ class VerifyUserOTPSerializer(serializers.ModelSerializer):
         otp = data.get("otp")
 
         try:
-            user = UnverifiedUser.objects.get(email=email)
+            user = VerificationRepository().get_unverified_user(email)
         except UnverifiedUser.DoesNotExist as err:
             raise serializers.ValidationError({"email": "User does not exist."}) from err
 
         try:
-            user_otp = VerifyUserOTP.objects.get(user=user)
+            user_otp = VerificationRepository().get_verification_otp(user)
         except VerifyUserOTP.DoesNotExist as err:
             raise serializers.ValidationError({"otp": "OTP does not exist."}) from err
 
@@ -132,16 +105,10 @@ class VerifyUserOTPSerializer(serializers.ModelSerializer):
         """Add user to User table, delete the OTP, and return JWT tokens."""
         unverified_user = self.validated_data["user"]
         # Create verified user with already-hashed password
-        user = User(
-            contact=unverified_user.contact,
-            email=unverified_user.email,
-            password=unverified_user.password,  # Already hashed
-            is_active=True,
-            email_verified=True,
+        user = VerificationRepository().complete_signup(
+            unverified_user,
+            self.validated_data["user_otp"],
         )
-        user.save()
-        unverified_user.delete()
-        self.validated_data["user_otp"].delete()
 
         # Generate JWT tokens for the new user
         refresh = RefreshToken.for_user(user)
@@ -170,7 +137,7 @@ class LoginSerializer(serializers.Serializer):
 
         # First check if user exists
         try:
-            user = User.objects.get(email=email)
+            user = UserRepository().get_by_email(email)
         except User.DoesNotExist as err:
             raise serializers.ValidationError({"email": "User does not exist."}) from err
 
@@ -208,15 +175,15 @@ class ForgotPasswordSerializer(serializers.Serializer):
 
     def validate_email(self, value: str) -> str:
         """Validate that the email exists in the database."""
-        if not User.objects.filter(email=value).exists():
+        if not UserRepository().email_exists(value):
             raise serializers.ValidationError("User with this email does not exist.")
         return value
 
     def send_reset_otp(self) -> None:
         """Send a password reset OTP to the user."""
         email = self.validated_data["email"]
-        user = User.objects.get(email=email)
-        user.generate_otp()
+        user = UserRepository().get_by_email(email)
+        VerificationRepository().create_password_reset_otp(user)
         print(f"Sending password reset OTP to {email}")
 
 
@@ -233,12 +200,12 @@ class ResetPasswordSerializer(serializers.Serializer):
         otp = data.get("otp")
 
         try:
-            user = User.objects.get(email=email)
+            user = UserRepository().get_by_email(email)
         except User.DoesNotExist as err:
             raise serializers.ValidationError({"email": "User does not exist."}) from err
 
         try:
-            user_otp = SignUpOTP.objects.get(user=user)
+            user_otp = VerificationRepository().get_password_reset_otp(user)
         except SignUpOTP.DoesNotExist as err:
             raise serializers.ValidationError({"otp": "OTP does not exist."}) from err
 
