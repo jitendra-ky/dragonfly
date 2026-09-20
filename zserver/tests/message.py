@@ -9,17 +9,26 @@ from zserver.models import Message
 User = get_user_model()
 
 
+def create_user(*, contact: str, email: str, **fields):
+    return User.objects.create_user(
+        username=email,
+        first_name=contact,
+        email=email,
+        **fields,
+    )
+
+
 class MessageViewTest(APITestCase):
     def setUp(self):
         """Set up test data for MessageViewTest."""
         self.client = APIClient()
-        self.sender = User.objects.create_user(
+        self.sender = create_user(
             contact="Sender User",
             email="sender_user@jitendra.me",
             password="password123",
             is_active=True,
         )
-        self.receiver = User.objects.create_user(
+        self.receiver = create_user(
             contact="Receiver User",
             email="receiver_user@jitendra.me",
             password="password123",
@@ -68,13 +77,13 @@ class ContactViewTest(APITestCase):
     def setUp(self):
         """Set up test data for ContactViewTest."""
         self.client = APIClient()
-        self.user = User.objects.create_user(
+        self.user = create_user(
             contact="Test User",
             email="test_user@jitendra.me",
             password="password123",
             is_active=True,
         )
-        self.contact = User.objects.create_user(
+        self.contact = create_user(
             contact="Contact User",
             email="contact_user@jitendra.me",
             password="password123",
@@ -104,13 +113,13 @@ class AllUsersViewTest(APITestCase):
     def setUp(self):
         """Set up test data for AllUsersViewTest."""
         self.client = APIClient()
-        self.user1 = User.objects.create_user(
+        self.user1 = create_user(
             contact="User One",
             email="user1@jitendra.me",
             password="password123",
             is_active=True,
         )
-        self.user2 = User.objects.create_user(
+        self.user2 = create_user(
             contact="User Two",
             email="user2@jitendra.me",
             password="password123",

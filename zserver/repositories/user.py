@@ -1,5 +1,8 @@
+from django.contrib.auth import get_user_model
+
 from zserver.domain.entities import User
-from zserver.models.user_profile import User as UserModel
+
+UserModel = get_user_model()
 
 
 class UserRepository:
@@ -21,8 +24,8 @@ class UserRepository:
     def get_or_create_google_user(self, *, email: str, contact: str) -> tuple[UserModel, bool]:
         """Get or create an active user for Google authentication."""
         user, created = UserModel.objects.get_or_create(
-            email=email,
-            defaults={"contact": contact, "is_active": True, "email_verified": True},
+            username=email,
+            defaults={"email": email, "first_name": contact, "is_active": True},
         )
         if created:
             user.set_unusable_password()
@@ -45,7 +48,7 @@ class UserRepository:
         password: str | None,
     ) -> UserModel:
         """Update a user model and return it for response serialization."""
-        user.contact = contact
+        user.first_name = contact
         user.email = email
         if password is not None:
             user.set_password(password)
@@ -54,4 +57,4 @@ class UserRepository:
 
     @staticmethod
     def _to_entity(user: UserModel) -> User:
-        return User(id=user.id, email=user.email, contact=user.contact)
+        return User(id=user.id, email=user.email, contact=user.first_name)

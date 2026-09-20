@@ -1,10 +1,9 @@
 from django.contrib.auth import get_user_model
-from django.contrib.auth.hashers import make_password
 from rest_framework import serializers
 from rest_framework_simplejwt.tokens import RefreshToken
 
 from zserver.domain.entities import User as UserEntity
-from zserver.models import SignUpOTP, UnverifiedUser, VerifyUserOTP
+from zserver.models import SignUpOTP, VerifyUserOTP
 from zserver.repositories import MessageRepository, UserRepository, VerificationRepository
 
 User = get_user_model()
@@ -15,7 +14,7 @@ class UserProfileSerializer(serializers.Serializer):
     # Add dynamic field for last message between the user and the contact
     last_message = serializers.SerializerMethodField()
     id = serializers.IntegerField(read_only=True)
-    contact = serializers.CharField()
+    contact = serializers.CharField(source="first_name")
     email = serializers.EmailField()
     password = serializers.CharField(write_only=True, required=False)
 
@@ -36,26 +35,19 @@ class UserProfileSerializer(serializers.Serializer):
         """Update an existing user profile."""
         return UserRepository().update(
             instance,
-            contact=validated_data.get("contact", instance.contact),
+            contact=validated_data.get("first_name", instance.first_name),
             email=validated_data.get("email", instance.email),
             password=validated_data.get("password"),
         )
 
 
 # Serializer class for the UnverifiedUser model
-class UnverifiedUserProfileSerializer(serializers.ModelSerializer):
+class UnverifiedUserProfileSerializer(serializers.Serializer):
+    contact = serializers.CharField(source="first_name")
+    email = serializers.EmailField()
+    password = serializers.CharField(write_only=True)
     class Meta:
         """Meta class to specify the model and fields to be serialized."""
-
-        model = UnverifiedUser
-        fields = [
-            "contact",
-            "email",
-            "password",
-        ]  # Fields to be included in the serialization
-        extra_kwargs = {
-            "password": {"write_only": True},  # Make the password field write-only
-        }
 
     def validate_email(self, value: str) -> str:
         """Validate that the email is not already in use."""
@@ -63,10 +55,13 @@ class UnverifiedUserProfileSerializer(serializers.ModelSerializer):
             raise serializers.ValidationError("Email is already in use.")
         return value
 
-    def create(self, validated_data: dict) -> UnverifiedUser:
+    def create(self, validated_data: dict) -> User:
         """Create a new unverified user profile."""
-        validated_data["password"] = make_password(validated_data["password"])
-        return VerificationRepository().create_unverified_user(**validated_data)
+        return VerificationRepository().create_unverified_user(
+            contact=validated_data["first_name"],
+            email=validated_data["email"],
+            password=validated_data["password"],
+        )
 
 
 # serializer for VerifyUserOTP model
@@ -86,7 +81,7 @@ class VerifyUserOTPSerializer(serializers.ModelSerializer):
 
         try:
             user = VerificationRepository().get_unverified_user(email)
-        except UnverifiedUser.DoesNotExist as err:
+        except User.DoesNotExist as err:
             raise serializers.ValidationError({"email": "User does not exist."}) from err
 
         try:
@@ -119,7 +114,7 @@ class VerifyUserOTPSerializer(serializers.ModelSerializer):
             "user": {
                 "id": user.id,
                 "email": user.email,
-                "contact": user.contact,
+                "contact": user.first_name,
             },
         }
 
@@ -163,7 +158,7 @@ class LoginSerializer(serializers.Serializer):
             "user": {
                 "id": user.id,
                 "email": user.email,
-                "contact": user.contact,
+                "contact": user.first_name,
             },
         }
 

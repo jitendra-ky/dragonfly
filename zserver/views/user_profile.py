@@ -135,7 +135,7 @@ class GoogleLoginView(APIView):
                 "user": {
                     "id": user.id,
                     "email": user.email,
-                    "contact": user.contact,
+                    "contact": user.first_name,
                 },
             }, status=status.HTTP_200_OK)
 

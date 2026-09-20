@@ -5,9 +5,18 @@ from rest_framework import status
 from rest_framework.test import APIClient
 from rest_framework_simplejwt.tokens import RefreshToken
 
-from zserver.models import SignUpOTP, UnverifiedUser, VerifyUserOTP
+from zserver.models import SignUpOTP, VerifyUserOTP
 
 User = get_user_model()
+
+
+def create_user(*, contact: str, email: str, **fields):
+    return User.objects.create_user(
+        username=email,
+        first_name=contact,
+        email=email,
+        **fields,
+    )
 
 
 class UserProfileViewTest(TestCase):
@@ -21,14 +30,14 @@ class UserProfileViewTest(TestCase):
         # then it will also make sure that some user not exist
         self.client = APIClient()
         # creating not active user
-        self.user = User.objects.create_user(
+        self.user = create_user(
             contact="not active user",
             email="not_active_user@gmail.com",
             password="password123",
             is_active=False,
         )
         # creating active user with JWT token
-        self.active_user_with_token = User.objects.create_user(
+        self.active_user_with_token = create_user(
             contact="active user",
             email="active_user@jitenddra.me",
             password="password123",
@@ -37,7 +46,7 @@ class UserProfileViewTest(TestCase):
         refresh = RefreshToken.for_user(self.active_user_with_token)
         self.access_token = str(refresh.access_token)
         # creating active user without token
-        self.active_user_without_token = User.objects.create_user(
+        self.active_user_without_token = create_user(
             contact="active user without token",
             email="active_user_without_token@jitendra.me",
             password="password123",
@@ -88,9 +97,9 @@ class UserProfileViewTest(TestCase):
         self.assertEqual(response.data["email"], new_user["email"])
         # now check the user is created and opt is generated
         try:
-            user = UnverifiedUser.objects.get(email=new_user["email"])
+            user = User.objects.get(username=new_user["email"], is_active=False)
             print("User created successfully")
-        except UnverifiedUser.DoesNotExist:
+        except User.DoesNotExist:
             self.fail("User not created")
         try:
             VerifyUserOTP.objects.get(user=user)
@@ -100,7 +109,7 @@ class UserProfileViewTest(TestCase):
 
         # this will send a post request to create a user that already exits
         existed_user = {
-            "contact": self.active_user_without_token.contact,
+            "contact": self.active_user_without_token.first_name,
             "email": self.active_user_without_token.email,
             "password": "somepassword",
         }
@@ -179,14 +188,14 @@ class SignInViewTest(TestCase):
         # then it will also make sure that some user not exist
         self.client = APIClient()
         # creating not active user
-        self.user = User.objects.create_user(
+        self.user = create_user(
             contact="not active user",
             email="not_active_user@gmail.com",
             password="password123",
             is_active=False,
         )
         # creating active user with JWT token
-        self.active_user_with_token = User.objects.create_user(
+        self.active_user_with_token = create_user(
             contact="active user",
             email="active_user@jitenddra.me",
             password="password123",
@@ -195,7 +204,7 @@ class SignInViewTest(TestCase):
         refresh = RefreshToken.for_user(self.active_user_with_token)
         self.access_token = str(refresh.access_token)
         # creating active user without token
-        self.active_user_without_token = User.objects.create_user(
+        self.active_user_without_token = create_user(
             contact="active user without token",
             email="active_user_without_token@jitendra.me",
             password="password123",
@@ -323,7 +332,7 @@ class VerifyUserOTPTest(TestCase):
         response = self.client.post(reverse("user-profile"), new_user)
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
         # get the otp
-        user = UnverifiedUser.objects.get(email=new_user["email"])
+        user = User.objects.get(username=new_user["email"], is_active=False)
         otp = VerifyUserOTP.objects.get(user=user)
         # test the otp
         data = {"email": new_user["email"], "otp": otp.otp}
@@ -347,7 +356,7 @@ class VerifyUserOTPTest(TestCase):
 class ForgotPasswordViewTest(TestCase):
     def setUp(self):
         """Set up test data for ForgotPasswordViewTest."""
-        self.active_user = User.objects.create_user(
+        self.active_user = create_user(
             contact="Test User",
             email="test_user@jitendra.me",
             password="rootrootroot",
@@ -370,13 +379,13 @@ class ResetPasswordViewTest(TestCase):
         self.url = reverse("reset-password")
 
         # Create a user and generate OTP
-        self.user = User.objects.create_user(
+        self.user = create_user(
             contact="Test User",
             email="test_user@jitendra.me",
             password="oldpassword",
             is_active=True,
         )
-        self.user.generate_otp()
+        SignUpOTP.objects.create(user=self.user, otp="123456")
         self.otp = SignUpOTP.objects.get(user=self.user).otp
 
     def test_reset_password_valid_otp(self):

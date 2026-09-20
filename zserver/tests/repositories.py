@@ -9,16 +9,25 @@ from zserver.repositories import MessageRepository, UserRepository, Verification
 User = get_user_model()
 
 
+def create_user(*, contact: str, email: str, **fields):
+    return User.objects.create_user(
+        username=email,
+        first_name=contact,
+        email=email,
+        **fields,
+    )
+
+
 class RepositoryTest(TestCase):
     def setUp(self) -> None:
         """Create users used by repository tests."""
-        self.sender = User.objects.create_user(
+        self.sender = create_user(
             email="sender@example.com",
             contact="Sender",
             password="password123",
             is_active=True,
         )
-        self.receiver = User.objects.create_user(
+        self.receiver = create_user(
             email="receiver@example.com",
             contact="Receiver",
             password="password123",
