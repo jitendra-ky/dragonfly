@@ -32,7 +32,12 @@ vi.mock('../store/authStore', () => ({
 describe('SignIn page', () => {
   beforeEach(() => {
     vi.clearAllMocks();
+    vi.stubEnv('VITE_DEV_MODE', 'false');
     authState = { user: null, signIn: mockSignIn, googleSignIn: mockGoogleSignIn };
+  });
+
+  afterEach(() => {
+    vi.unstubAllEnvs();
   });
 
   it('submits credentials and navigates home on success', async () => {
@@ -71,6 +76,52 @@ describe('SignIn page', () => {
 
     await waitFor(() => {
       expect(screen.getByText('Invalid email or password')).toBeInTheDocument();
+    });
+  });
+
+  it('shows all seeded test users in dev mode', () => {
+    vi.stubEnv('VITE_DEV_MODE', 'true');
+
+    render(
+      <MemoryRouter>
+        <SignIn />
+      </MemoryRouter>
+    );
+
+    expect(screen.getByText('Test users')).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'Login as Alice' })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'Login as Bob' })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'Login as Carol' })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'Login as Dave' })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'Login as Eve' })).toBeInTheDocument();
+  });
+
+  it('hides seeded test users outside dev mode', () => {
+    render(
+      <MemoryRouter>
+        <SignIn />
+      </MemoryRouter>
+    );
+
+    expect(screen.queryByText('Test users')).not.toBeInTheDocument();
+  });
+
+  it('logs in with a selected seeded test user', async () => {
+    const user = userEvent.setup();
+    vi.stubEnv('VITE_DEV_MODE', 'true');
+    mockSignIn.mockResolvedValueOnce({ ok: true });
+
+    render(
+      <MemoryRouter>
+        <SignIn />
+      </MemoryRouter>
+    );
+
+    await user.click(screen.getByRole('button', { name: 'Login as Carol' }));
+
+    await waitFor(() => {
+      expect(mockSignIn).toHaveBeenCalledWith('carol@example.com', 'password123');
+      expect(mockNavigate).toHaveBeenCalledWith('/');
     });
   });
 });

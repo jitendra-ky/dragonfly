@@ -5,6 +5,14 @@ import Button from '../components/Button';
 import Input from '../components/Input';
 import LoadingSpinner from '../components/LoadingSpinner';
 
+const TEST_USERS = [
+  { name: 'Alice', email: 'alice@example.com', password: 'password123' },
+  { name: 'Bob', email: 'bob@example.com', password: 'password123' },
+  { name: 'Carol', email: 'carol@example.com', password: 'password123' },
+  { name: 'Dave', email: 'dave@example.com', password: 'password123' },
+  { name: 'Eve', email: 'eve@example.com', password: 'password123' },
+];
+
 function SignIn() {
   const navigate = useNavigate();
   const user = useAuthStore((state) => state.user);
@@ -16,6 +24,7 @@ function SignIn() {
   });
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
+  const devMode = import.meta.env.VITE_DEV_MODE === 'true';
 
   // Redirect if already logged in
   useEffect(() => {
@@ -32,19 +41,23 @@ function SignIn() {
     setError('');
   };
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
+  const handleSignIn = async (email, password) => {
     setError('');
     setLoading(true);
 
     try {
-      await signIn(formData.email, formData.password);
+      await signIn(email, password);
       navigate('/');
     } catch (err) {
       setError(err.response?.data?.detail || 'Invalid email or password');
     } finally {
       setLoading(false);
     }
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    await handleSignIn(formData.email, formData.password);
   };
 
   const handleGoogleSignIn = () => {
@@ -138,6 +151,26 @@ function SignIn() {
               {loading ? <LoadingSpinner size="sm" /> : 'Sign In'}
             </Button>
           </form>
+
+          {devMode && (
+            <div className="mt-6 border-t border-gray-200 pt-6">
+              <p className="mb-3 text-sm font-medium text-gray-700">Test users</p>
+              <div className="grid grid-cols-2 gap-2">
+                {TEST_USERS.map((testUser) => (
+                  <Button
+                    key={testUser.email}
+                    type="button"
+                    variant="outline"
+                    onClick={() => handleSignIn(testUser.email, testUser.password)}
+                    disabled={loading}
+                    className="w-full"
+                  >
+                    Login as {testUser.name}
+                  </Button>
+                ))}
+              </div>
+            </div>
+          )}
 
           {/* Divider */}
           <div className="my-6 flex items-center">
