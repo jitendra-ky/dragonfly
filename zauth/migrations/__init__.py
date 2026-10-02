@@ -1,0 +1,1 @@
+"""zauth migrations package."""

@@ -17,7 +17,7 @@ os.environ.setdefault("DJANGO_SETTINGS_MODULE", "zproject.settings")
 
 django_asgi_app = get_asgi_application()
 
-from zserver.routing import websocket_urlpatterns  # noqa: E402
+from zchat.routing import websocket_urlpatterns  # noqa: E402
 
 application = ProtocolTypeRouter({
     "http": django_asgi_app,

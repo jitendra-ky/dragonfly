@@ -11,7 +11,7 @@ os.environ.setdefault("DJANGO_SETTINGS_MODULE", "zproject.settings")
 django.setup()
 
 from django.contrib.auth import get_user_model
-from zserver.models.message import Message
+from zchat.models import Message
 
 User = get_user_model()
 

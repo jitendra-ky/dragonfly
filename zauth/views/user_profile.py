@@ -1,0 +1,220 @@
+import os
+
+from dotenv import load_dotenv
+from google.auth.transport import requests
+from google.oauth2 import id_token
+from rest_framework import status
+from rest_framework.permissions import AllowAny, IsAuthenticated
+from rest_framework.request import Request
+from rest_framework.response import Response
+from rest_framework.views import APIView
+from rest_framework_simplejwt.tokens import RefreshToken
+
+from zauth.repositories import UserRepository
+from zauth.serializers import (
+    ForgotPasswordSerializer,
+    LoginSerializer,
+    ResetPasswordSerializer,
+    UnverifiedUserProfileSerializer,
+    UserProfileSerializer,
+    VerifyUserOTPSerializer,
+)
+from zchat.repositories import MessageRepository
+
+load_dotenv()
+
+
+class UserProfileView(APIView):
+
+    def get_permissions(self):
+        """Instantiate and return the list of permissions that this view requires.
+
+        POST (signup) is public, other methods require authentication.
+        """
+        if self.request.method == "POST":
+            return [AllowAny()]
+        return [IsAuthenticated()]
+
+    def get(self, request: Request) -> Response:
+        """Retrieve the profile of the signed-in user."""
+        serializer = UserProfileSerializer(request.user)
+        return Response(serializer.data)
+
+    def post(self, request: Request) -> Response:
+        """Create a new user profile."""
+        serializer = UnverifiedUserProfileSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    def put(self, request: Request) -> Response:
+        """Update the profile of the signed-in user."""
+        serializer = UserProfileSerializer(request.user, data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    def delete(self, request: Request) -> Response:
+        """Delete the profile of the signed-in user."""
+        request.user.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
+
+
+class SignInView(APIView):
+
+    def get_permissions(self):
+        """GET requires authentication, POST (login) is public."""
+        if self.request.method == "GET":
+            return [IsAuthenticated()]
+        return [AllowAny()]
+
+    def get(self, request: Request) -> Response:
+        """Retrieve the profile of the signed-in user."""
+        serializer = UserProfileSerializer(request.user)
+        return Response(serializer.data)
+
+    def post(self, request: Request) -> Response:
+        """Authenticate user and return JWT tokens."""
+        serializer = LoginSerializer(data=request.data)
+        if serializer.is_valid():
+            tokens = serializer.get_tokens()
+            return Response(tokens, status=status.HTTP_200_OK)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+class VerifyUserOTPView(APIView):
+    permission_classes = [AllowAny]
+
+    def post(self, request: Request) -> Response:
+        """Verify OTP, signup user, and return JWT tokens."""
+        serializer = VerifyUserOTPSerializer(data=request.data)
+        if serializer.is_valid():
+            tokens = serializer.signup_user()
+            return Response(tokens, status=status.HTTP_200_OK)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+class GoogleLoginView(APIView):
+    permission_classes = [AllowAny]
+
+    def post(self, request: Request) -> Response:
+        """Handle Google login and return JWT tokens for the user."""
+        try:
+            authorization_code = request.data.get("code")
+
+            # Exchange authorization code for tokens
+            tokens = self.exchange_authorization_code(authorization_code)
+            print("get the token")
+
+            # Verify the token with Google's API
+            google_client_id = os.getenv("GOOGLE_CLIENT_ID")
+            id_info = id_token.verify_oauth2_token(tokens["id_token"],
+                                                   requests.Request(),
+                                                   google_client_id)
+
+            if id_info["iss"] not in ["accounts.google.com", "https://accounts.google.com"]:
+                return Response({"message": "Invalid issuer"}, status=status.HTTP_403_FORBIDDEN)
+
+            # Get user information
+            email = id_info["email"]
+            name = id_info.get("name", "")
+
+            # Create or get user
+            user, _created = UserRepository().get_or_create_google_user(
+                email=email,
+                contact=name,
+            )
+
+            # Generate JWT tokens
+            refresh = RefreshToken.for_user(user)
+
+            return Response({
+                "message": "Login successful!",
+                "refresh": str(refresh),
+                "access": str(refresh.access_token),
+                "user": {
+                    "id": user.id,
+                    "email": user.email,
+                    "contact": user.first_name,
+                },
+            }, status=status.HTTP_200_OK)
+
+        except Exception as e:
+            return Response({"message": str(e)}, status=status.HTTP_400_BAD_REQUEST)
+
+    def exchange_authorization_code(self, authorization_code: str) -> dict:
+        """Exchange the authorization code for tokens."""
+        client_id = os.getenv("GOOGLE_CLIENT_ID")
+        client_secret = os.getenv("GOOGLE_CLIENT_SECRET")
+        redirect_uri = os.getenv("GOOGLE_REDIRECT_URI")
+
+        token_request_data = {
+            "code": authorization_code,
+            "client_id": client_id,
+            "client_secret": client_secret,
+            "redirect_uri": redirect_uri,
+            "grant_type": "authorization_code",
+        }
+        response = requests.requests.post(
+            "https://oauth2.googleapis.com/token",
+            data=token_request_data,
+        )
+        response_data = response.json()
+
+        http_success_code = 200
+        if response.status_code != http_success_code:
+            print("exchange authorization error")
+            raise Exception(response_data.get("error",
+                                              "Failed to exchange authorization code"))
+
+        return response_data
+
+
+class ForgotPasswordView(APIView):
+    permission_classes = [AllowAny]
+
+    def post(self, request: Request) -> Response:
+        """Handle forgot password request."""
+        serializer = ForgotPasswordSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.send_reset_otp()
+            return Response({"message": "Password reset OTP sent."}, status=status.HTTP_200_OK)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+class ResetPasswordView(APIView):
+    permission_classes = [AllowAny]
+
+    def post(self, request: Request) -> Response:
+        """Handle password reset using OTP."""
+        serializer = ResetPasswordSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.reset_password()
+            return Response({"message": "Password reset successful."}, status=status.HTTP_200_OK)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+class ContactView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request: Request) -> Response:
+        """Retrieve all contacts for the authenticated user."""
+        user = request.user
+        contacts = UserRepository().get_many(
+            MessageRepository().contacts(user_id=user.id),
+        )
+        # With this one — pass the authenticated user via context for custom field logic
+        serializer = UserProfileSerializer(contacts, many=True, context={"user": user})
+        return Response(serializer.data)
+
+
+class AllUsersView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, _request: Request) -> Response:
+        """Retrieve all users."""
+        users = UserRepository().get_many()
+        serializer = UserProfileSerializer(users, many=True)
+        return Response(serializer.data)

@@ -1,6 +1,8 @@
 [run]
 source =
-    zserver
+    zauth
+    zchat
+    zcore
     zproject
 omit =
     */migrations/*

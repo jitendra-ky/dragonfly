@@ -70,17 +70,9 @@ dragonfly/
 │   │   └── build_and_push_producction_image.yml
 │   └── ISSUE_TEMPLATE/
 │
-├── zserver/                              # Core Django application
-│   ├── models/
-│   │   ├── user_profile.py               # Custom User, UnverifiedUser, OTP models
-│   │   └── message.py                    # Message model
-│   ├── views/
-│   │   ├── user_profile.py               # Auth, signup, Google OAuth, password reset
-│   │   └── message.py                    # Messages, contacts, all-users
-│   ├── serializers/                      # DRF serializers with business logic
-│   ├── tests/                            # Comprehensive automated test suite
-│   ├── consumers.py                      # WebSocket consumer (JWT-authenticated)
-│   └── urls.py                           # All API route definitions
+├── zauth/                                # Authentication and user profile API
+├── zchat/                                # Messages and WebSocket chat API
+└── zcore/                                # Core and health-check API
 │
 ├── frontend/                             # React + Vite SPA
 │   └── src/

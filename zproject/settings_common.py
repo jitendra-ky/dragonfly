@@ -21,7 +21,9 @@ INSTALLED_APPS = [
     "channels",
     "corsheaders",
     "rest_framework",
-    "zserver",
+    "zauth",
+    "zchat",
+    "zcore",
 ]
 
 MIDDLEWARE = [
