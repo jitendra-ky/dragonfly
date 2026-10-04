@@ -3,7 +3,13 @@ import useChatStore from '../store/chatStore';
 import Avatar from './Avatar';
 
 function ContactList() {
-  const { contacts, selectedContactId, setSelectedContact, messages } = useChatStore();
+  const {
+    contacts,
+    selectedContactId,
+    setSelectedContact,
+    setContactUnread,
+    messages,
+  } = useChatStore();
   const [searchQuery, setSearchQuery] = useState('');
 
   // Filter contacts based on search query
@@ -79,7 +85,10 @@ function ContactList() {
               return (
                 <button
                   key={contact.id}
-                  onClick={() => setSelectedContact(contact.id)}
+                  onClick={() => {
+                    setContactUnread(contact.id, false);
+                    setSelectedContact(contact.id);
+                  }}
                   className={`w-full p-4 flex items-center hover:bg-gray-50 transition-colors ${
                     isSelected ? 'bg-primary-50 border-l-4 border-primary-600' : ''
                   }`}
@@ -112,6 +121,12 @@ function ContactList() {
                       </p>
                     )}
                   </div>
+                  {contact.has_unread_messages && (
+                    <span
+                      className="ml-2 h-2.5 w-2.5 rounded-full bg-primary-600"
+                      aria-label="Unread messages"
+                    />
+                  )}
                 </button>
               );
             })}

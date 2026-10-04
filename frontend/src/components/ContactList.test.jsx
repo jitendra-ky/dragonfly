@@ -6,10 +6,12 @@ import ContactList from './ContactList';
 /* eslint-env jest */
 import { vi } from 'vitest';
 const setSelectedContact = vi.fn();
+const setContactUnread = vi.fn();
 let chatState = {
   contacts: [],
   selectedContactId: null,
   setSelectedContact,
+  setContactUnread,
   messages: {},
 };
 
@@ -24,6 +26,7 @@ describe('ContactList', () => {
       contacts: [],
       selectedContactId: null,
       setSelectedContact,
+      setContactUnread,
       messages: {},
     };
   });
@@ -59,5 +62,22 @@ describe('ContactList', () => {
     expect(screen.getByText('Latest message')).toBeInTheDocument();
     await user.click(screen.getByRole('button', { name: /contact@example.com/i }));
     expect(setSelectedContact).toHaveBeenCalledWith(5);
+  });
+
+  it('shows and clears the unread marker when a contact is selected', async () => {
+    const user = userEvent.setup();
+    chatState.contacts = [{
+      id: 5,
+      email: 'contact@example.com',
+      full_name: 'Contact Name',
+      has_unread_messages: true,
+    }];
+
+    render(<ContactList />);
+
+    expect(screen.getByLabelText('Unread messages')).toBeInTheDocument();
+    await user.click(screen.getByRole('button', { name: /contact@example.com/i }));
+
+    expect(setContactUnread).toHaveBeenCalledWith(5, false);
   });
 });

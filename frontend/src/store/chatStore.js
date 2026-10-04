@@ -12,6 +12,15 @@ const useChatStore = create((set) => ({
 
   // Actions
   setContacts: (contacts) => set({ contacts }),
+
+  setContactUnread: (contactId, hasUnreadMessages) =>
+    set((state) => ({
+      contacts: state.contacts.map((contact) =>
+        contact.id === contactId
+          ? { ...contact, has_unread_messages: hasUnreadMessages }
+          : contact
+      ),
+    })),
   
   setMessages: (contactId, messages) =>
     set((state) => ({

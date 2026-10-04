@@ -12,7 +12,12 @@ function useWebSocket() {
   const reconnectAttempts = useRef(0);
   const maxReconnectAttempts = 5;
 
-  const { setWsConnection, setIsConnected, addMessage, selectedContactId: _selectedContactId } = useChatStore();
+  const {
+    setWsConnection,
+    setIsConnected,
+    addMessage,
+    setContactUnread,
+  } = useChatStore();
   const connectRef = useRef(null);
 
   const connect = useCallback(() => {
@@ -47,6 +52,11 @@ function useWebSocket() {
             content,
             timestamp: timestamp || new Date().toISOString(),
           });
+          if (String(contactId) !== String(useChatStore.getState().selectedContactId)) {
+            setContactUnread(Number(contactId), true);
+          } else if (ws.readyState === WebSocket.OPEN) {
+            ws.send(JSON.stringify({ type: 'mark_read', contact_id: contactId }));
+          }
         } catch (error) {
           console.error('Error parsing WebSocket message:', error);
         }
@@ -76,7 +86,7 @@ function useWebSocket() {
     } catch (error) {
       console.error('Error creating WebSocket connection:', error);
     }
-  }, [user, setIsConnected, setWsConnection, addMessage]);
+  }, [user, setIsConnected, setWsConnection, addMessage, setContactUnread]);
 
   // keep a ref to the latest connect function to avoid use-before-declare issues
   useEffect(() => {
