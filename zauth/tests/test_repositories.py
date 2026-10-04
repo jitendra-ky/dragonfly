@@ -10,7 +10,7 @@ from zchat.repositories import MessageRepository
 User = get_user_model()
 
 
-def create_user(*, contact: str, email: str, **fields):
+def create_user(*, contact: str, email: str, **fields: object):
     return User.objects.create_user(
         username=email,
         first_name=contact,

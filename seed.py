@@ -1,28 +1,54 @@
-# -*- coding: utf-8 -*-
-"""
-Seed script -- creates 5 users and some messages between them.
-Run with:  .venv\\Scripts\\python.exe seed.py
+r"""Seed the database with five users and messages.
+
+Run with: .venv\Scripts\python.exe seed.py.
 """
 
 import os
+
 import django
 
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "zproject.settings")
 django.setup()
 
-from django.contrib.auth import get_user_model
-from zchat.models import Message
+from django.contrib.auth import get_user_model  # noqa: E402
+
+from zchat.models import Message  # noqa: E402
 
 User = get_user_model()
 
 # -- Users --------------------------------------------------------------------
 
 USERS = [
-    {"username": "alice", "email": "alice@example.com", "first_name": "Alice", "last_name": "Smith"},
-    {"username": "bob",   "email": "bob@example.com",   "first_name": "Bob",   "last_name": "Johnson"},
-    {"username": "carol", "email": "carol@example.com", "first_name": "Carol", "last_name": "Williams"},
-    {"username": "dave",  "email": "dave@example.com",  "first_name": "Dave",  "last_name": "Brown"},
-    {"username": "eve",   "email": "eve@example.com",   "first_name": "Eve",   "last_name": "Davis"},
+    {
+        "username": "alice",
+        "email": "alice@example.com",
+        "first_name": "Alice",
+        "last_name": "Smith",
+    },
+    {
+        "username": "bob",
+        "email": "bob@example.com",
+        "first_name": "Bob",
+        "last_name": "Johnson",
+    },
+    {
+        "username": "carol",
+        "email": "carol@example.com",
+        "first_name": "Carol",
+        "last_name": "Williams",
+    },
+    {
+        "username": "dave",
+        "email": "dave@example.com",
+        "first_name": "Dave",
+        "last_name": "Brown",
+    },
+    {
+        "username": "eve",
+        "email": "eve@example.com",
+        "first_name": "Eve",
+        "last_name": "Davis",
+    },
 ]
 
 PASSWORD = "password123"
@@ -32,10 +58,10 @@ for data in USERS:
     user, created = User.objects.get_or_create(
         username=data["username"],
         defaults={
-            "email":      data["email"],
+            "email": data["email"],
             "first_name": data["first_name"],
-            "last_name":  data["last_name"],
-            "is_active":  True,
+            "last_name": data["last_name"],
+            "is_active": True,
         },
     )
     if created:
@@ -103,4 +129,3 @@ for sender, receiver, content in MESSAGES:
 
 print(f"\nDone. {len(MESSAGES)} messages seeded.")
 print(f"All users share the password: '{PASSWORD}'")
-
