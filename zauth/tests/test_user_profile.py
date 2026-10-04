@@ -353,6 +353,11 @@ class ContactViewTest(TestCase):
         Message.objects.create(
             sender=self.user, receiver=self.contact, content="Hello, contact!",
         )
+        Message.objects.create(
+            sender=self.contact,
+            receiver=self.user,
+            content="Unread message!",
+        )
 
     def test_retrieve_contacts(self):
         """Test retrieving contacts for the authenticated user."""
@@ -363,6 +368,7 @@ class ContactViewTest(TestCase):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(len(response.data), 1)
         self.assertEqual(response.data[0]["email"], self.contact.email)
+        self.assertTrue(response.data[0]["has_unread_messages"])
 
 
 class AllUsersViewTest(TestCase):

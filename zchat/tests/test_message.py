@@ -61,7 +61,7 @@ class MessageViewTest(APITestCase):
         Message.objects.create(
             sender=self.sender, receiver=self.receiver, content="Test message 1",
         )
-        Message.objects.create(
+        incoming_message = Message.objects.create(
             sender=self.receiver, receiver=self.sender, content="Test message 2",
         )
         self.client.credentials(HTTP_AUTHORIZATION=f"Bearer {self.access_token}")
@@ -71,3 +71,5 @@ class MessageViewTest(APITestCase):
         )
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(len(response.data), 2)
+        incoming_message.refresh_from_db()
+        self.assertTrue(incoming_message.is_read)

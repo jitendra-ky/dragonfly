@@ -16,6 +16,10 @@ class MessageView(APIView):
         receiver = request.headers.get("receiver")
         if receiver is None:
             return Response(status=status.HTTP_400_BAD_REQUEST)
+        MessageRepository().mark_as_read(
+            receiver_id=request.user.id,
+            sender_id=int(receiver),
+        )
         messages = MessageRepository().conversation(
             user_id=request.user.id,
             contact_id=int(receiver),

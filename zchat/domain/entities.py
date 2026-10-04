@@ -9,3 +9,4 @@ class Message:
     receiver_id: int
     content: str
     timestamp: datetime
+    is_read: bool

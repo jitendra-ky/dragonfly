@@ -32,6 +32,22 @@ class MessageRepository:
         )
         return list(set(sender_ids).union(receiver_ids))
 
+    def has_unread_messages(self, *, user_id: int, contact_id: int) -> bool:
+        """Return whether a contact has unread messages for the user."""
+        return MessageModel.objects.filter(
+            sender_id=contact_id,
+            receiver_id=user_id,
+            is_read=False,
+        ).exists()
+
+    def mark_as_read(self, *, receiver_id: int, sender_id: int) -> None:
+        """Mark incoming messages from a contact as read."""
+        MessageModel.objects.filter(
+            sender_id=sender_id,
+            receiver_id=receiver_id,
+            is_read=False,
+        ).update(is_read=True)
+
     @staticmethod
     def _to_entity(message: MessageModel) -> Message:
         return Message(
@@ -40,4 +56,5 @@ class MessageRepository:
             receiver_id=message.receiver_id,
             content=message.content,
             timestamp=message.timestamp,
+            is_read=message.is_read,
         )
