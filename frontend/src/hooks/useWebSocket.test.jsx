@@ -7,6 +7,7 @@ import { STORAGE_KEYS } from '../constants';
 const setWsConnection = vi.fn();
 const setIsConnected = vi.fn();
 const addMessage = vi.fn();
+const setContactUnread = vi.fn();
 
 let authState = { user: { id: 1 } };
 let chatState = {
@@ -14,6 +15,7 @@ let chatState = {
   setIsConnected,
   addMessage,
   selectedContactId: null,
+  setContactUnread,
 };
 
 vi.mock('../store/authStore', () => ({
@@ -34,6 +36,7 @@ describe('useWebSocket', () => {
       setIsConnected,
       addMessage,
       selectedContactId: null,
+      setContactUnread,
     };
   });
 

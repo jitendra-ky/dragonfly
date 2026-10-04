@@ -1,10 +1,12 @@
 import json
 
+from channels.db import database_sync_to_async
 from channels.generic.websocket import AsyncWebsocketConsumer
 from rest_framework_simplejwt.exceptions import InvalidToken, TokenError
 from rest_framework_simplejwt.tokens import AccessToken, UntypedToken
 
 from zauth.repositories import UserRepository
+from zchat.repositories import MessageRepository
 
 # Dictionary to keep track of user connections
 connections: dict[str, "ChatConsumer"] = {}
@@ -60,6 +62,12 @@ class ChatConsumer(AsyncWebsocketConsumer):
     async def receive(self, text_data: str) -> None:
         """Receive a message from the client and forward it to the recipient."""
         data = json.loads(text_data)
+        if data.get("type") == "mark_read":
+            contact_id = data.get("contact_id")
+            if contact_id is not None:
+                await self._mark_messages_as_read(contact_id)
+            return
+
         sender = data.get("sender")
         receiver = data.get("receiver")
         content = data.get("content")
@@ -70,3 +78,11 @@ class ChatConsumer(AsyncWebsocketConsumer):
                 "receiver": receiver,
                 "content": content,
             }))
+
+    @database_sync_to_async
+    def _mark_messages_as_read(self, contact_id: int) -> None:
+        """Mark messages from the active contact as read."""
+        MessageRepository().mark_as_read(
+            receiver_id=int(self.user_id),
+            sender_id=int(contact_id),
+        )

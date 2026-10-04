@@ -14,6 +14,7 @@ User = get_user_model()
 class UserProfileSerializer(serializers.Serializer):
     # Add dynamic field for last message between the user and the contact
     last_message = serializers.SerializerMethodField()
+    has_unread_messages = serializers.SerializerMethodField()
     id = serializers.IntegerField(read_only=True)
     contact = serializers.CharField(source="first_name")
     email = serializers.EmailField()
@@ -31,6 +32,16 @@ class UserProfileSerializer(serializers.Serializer):
             contact_id=contact.id,
         )
         return messages[-1].content if messages else None
+
+    def get_has_unread_messages(self, contact: User | UserEntity) -> bool:
+        """Return whether the contact has unread messages for the user."""
+        user = self.context.get("user")
+        if not user:
+            return False
+        return MessageRepository().has_unread_messages(
+            user_id=user.id,
+            contact_id=contact.id,
+        )
 
     def update(self, instance: User, validated_data: dict) -> User:
         """Update an existing user profile."""

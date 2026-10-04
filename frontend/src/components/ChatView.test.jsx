@@ -16,6 +16,7 @@ let chatState = {
   contacts: [],
   messages: {},
   setMessages,
+  wsConnection: null,
 };
 
 vi.mock('../store/authStore', () => ({
@@ -46,6 +47,7 @@ describe('ChatView', () => {
       contacts: [],
       messages: {},
       setMessages,
+      wsConnection: null,
     };
   });
 
@@ -62,6 +64,7 @@ describe('ChatView', () => {
         2: [{ id: 10, sender_id: 2, receiver_id: 1, content: 'hello', timestamp: new Date().toISOString() }],
       },
       setMessages,
+      wsConnection: null,
     };
     mockGetMessages.mockResolvedValueOnce([
       { id: 11, sender: 2, receiver: 1, message: 'fetched', created_at: new Date().toISOString() },

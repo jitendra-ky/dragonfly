@@ -11,7 +11,7 @@ class MessageSerializer(serializers.ModelSerializer):
         """Configure message validation and response fields."""
 
         model = MessageModel
-        fields = ["id", "sender", "receiver", "content"]
+        fields = ["id", "sender", "receiver", "content", "is_read"]
 
     def to_representation(self, instance: Message | MessageModel) -> dict:
         """Serialize either a domain message or an ORM message."""
@@ -21,6 +21,7 @@ class MessageSerializer(serializers.ModelSerializer):
                 "sender": instance.sender_id,
                 "receiver": instance.receiver_id,
                 "content": instance.content,
+                "is_read": instance.is_read,
             }
         return super().to_representation(instance)
 

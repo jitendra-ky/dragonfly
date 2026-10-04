@@ -8,7 +8,7 @@ import LoadingSpinner from './LoadingSpinner';
 
 function ChatView() {
   const user = useAuthStore((state) => state.user);
-  const { selectedContactId, contacts, messages, setMessages } = useChatStore();
+  const { selectedContactId, contacts, messages, setMessages, wsConnection } = useChatStore();
   const [loading, setLoading] = useState(false);
   const messagesEndRef = useRef(null);
 
@@ -41,6 +41,15 @@ function ChatView() {
 
     fetchMessages();
   }, [selectedContactId, setMessages]);
+
+  useEffect(() => {
+    if (selectedContactId && wsConnection?.readyState === WebSocket.OPEN) {
+      wsConnection.send(JSON.stringify({
+        type: 'mark_read',
+        contact_id: selectedContactId,
+      }));
+    }
+  }, [selectedContactId, wsConnection]);
 
   // Scroll to bottom when messages change
   useEffect(() => {
