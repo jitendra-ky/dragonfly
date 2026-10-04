@@ -84,7 +84,7 @@ dragonfly/
 │       └── types/                        # TypeScript-compatible type definitions
 │
 ├── zproject/                             # Django project config (settings, ASGI, routing)
-├── tools/dockerfiles/                    # Dockerfiles for CI test environment
+├── tools/                                # Dockerfiles and Compose deployment definitions
 ├── docs/                                 # Developer documentation
 ├── render.yaml                           # Render deployment config (IaC)
 └── pyproject.toml                        # Ruff linting config

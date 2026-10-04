@@ -1,0 +1,60 @@
+services:
+  # PostgreSQL stays private on the Compose network and persists in a volume.
+  # It is not published to the internet.
+  db:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    env_file:
+      - ../.env
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-dragonfly}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB:-dragonfly}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-dragonfly} -d ${POSTGRES_DB:-dragonfly}"]
+      interval: 5s
+      timeout: 5s
+      retries: 12
+
+  web:
+    # The web container receives the public HTTP port and handles WebSockets.
+    build:
+      context: ..
+      dockerfile: tools/dockerfiles/Dockerfile.aws
+    restart: unless-stopped
+    env_file:
+      - ../.env
+    environment:
+      DATABASE_URL: postgresql://${POSTGRES_USER:-dragonfly}:${POSTGRES_PASSWORD}@db:5432/${POSTGRES_DB:-dragonfly}?sslmode=disable
+    command: >
+      sh -c "python manage.py collectstatic --noinput &&
+      exec daphne -b 0.0.0.0 -p 8000 zproject.asgi:application"
+    depends_on:
+      db:
+        condition: service_healthy
+      seed:
+        condition: service_completed_successfully
+    ports:
+      - "80:8000"
+
+  # Run migrations and showcase seed data once before the web service starts.
+  # This service exits after success; web waits for that successful exit.
+  seed:
+    build:
+      context: ..
+      dockerfile: tools/dockerfiles/Dockerfile.aws
+    env_file:
+      - ../.env
+    environment:
+      DATABASE_URL: postgresql://${POSTGRES_USER:-dragonfly}:${POSTGRES_PASSWORD}@db:5432/${POSTGRES_DB:-dragonfly}?sslmode=disable
+    command: >
+      sh -c "python manage.py migrate --noinput &&
+      python seed.py"
+    depends_on:
+      db:
+        condition: service_healthy
+
+volumes:
+  postgres_data:

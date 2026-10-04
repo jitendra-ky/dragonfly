@@ -1,4 +1,7 @@
 .venv
+.env.aws
+*.deploy.env
+.aws/
 db.sqlite3
 *pyc
 .vscode
