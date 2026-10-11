@@ -1,0 +1,295 @@
+{
+    "root_group": {
+        "path": "",
+        "id": "d41d8cd98f00b204e9800998ecf8427e",
+        "groups": {
+            "setup": {
+                "path": "::setup",
+                "id": "5c0f8025f7e0b6654089e5b00e950f1a",
+                "groups": {},
+                "checks": {
+                        "login status is 200": {
+                            "path": "::setup::login status is 200",
+                            "id": "bb27b460b057923f4a083e3603c038b9",
+                            "passes": 1,
+                            "fails": 0,
+                            "name": "login status is 200"
+                        },
+                        "login returns access token": {
+                            "id": "a8d617b206e48dce0a3283066f41d213",
+                            "passes": 1,
+                            "fails": 0,
+                            "name": "login returns access token",
+                            "path": "::setup::login returns access token"
+                        },
+                        "login returns user id": {
+                            "path": "::setup::login returns user id",
+                            "id": "9bd8cedb444fa6df76828b1d67b3d4fc",
+                            "passes": 1,
+                            "fails": 0,
+                            "name": "login returns user id"
+                        }
+                    },
+                "name": "setup"
+            }
+        },
+        "checks": {
+            "health status is 200": {
+                "name": "health status is 200",
+                "path": "::health status is 200",
+                "id": "ab698ad652ee317628077e42e47eda00",
+                "passes": 32,
+                "fails": 0
+            },
+            "health response is healthy": {
+                "id": "c30a9440c21cfa7e44af9e3769cb2909",
+                "passes": 32,
+                "fails": 0,
+                "name": "health response is healthy",
+                "path": "::health response is healthy"
+            },
+            "all users status is 200": {
+                "name": "all users status is 200",
+                "path": "::all users status is 200",
+                "id": "4f744da5f9d0eeed626148650c3dc306",
+                "passes": 32,
+                "fails": 0
+            },
+            "all users response is an array": {
+                "passes": 32,
+                "fails": 0,
+                "name": "all users response is an array",
+                "path": "::all users response is an array",
+                "id": "e7debd5938981bbc59400b086e14adbc"
+            },
+            "peer user is available": {
+                "passes": 32,
+                "fails": 0,
+                "name": "peer user is available",
+                "path": "::peer user is available",
+                "id": "2e2b291d0fe37d7e15b1b122c9139942"
+            },
+            "contacts status is 200": {
+                "id": "de99767cd0054db1ed052998e6ab6611",
+                "passes": 32,
+                "fails": 0,
+                "name": "contacts status is 200",
+                "path": "::contacts status is 200"
+            },
+            "contacts response is an array": {
+                "passes": 32,
+                "fails": 0,
+                "name": "contacts response is an array",
+                "path": "::contacts response is an array",
+                "id": "56fe3b3f5ec015455a5724fc6e6c1ae9"
+            },
+            "messages status is 200": {
+                "name": "messages status is 200",
+                "path": "::messages status is 200",
+                "id": "3dc116e715b16f5142321920de0a47ba",
+                "passes": 32,
+                "fails": 0
+            },
+            "messages response is an array": {
+                "name": "messages response is an array",
+                "path": "::messages response is an array",
+                "id": "99ffbb34bf679dbb0f1ab03e55999a6d",
+                "passes": 32,
+                "fails": 0
+            },
+            "send message status is 201": {
+                "name": "send message status is 201",
+                "path": "::send message status is 201",
+                "id": "a110341a0546e45bec0bf3b61002af45",
+                "passes": 32,
+                "fails": 0
+            },
+            "sent message has id": {
+                "name": "sent message has id",
+                "path": "::sent message has id",
+                "id": "68b34bb901ec28cb5132abcd5898f915",
+                "passes": 32,
+                "fails": 0
+            },
+            "sent message has content": {
+                "name": "sent message has content",
+                "path": "::sent message has content",
+                "id": "67cab97436a2636aa18dc8073dd2f86e",
+                "passes": 32,
+                "fails": 0
+            }
+        },
+        "name": ""
+    },
+    "metrics": {
+        "http_req_duration": {
+            "med": 27.547366,
+            "max": 246.427279,
+            "p(90)": 212.629878,
+            "p(95)": 231.858709,
+            "avg": 62.56895065838508,
+            "min": 7.496764,
+            "thresholds": {
+                "p(95)<500": false
+            }
+        },
+        "http_req_tls_handshaking": {
+            "avg": 0,
+            "min": 0,
+            "med": 0,
+            "max": 0,
+            "p(90)": 0,
+            "p(95)": 0
+        },
+        "endpoint_sign_in": {
+            "avg": 196.015506,
+            "min": 196.015506,
+            "med": 196.015506,
+            "max": 196.015506,
+            "p(90)": 196.015506,
+            "p(95)": 196.015506
+        },
+        "endpoint_messages_write": {
+            "max": 30.757519,
+            "p(90)": 27.361156100000002,
+            "p(95)": 28.08164965,
+            "avg": 25.427456781249997,
+            "min": 19.486777,
+            "med": 25.466306000000003
+        },
+        "iterations": {
+            "count": 32,
+            "rate": 1.0378640170993274
+        },
+        "http_req_blocked": {
+            "p(90)": 0.008997,
+            "p(95)": 0.010519,
+            "avg": 0.015097136645962737,
+            "min": 0.002906,
+            "med": 0.006202,
+            "max": 0.910892
+        },
+        "http_req_waiting": {
+            "avg": 62.43663232919255,
+            "min": 7.423727,
+            "med": 27.446297,
+            "max": 246.345276,
+            "p(90)": 212.468687,
+            "p(95)": 231.703639
+        },
+        "http_req_sending": {
+            "max": 0.166251,
+            "p(90)": 0.043802,
+            "p(95)": 0.055424,
+            "avg": 0.027968621118012432,
+            "min": 0.009247,
+            "med": 0.023544
+        },
+        "data_sent": {
+            "count": 53893,
+            "rate": 1747.9251710479393
+        },
+        "checks": {
+            "fails": 0,
+            "passes": 387,
+            "thresholds": {
+                "rate>0.99": false
+            },
+            "value": 1
+        },
+        "iteration_duration": {
+            "avg": 1914.46879371875,
+            "min": 1877.621465,
+            "med": 1910.8643025000001,
+            "max": 1953.672276,
+            "p(90)": 1950.0707949999999,
+            "p(95)": 1951.7441623
+        },
+        "data_received": {
+            "rate": 39899.57940686548,
+            "count": 1230206
+        },
+        "vus_max": {
+            "value": 2,
+            "min": 2,
+            "max": 2
+        },
+        "http_req_failed": {
+            "passes": 0,
+            "fails": 161,
+            "thresholds": {
+                "rate<0.01": false
+            },
+            "value": 0
+        },
+        "endpoint_contacts": {
+            "p(90)": 241.56386030000002,
+            "p(95)": 244.1085986,
+            "avg": 212.91885687500005,
+            "min": 178.926382,
+            "med": 213.07443849999999,
+            "max": 246.427279
+        },
+        "vus": {
+            "value": 2,
+            "min": 2,
+            "max": 2
+        },
+        "http_req_duration{expected_response:true}": {
+            "p(95)": 231.858709,
+            "avg": 62.56895065838508,
+            "min": 7.496764,
+            "med": 27.547366,
+            "max": 246.427279,
+            "p(90)": 212.629878
+        },
+        "http_req_connecting": {
+            "avg": 0.005378937888198757,
+            "min": 0,
+            "med": 0,
+            "max": 0.515033,
+            "p(90)": 0,
+            "p(95)": 0
+        },
+        "endpoint_all_users": {
+            "avg": 32.14859046875,
+            "min": 26.878436,
+            "med": 29.5361185,
+            "max": 56.486856,
+            "p(90)": 37.9306387,
+            "p(95)": 47.205481199999994
+        },
+        "http_reqs": {
+            "count": 161,
+            "rate": 5.221753336030992
+        },
+        "endpoint_messages_read": {
+            "p(95)": 40.1409229,
+            "avg": 28.350976593749998,
+            "min": 21.35804,
+            "med": 25.893857,
+            "max": 45.650211,
+            "p(90)": 37.4769436
+        },
+        "http_req_receiving": {
+            "avg": 0.10434970807453416,
+            "min": 0.018334,
+            "med": 0.089939,
+            "max": 0.501888,
+            "p(90)": 0.145311,
+            "p(95)": 0.212798
+        },
+        "endpoint_health": {
+            "avg": 9.828667718750003,
+            "min": 7.496764,
+            "med": 9.5582785,
+            "max": 14.222705,
+            "p(90)": 12.0004677,
+            "p(95)": 13.62866845
+        }
+    },
+    "setup_data": {
+        "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzkxNzE0Mzg3LCJpYXQiOjE3OTE3MTA3ODcsImp0aSI6IjUxMzNhZDM1YTM0YTRjOGZhZjg1NGI3MmE2ZDdiOGFkIiwidXNlcl9pZCI6MX0.B9VF7gM_zkEVCkaXsxoFv3Dea6pOH2MQScmeL9zUPes",
+        "userId": 1
+    }
+}

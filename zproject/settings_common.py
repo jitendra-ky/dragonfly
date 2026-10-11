@@ -3,6 +3,7 @@
 This file contains shared configuration for both development and production.
 """
 
+import os
 from datetime import timedelta
 from pathlib import Path
 
@@ -142,8 +143,17 @@ CORS_ALLOW_HEADERS = [
 ]
 
 # Django Channels Configuration
-CHANNEL_LAYERS = {
-    "default": {
-        "BACKEND": "channels.layers.InMemoryChannelLayer",
-    },
-}
+CHANNEL_REDIS_URL = os.getenv("CHANNEL_REDIS_URL")
+if CHANNEL_REDIS_URL:
+    CHANNEL_LAYERS = {
+        "default": {
+            "BACKEND": "channels_redis.core.RedisChannelLayer",
+            "CONFIG": {"hosts": [CHANNEL_REDIS_URL]},
+        },
+    }
+else:
+    CHANNEL_LAYERS = {
+        "default": {
+            "BACKEND": "channels.layers.InMemoryChannelLayer",
+        },
+    }

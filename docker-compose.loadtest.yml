@@ -1,0 +1,87 @@
+services:
+  db:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_DB: dragonfly_loadtest
+      POSTGRES_USER: dragonfly
+      POSTGRES_PASSWORD: dragonfly-loadtest
+    volumes:
+      - loadtest_postgres_data:/var/lib/postgresql/data
+    ports:
+      - "5433:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U dragonfly -d dragonfly_loadtest"]
+      interval: 3s
+      timeout: 3s
+      retries: 20
+
+  redis:
+    image: redis:7-alpine
+    ports:
+      - "6380:6379"
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 3s
+      timeout: 3s
+      retries: 20
+
+  seed:
+    build:
+      context: .
+      dockerfile: tools/dockerfiles/Dockerfile.aws
+    environment:
+      DJANGO_ENV: production
+      DJANGO_DEBUG: "false"
+      SECRET_KEY: loadtest-only-secret-key
+      DATABASE_URL: postgresql://dragonfly:dragonfly-loadtest@host.docker.internal:5433/dragonfly_loadtest?sslmode=disable
+      ALLOWED_HOSTS: localhost,127.0.0.1,web,host.docker.internal
+      CORS_ALLOWED_ORIGINS: http://localhost:8000
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    command: >
+      sh -c "python manage.py migrate --noinput &&
+      PYTHONPATH=/app python loadtest/seed.py"
+    depends_on:
+      db:
+        condition: service_healthy
+
+  web:
+    build:
+      context: .
+      dockerfile: tools/dockerfiles/Dockerfile.aws
+    environment:
+      DJANGO_ENV: production
+      DJANGO_DEBUG: "false"
+      SECRET_KEY: loadtest-only-secret-key
+      DATABASE_URL: postgresql://dragonfly:dragonfly-loadtest@host.docker.internal:5433/dragonfly_loadtest?sslmode=disable
+      ALLOWED_HOSTS: localhost,127.0.0.1,web,host.docker.internal
+      CORS_ALLOWED_ORIGINS: http://localhost:8000
+      CHANNEL_REDIS_URL: redis://host.docker.internal:6380/0
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    command: ["daphne", "-b", "0.0.0.0", "-p", "8000", "zproject.asgi:application"]
+    depends_on:
+      seed:
+        condition: service_completed_successfully
+      redis:
+        condition: service_healthy
+    ports:
+      - "8000:8000"
+
+  k6:
+    image: grafana/k6:latest
+    environment:
+      BASE_URL: http://host.docker.internal:8000
+      LOADTEST_EMAIL: loadtest-0000@example.com
+      LOADTEST_PASSWORD: LoadtestPassword123!
+    volumes:
+      - ./loadtest:/scripts:ro
+      - ./loadtest/results:/results
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    depends_on:
+      web:
+        condition: service_started
+
+volumes:
+  loadtest_postgres_data:
