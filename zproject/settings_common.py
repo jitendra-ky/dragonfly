@@ -3,8 +3,8 @@
 This file contains shared configuration for both development and production.
 """
 
-from datetime import timedelta
 import os
+from datetime import timedelta
 from pathlib import Path
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
